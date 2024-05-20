@@ -1,0 +1,12 @@
+^heimdall\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^README\.Rmd$
+^\.github$
+^data-gen$
+^data-real$
+^development$
+package.R
+jupyter.R
+
+
