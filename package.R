@@ -56,8 +56,8 @@ if (FALSE) { #build package for cran
   pkgbuild::build(manual = TRUE)
 
   #run in terminal
-  #R CMD check heimdall_1.0.0.tar.gz
-  #R CMD check heimdall_1.0.0.tar.gz --as-cran
+  #R CMD check heimdall_1.0.1.tar.gz
+  #R CMD check heimdall_1.0.1.tar.gz --as-cran
 
   #upload package
   #https://cran.r-project.org/submit.html
