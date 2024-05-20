@@ -36,8 +36,7 @@ devtools::install_github("cefet-rj-dal/heimdall", force=TRUE, upgrade="never")
 
 Examples of heimdall are organized according to drift detection.
 
-General:
-<https://nbviewer.org/github/cefet-rj-dal/heimdall/tree/master/>
+General: <https://nbviewer.org/github/cefet-rj-dal/heimdall>
 
 ``` r
 library(heimdall)
