@@ -58,7 +58,8 @@ if (FALSE) { #build package for cran
   #run in terminal
   #R CMD check heimdall_1.0.1.tar.gz
   #R CMD check heimdall_1.0.1.tar.gz --as-cran
-  #Incluir na opção de projeto --resave-data
+  #resaveRdaFiles('data/st_drift_examples.RData')
+  #resaveRdaFiles('data/st_real_examples.RData')
   
 
   #upload package
