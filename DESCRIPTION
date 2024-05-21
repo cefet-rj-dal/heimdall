@@ -22,6 +22,7 @@ Imports:
   daltoolbox,
   ggplot2
 Depends:
-  caret
+  caret,
+  R (>= 2.10)
 
     

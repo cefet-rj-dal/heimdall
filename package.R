@@ -58,6 +58,8 @@ if (FALSE) { #build package for cran
   #run in terminal
   #R CMD check heimdall_1.0.1.tar.gz
   #R CMD check heimdall_1.0.1.tar.gz --as-cran
+  #Incluir na opção de projeto --resave-data
+  
 
   #upload package
   #https://cran.r-project.org/submit.html
