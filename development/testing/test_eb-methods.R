@@ -1,21 +1,27 @@
-source("/home/lucas/stealthy/R/ac_drifter.R")
-source("/home/lucas/stealthy/R/ac_metrics.R")
-source("/home/lucas/stealthy/R/ac_stealthy.R")
-source("/home/lucas/stealthy/R/dd_ddm.R")
-source("/home/lucas/stealthy/R/dd_eddm.R")
-source("/home/lucas/stealthy/R/dd_hddm.R")
-#source("/home/lucas/stealthy/R/dd_page_hinkley.R")
-#source("/home/lucas/stealthy/development/iterator.R")
-install.packages('prob')
+source("/home/lucas/heimdall/R/ac_drifter.R")
+source("/home/lucas/heimdall/R/ac_metrics.R")
+source("/home/lucas/heimdall/R/ac_stealthy.R")
+source("/home/lucas/heimdall/R/dfr_ddm.R")
+source("/home/lucas/heimdall/R/dfr_eddm.R")
+source("/home/lucas/heimdall/R/dfr_hddm.R")
+source("/home/lucas/heimdall/R/dfr_page_hinkley.R")
+source("/home/lucas/heimdall/development/iterator.R")
+
+#install.packages("/home/lucas/heimdall",
+#                 repos = NULL, 
+#                 type = "source")
+
 library("daltoolbox")
-library("dplyr")
-library('ggplot2')
+#library("dplyr")
+#library('ggplot2')
+library('heimdall')
 
-data("st_real_examples")
+#data("st_real_examples")
+load('/home/lucas/lucas/data/original/bfd_2022.rdata')
 
-bfd <- st_real_examples$bfd1
+#bfd <- st_real_examples$bfd1
 
-bfd['batch_index'] <- format(bfd['expected_depart'], '%Y-%m-%d')
+bfd['batch_index'] <- format(bfd['expected_depart'], '%V')
 bfd <- bfd[bfd['depart'] == 'SBSP',]
 
 # Model features
@@ -38,7 +44,7 @@ ordered_batches <- sort(unique(bfd$batch_index))
 old_start_batch <- ordered_batches[1]
 
 # Classification Algorithm
-model <- stealthy(cla_nb(target, slevels), dd_hddm())
+model <- stealthy(cla_nb(target, slevels), dfr_eddm(), verbose=TRUE)
 
 for (batch in ordered_batches[2:length(ordered_batches)]){
   print(batch)
