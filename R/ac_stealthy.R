@@ -3,6 +3,7 @@
 #'@param model The algorithm object to be used for predictions
 #'@param drift_method The algorithm object to detect drifts
 #'@param th The threshold to be used with classification algorithms
+#'@param verbose if TRUE shows drift messages
 #'@return Stealthy object
 #'@examples
 #'# See ?dd_ddm for an example of DDM drift detector
