@@ -4,7 +4,7 @@
 \alias{stealthy}
 \title{Stealthy}
 \usage{
-stealthy(model, drift_method, th = 0.5)
+stealthy(model, drift_method, th = 0.5, verbose = FALSE)
 }
 \arguments{
 \item{model}{The algorithm object to be used for predictions}
@@ -12,6 +12,8 @@ stealthy(model, drift_method, th = 0.5)
 \item{drift_method}{The algorithm object to detect drifts}
 
 \item{th}{The threshold to be used with classification algorithms}
+
+\item{verbose}{if TRUE shows drift messages}
 }
 \value{
 Stealthy object
