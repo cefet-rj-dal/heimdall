@@ -10,7 +10,7 @@
 #'@import stats
 #'@importFrom caret dummyVars
 #'@export
-stealthy <- function(model, drift_method, th=0.5){
+stealthy <- function(model, drift_method, th=0.5, verbose=FALSE){
   obj <- dal_base()
   obj$dummy <- NULL
   obj$model <- model
@@ -20,6 +20,7 @@ stealthy <- function(model, drift_method, th=0.5){
   obj$x_train <- c()
   obj$y_train <- c()
   obj$th <- th
+  obj$verbose <- verbose
   attr(obj, 'class') <- 'stealthy'
   return(obj)
 }
@@ -37,7 +38,12 @@ fit.stealthy <- function(obj, x, y, ...){
   if (obj$model$is_fitted){
     x_oh <- data.frame(predict(obj$dummy, newdata = x))
     if (!all(obj$dummy$feat_names %in% names(x_oh))){
-      print('Some categories present on train are not on test dataset.')
+      warning('Some categories present on train are not on the most recent dataset. Creating zero columns.')
+      for (feat in obj$dummy$feat_names){
+        if (!(feat %in% names(x_oh))){
+          x_oh[feat] <- 0
+        }
+      }
     }
     if ('error_based' %in% class(obj$drift_method)){
       predictions <- predict(obj$model, x_oh)
@@ -54,7 +60,9 @@ fit.stealthy <- function(obj, x, y, ...){
     }
     
     if(obj$drift_method$drifted){
-      print('Stealthy detected a drift, discarding old data')
+      if(obj$verbose){
+        message('Stealthy detected a drift, discarding old data')
+      }
       obj$x_train <- c()
       obj$y_train <- c()  
       obj$drift_method <- reset_state(obj$drift_method)
@@ -74,6 +82,7 @@ fit.stealthy <- function(obj, x, y, ...){
   data <- cbind(x_train, obj$y_train)
   # Fit model
   obj$model <- fit(obj$model, data)
+  obj$model$feat_names <- names(data)
   obj$model$is_fitted <- TRUE
   return(obj)
 }
@@ -81,5 +90,10 @@ fit.stealthy <- function(obj, x, y, ...){
 #'@export
 predict.stealthy <- function(object, data, ...){
   data_oh <- data.frame(predict(object$dummy, newdata = data))
+  for (feat in object$model$feat_names){
+    if (!(feat %in% names(data_oh))){
+      data_oh[feat] <- 0
+    }
+  }
   return(predict(object$model, data_oh))
 }
