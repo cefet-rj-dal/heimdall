@@ -15,7 +15,7 @@ stealthy <- function(model, drift_method, th=0.5, verbose=FALSE){
   obj <- dal_base()
   obj$dummy <- NULL
   obj$model <- model
-  obj$model$is_fitted <- FALSE
+  obj$fitted <- FALSE
   obj$drift_method <- drift_method
   obj$drifted <- FALSE
   obj$x_train <- c()
@@ -36,7 +36,7 @@ update_state.stealthy <- function(obj, value, ...){
 fit.stealthy <- function(obj, x, y, ...){
   # Check Drift
   obj$drifted <- FALSE
-  if (obj$model$is_fitted){
+  if (obj$fitted){
     x_oh <- data.frame(predict(obj$dummy, newdata = x))
     if (!all(obj$dummy$feat_names %in% names(x_oh))){
       warning('Some categories present on train are not on the most recent dataset. Creating zero columns.')
@@ -84,7 +84,7 @@ fit.stealthy <- function(obj, x, y, ...){
   # Fit model
   obj$model <- fit(obj$model, data)
   obj$model$feat_names <- names(data)
-  obj$model$is_fitted <- TRUE
+  obj$fitted <- TRUE
   return(obj)
 }
 
