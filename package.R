@@ -56,8 +56,8 @@ if (FALSE) { #build package for cran
   pkgbuild::build(manual = TRUE)
 
   #run in terminal
-  #R CMD check heimdall_1.0.2.tar.gz
-  #R CMD check heimdall_1.0.2.tar.gz --as-cran
+  #R CMD check heimdall_1.0.3.tar.gz
+  #R CMD check heimdall_1.0.3.tar.gz --as-cran
   #resaveRdaFiles('data/st_drift_examples.RData')
   #resaveRdaFiles('data/st_real_examples.RData')
   
