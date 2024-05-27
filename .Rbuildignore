@@ -5,6 +5,7 @@
 ^\.github$
 ^data-gen$
 ^data-real$
+^inst$
 ^development$
 package.R
 jupyter.R
