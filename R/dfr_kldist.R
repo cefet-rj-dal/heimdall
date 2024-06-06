@@ -101,7 +101,7 @@ dfr_kldist <- function(target_feat, window_size=100, p_th=0.9, data=NULL) {
     
     state <- list()
     state$window_size <- window_size
-    state$p_th = p_th
+    state$p_th <- p_th
     state$p_value <- 0
     state$n <- 0
 
@@ -140,7 +140,7 @@ update_state.dfr_kldist <- function(obj, value) {
     p <- p_window / sum(p_window)
     q <- q_window / sum(q_window)
     
-    state$kl <- sum(p * log(p/q, base=2))
+    state$kl <- sum(p * log(p/q, base=2), na.rm=TRUE)
     
     if((state$kl >= state$p_th)){
       state$window <- tail(state$window, state$window_size/2)
