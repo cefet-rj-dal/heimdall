@@ -108,10 +108,12 @@ dfr_adwin <- function(target_feat, delta=0.002) {
     return(obj)
   }
   
-  obj$insert_element_bucket <- function(obj){
+  obj$insert_element_bucket <- function(obj, value, variance){
     
     state <- obj$state
     
+    state$list_row_bucket$first <- state$list_row_bucket$first$insert_bucket(state$list_row_bucket$first, value, variance)
+
     state$bucket_number <- state$bucket_number + 1
     
     if (state$bucket_number > state$bucket_num_max){
@@ -243,8 +245,6 @@ dfr_adwin <- function(target_feat, delta=0.002) {
         
         while ((!bln_exit) & (!is.null(cursor))){
           for (k in 1:cursor$bucket_size_row){
-            #print('WHILE')
-            #print(cursor$bucket_size_row)
             n2 <- 2^i
             u2 <- cursor$bucket_total[k]
             
@@ -272,10 +272,10 @@ dfr_adwin <- function(target_feat, delta=0.002) {
             
             abs_value <- 1 * ((u0/n0) - (u1/n1))
             
-            #print(n0)
-            #print(n1)
-            #print(state$mint_min_window_length)
-            #print(obj$bln_cut_expression(obj, n0, n1, u0, u1, v0, v1, abs_value, state$delta))
+            print(n0)
+            print(n1)
+            print(state$mint_min_window_length)
+            print(obj$bln_cut_expression(obj, n0, n1, u0, u1, v0, v1, abs_value, state$delta))
             if ((n1 >= state$mint_min_window_length) & (n0 >= state$mint_min_window_length) & (obj$bln_cut_expression(obj, n0, n1, u0, u1, v0, v1, abs_value, state$delta))){
               bln_bucket_deleted <-TRUE
               state$detect <- state$mint_time
@@ -291,8 +291,8 @@ dfr_adwin <- function(target_feat, delta=0.002) {
               if (state$width > 0){
                 obj$state <- state
                 delete_return <- state$delete_element(state)
-                state <- obj$state
                 obj <- delete_return[1]
+                state <- obj$state
                 n0 <- n0 - delete_return[2]
               }
             }
@@ -364,19 +364,18 @@ update_state.dfr_adwin <- function(obj, value){
   state <- obj$state
   
   state$width <- state$width + 1
-  state$list_row_bucket$first <- state$list_row_bucket$first$insert_bucket(state$list_row_bucket$first, 0, value)
+  
   obj$state <- state
-  obj <- obj$insert_element_bucket(obj)
+  obj <- obj$insert_element_bucket(obj,value, 0)
   state <- obj$state
   incremental_variance <- 0
   
   if (state$width > 1){
     incremental_variance <- (state$width - 1) * (value - state$total / (state$width - 1)) * (value - state$total / (state$width - 1)) / state$width
-    #print(incremental_variance)
+    
   }
-  #print(state$variance)
+  
   state$variance <- state$variance + incremental_variance
-  #print(state$variance)
   state$total <- state$total + value
   
   obj$state <- state
