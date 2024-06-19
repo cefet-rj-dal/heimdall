@@ -11,7 +11,6 @@
 #'@examples
 #'require("daltoolbox")
 #'require('ggplot2')
-#'require('darch')
 #'
 #'data("st_real_examples")
 #'
