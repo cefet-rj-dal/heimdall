@@ -1,23 +1,26 @@
-source("/home/lucas/heimdall/R/ac_drifter.R")
-source("/home/lucas/heimdall/R/ac_metrics.R")
-source("/home/lucas/heimdall/R/ac_stealthy.R")
-source("/home/lucas/heimdall/R/dfr_ddm.R")
-source("/home/lucas/heimdall/R/dfr_eddm.R")
-source("/home/lucas/heimdall/R/dfr_hddm.R")
-source("/home/lucas/heimdall/R/dfr_page_hinkley.R")
-source("/home/lucas/heimdall/development/iterator.R")
+#source("/home/lucas/heimdall/R/ac_drifter.R")
+#source("/home/lucas/heimdall/R/ac_metrics.R")
+#source("/home/lucas/heimdall/R/ac_stealthy.R")
+#source("/home/lucas/heimdall/R/dfr_ddm.R")
+#source("/home/lucas/heimdall/development/drift_techniques/dfr_ecdd.R")
+source("/home/lucas/heimdall/development/drift_techniques/dfr_adwin.R")
+#source("/home/lucas/heimdall/R/dfr_eddm.R")
+#source("/home/lucas/heimdall/R/dfr_hddm.R")
+#source("/home/lucas/heimdall/R/dfr_page_hinkley.R")
+#source("/home/lucas/heimdall/development/iterator.R")
 
 #install.packages("/home/lucas/heimdall",
 #                 repos = NULL, 
 #                 type = "source")
 
 library("daltoolbox")
-#library("dplyr")
-#library('ggplot2')
+library("dplyr")
+library('ggplot2')
 library('heimdall')
+library('reticulate')
 
 #data("st_real_examples")
-load('/home/lucas/lucas/data/original/bfd_2022.rdata')
+load('/home/lucas/heimdall/development/testing/data/bfd_2023.rdata')
 
 #bfd <- st_real_examples$bfd1
 
@@ -36,6 +39,9 @@ bfd$delay_depart_bin <- bfd$delay_depart > 0
 target = 'delay_depart_bin'
 slevels <- c(TRUE, FALSE)
 
+# Save bfd data
+#write.csv(bfd, '/home/lucas/bfd.csv')
+
 # Evaluation
 th=0.5
 
@@ -44,7 +50,7 @@ ordered_batches <- sort(unique(bfd$batch_index))
 old_start_batch <- ordered_batches[1]
 
 # Classification Algorithm
-model <- stealthy(cla_nb(target, slevels), dfr_eddm(), verbose=TRUE)
+model <- stealthy(cla_nb(target, slevels), dfr_adwin(target_feat='depart_visibility', delta=0.002), verbose=TRUE)
 
 for (batch in ordered_batches[2:length(ordered_batches)]){
   print(batch)
@@ -88,7 +94,7 @@ results <- as.data.frame(results)
 results['index'] <- as.Date(results$index)
 names(results) <- c('index', 'precision', 'recall', 'f1', 'drift')
 
-ggplot(data=results, aes(x=as.Date(index), y=as.numeric(f1), group=1)) + 
+ggplot(data=results, aes(x=index, y=as.numeric(f1), group=1)) + 
   geom_line() +
   xlab('') +
   ylab('F1') +
