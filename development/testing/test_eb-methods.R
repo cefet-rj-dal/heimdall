@@ -4,6 +4,7 @@
 #source("/home/lucas/heimdall/R/dfr_ddm.R")
 #source("/home/lucas/heimdall/R/dfr_ecdd.R")
 #source("/home/lucas/heimdall/R/dfr_adwin.R")
+source("/home/lucas/heimdall/development/drift_techniques/dfr_cumsum.R")
 #source("/home/lucas/heimdall/R/dfr_eddm.R")
 #source("/home/lucas/heimdall/R/dfr_hddm.R")
 #source("/home/lucas/heimdall/R/dfr_page_hinkley.R")
@@ -50,7 +51,7 @@ ordered_batches <- sort(unique(bfd$batch_index))
 old_start_batch <- ordered_batches[1]
 
 # Classification Algorithm
-model <- stealthy(cla_nb(target, slevels), dfr_ecdd(lambda=0.2), verbose=TRUE)
+model <- stealthy(cla_nb(target, slevels), dfr_cumsum(), verbose=TRUE)
 
 for (batch in ordered_batches[2:length(ordered_batches)]){
   print(batch)
