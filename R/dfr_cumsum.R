@@ -1,6 +1,5 @@
 #'@title Cumulative Sum for Concept Drift Detection (CUMSUM) method
 #'@description The cumulative sum (CUSUM) is a sequential analysis technique used for change detection.
-#'@param delta The minimum number of instances before detecting change
 #'@param lambda Necessary level for warning zone (2 standard deviation)
 #CUMSUM: S. Muthukrishnan, Eric Berg, Yihua Wu: Sequential Change Detection on Data Streams. Seventh IEEE International Conference on Data Mining Workshops (ICDMW 2007), DOI:10.1109/ICDMW.2007.89
 #'@return `dfr_cumsum` object
@@ -36,12 +35,11 @@
 #'detection <- as.data.frame(detection)
 #'detection[detection$type == 'drift',]
 #'@export
-dfr_cumsum <- function(delta=0, lambda=10**3) {
+dfr_cumsum <- function(lambda=100) {
   obj <- error_based()
   
   state <- list()
   
-  state$delta <- delta
   state$lambda <- lambda
   
   state$g <- 0
@@ -61,10 +59,15 @@ update_state.dfr_cumsum <- function(obj, value){
   if (is.na(value)){
     value <- 0
   }
+  
+  if (value == 0){
+    value = -1
+  }
+  
   state <- obj$state
   
   state$last_g <- state$g
-  state$g <- max(0, state$last_g + (value - state$delta))
+  state$g <- max(0, state$last_g + value)
   
   obj$state <- state
   if (state$g > state$lambda){
@@ -89,9 +92,7 @@ fit.dfr_cumsum <- function(obj, data, ...){
 reset_state.dfr_cumsum <- function(obj) {
   obj$drifted <- FALSE
   obj$state <- dfr_cumsum(
-    delta = obj$state$delta,
     lambda = obj$state$lambda
-    
   )$state
   return(obj)  
 }
