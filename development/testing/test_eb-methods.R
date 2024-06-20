@@ -5,7 +5,7 @@
   #source("/home/lucas/heimdall/R/dfr_ecdd.R")
   #source("/home/lucas/heimdall/R/dfr_adwin.R")
   #source("/home/lucas/heimdall/R/dfr_cumsum.R")
-  source("/home/lucas/heimdall/development/drift_techniques/dfr_mcdd.R")
+  #source("/home/lucas/heimdall/development/drift_techniques/dfr_mcdd.R")
   #source("/home/lucas/heimdall/R/dfr_eddm.R")
   #source("/home/lucas/heimdall/R/dfr_hddm.R")
   #source("/home/lucas/heimdall/R/dfr_page_hinkley.R")
