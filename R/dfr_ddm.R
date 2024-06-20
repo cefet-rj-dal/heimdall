@@ -6,94 +6,35 @@
 #DDM: João Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning with Drift Detection. SBIA 2004: 286-295.
 #DDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/ddm.py
 #'@return `dfr_ddm` object
-#'@import ggplot2
-#'@importFrom daltoolbox cla_nb
 #'@examples
-#'require("daltoolbox")
-#'require('ggplot2')
-#'require('caret')
+#'library(daltoolbox)
+#'library(heimdall)
 #'
-#'data("st_real_examples")
+#'# This example assumes a model residual where 1 is an error and 0 is a correct prediction.
 #'
-#'bfd <- st_real_examples$bfd1
-#'bfd['batch_index'] <- format(bfd['expected_depart'], '%V')
-#'bfd <- bfd[bfd['depart'] == 'SBSP',]
+#'data(st_drift_examples)
+#'data <- st_drift_examples$univariate
+#'data$event <- NULL
+#'data$prediction <- st_drift_examples$univariate$serie > 4
 #'
-#'# Model features
-#'features <- c(
-#'  'depart_elevation', 'depart_visibility', 'depart_day_period', 'depart_pressure', 
-#'  'depart_relative_humidity', 'depart_dew_point', 'depart_wind_speed_scale'
-#')
 #'
-#'## Target
-#'bfd$delay_depart_bin <- bfd$delay_depart > 0
-#'target = 'delay_depart_bin'
-#'bfd = bfd[complete.cases(bfd[target]),]
-#'slevels <- c(TRUE, FALSE)
+#'model <- dfr_ddm()
 #'
-#'# Evaluation
-#'th=0.5
-#'
-#'results <- c()
-#'ordered_batches <- sort(unique(bfd$batch_index))
-#'old_start_batch <- ordered_batches[1]
-#'
-#'# Classification Algorithm
-#'model <- stealthy(daltoolbox::cla_nb(target, slevels), dfr_ddm(out_control_level=10))
-#'
-#'for (batch in ordered_batches[2:length(ordered_batches)]){
-#'  print(batch)
-#'  print(old_start_batch)
-#'  
-#'  new_batch <- bfd[bfd$batch_index == batch,]
-#'  last_batch <- bfd[(bfd$batch_index < batch) & (bfd$batch_index >= old_start_batch),]
-#'  
-#'  old_start_batch <- batch
-#'  
-#'  x_train <- last_batch[, features]
-#'  y_train <- last_batch[, target, drop=FALSE]
-#'  
-#'  x_test <- new_batch[, features]
-#'  y_test <- new_batch[, target]
-#'  
-#'  model <- fit(model, x_train, y_train)
-#'  
-#'  test_predictions <- predict(model, x_test)
-#'  y_pred <- test_predictions[, 2] > th
-#'  
-#'  # Evaluation
-#'  precision <- evaluate(mt_precision(), y_pred, y_test)
-#'  recall <- evaluate(mt_recall(), y_pred, y_test)
-#'  f1 <- evaluate(mt_fscore(), y_pred, y_test)
-#'  
-#'  results <- rbind(results, 
-#'                   c(
-#'                     batch,
-#'                     precision,
-#'                     recall,
-#'                     f1,
-#'                     model$drifted
-#'                   )
-#'  )
-#'  
-#'  print(nrow(model$x_train))
-#'  print(nrow(new_batch))
+#'detection <- c()
+#'output <- list(obj=model, pred=FALSE)
+#'for (i in 1:length(data$serie)){
+#'  output <- update_state(output$obj, data$serie[i])
+#'  if (output$pred){
+#'    type <- 'drift'
+#'    output$obj <- reset_state(output$obj)
+#'  }else{
+#'    type <- ''
+#'  }
+#'  detection <- rbind(detection, list(idx=i, event=output$pred, type=type))
 #'}
-#'results <- as.data.frame(results)
-#'results['index'] <- as.Date(results$index)
-#'names(results) <- c('index', 'precision', 'recall', 'f1', 'drift')
-#'results[, length(names(results))] <- NULL
 #'
-#'ggplot(data=results, aes(x=index, y=as.numeric(f1), group=1)) + 
-#'  geom_line() +
-#'  xlab('') +
-#'  ylab('F1') +
-#'  geom_vline(xintercept = results[results['drift']==TRUE, 'index'],
-#'             linetype="dotted", 
-#'             color = "red", linewidth=0.5) +
-#'  theme_classic()
-#'
-#'
+#'detection <- as.data.frame(detection)
+#'detection[detection$type == 'drift',]
 #'@export
 dfr_ddm <- function(min_instances=30, warning_level=2.0, out_control_level=3.0) {
   obj <- error_based()
@@ -127,7 +68,7 @@ update_state.dfr_ddm <- function(obj, value){
   }
   state <- obj$state
   state$miss_prob <- state$miss_prob + (value - state$miss_prob) / state$sample_count
-  state$miss_std <- sqrt(state$miss_prob * (1 - state$miss_prob)) / state$sample_count
+  state$miss_std <- sqrt(abs(state$miss_prob * (1 - state$miss_prob))) / state$sample_count
   state$sample_count <- state$sample_count + 1
   
   state$estimation <- state$miss_prob

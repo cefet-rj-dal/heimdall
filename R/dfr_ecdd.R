@@ -4,96 +4,38 @@
 #'@param min_run_instances Necessary level for warning zone (2 standard deviation)
 #'@param average_run_length Necessary level for a positive drift detection
 #ECDD: Gordon Ross, Niall Adams, Dimitris Tasoulis, David Hand: Exponentially weighted moving average charts for detecting concept drift. Pattern Recognition Letters 2012, Volume 33, Issue 2: 191-198, DOI:10.1016/j.patrec.2011.08.019
+#ECDD Implementation: Jaime Sisniega, Álvaro García: Frouros: An open-source Python library for drift detection in machine learning systems. Neurocomputing, Volume 26, 2024, DOI: 10.1016/j.softx.2024.101733
 #ECDD implementation: Frouros, https://github.com/IFCA-Advanced-Computing/frouros/blob/acde82386da735ca8e15f85112f48d5cfb10cc9a/frouros/detectors/concept_drift/streaming/statistical_process_control/ecdd.py
 #'@return `dfr_ecdd` object
-#'@import ggplot2
-#'@importFrom daltoolbox cla_nb
 #'@examples
-#'require("daltoolbox")
-#'require('ggplot2')
-#'require('caret')
+#'library(daltoolbox)
+#'library(heimdall)
 #'
-#'data("st_real_examples")
+#'# This example assumes a model residual where 1 is an error and 0 is a correct prediction.
 #'
-#'bfd <- st_real_examples$bfd1
-#'bfd['batch_index'] <- format(bfd['expected_depart'], '%V')
-#'bfd <- bfd[bfd['depart'] == 'SBSP',]
+#'data(st_drift_examples)
+#'data <- st_drift_examples$univariate
+#'data$event <- NULL
+#'data$prediction <- st_drift_examples$univariate$serie > 4
 #'
-#'# Model features
-#'features <- c(
-#'  'depart_elevation', 'depart_visibility', 'depart_day_period', 'depart_pressure', 
-#'  'depart_relative_humidity', 'depart_dew_point', 'depart_wind_speed_scale'
-#')
 #'
-#'## Target
-#'bfd$delay_depart_bin <- bfd$delay_depart > 0
-#'target = 'delay_depart_bin'
-#'bfd = bfd[complete.cases(bfd[target]),]
-#'slevels <- c(TRUE, FALSE)
+#'model <- dfr_ecdd()
 #'
-#'# Evaluation
-#'th=0.5
-#'
-#'results <- c()
-#'ordered_batches <- sort(unique(bfd$batch_index))
-#'old_start_batch <- ordered_batches[1]
-#'
-#'# Classification Algorithm
-#'model <- stealthy(daltoolbox::cla_nb(target, slevels), dfr_ecdd())
-#'
-#'for (batch in ordered_batches[2:length(ordered_batches)]){
-#'  print(batch)
-#'  print(old_start_batch)
-#'  
-#'  new_batch <- bfd[bfd$batch_index == batch,]
-#'  last_batch <- bfd[(bfd$batch_index < batch) & (bfd$batch_index >= old_start_batch),]
-#'  
-#'  old_start_batch <- batch
-#'  
-#'  x_train <- last_batch[, features]
-#'  y_train <- last_batch[, target, drop=FALSE]
-#'  
-#'  x_test <- new_batch[, features]
-#'  y_test <- new_batch[, target]
-#'  
-#'  model <- fit(model, x_train, y_train)
-#'  
-#'  test_predictions <- predict(model, x_test)
-#'  y_pred <- test_predictions[, 2] > th
-#'  
-#'  # Evaluation
-#'  precision <- evaluate(mt_precision(), y_pred, y_test)
-#'  recall <- evaluate(mt_recall(), y_pred, y_test)
-#'  f1 <- evaluate(mt_fscore(), y_pred, y_test)
-#'  
-#'  results <- rbind(results, 
-#'                   c(
-#'                     batch,
-#'                     precision,
-#'                     recall,
-#'                     f1,
-#'                     model$drifted
-#'                   )
-#'  )
-#'  
-#'  print(nrow(model$x_train))
-#'  print(nrow(new_batch))
+#'detection <- c()
+#'output <- list(obj=model, pred=FALSE)
+#'for (i in 1:length(data$serie)){
+#'  output <- update_state(output$obj, data$serie[i])
+#'  if (output$pred){
+#'    type <- 'drift'
+#'    output$obj <- reset_state(output$obj)
+#'  }else{
+#'    type <- ''
+#'  }
+#'  detection <- rbind(detection, list(idx=i, event=output$pred, type=type))
 #'}
-#'results <- as.data.frame(results)
-#'results['index'] <- as.Date(results$index)
-#'names(results) <- c('index', 'precision', 'recall', 'f1', 'drift')
-#'results[, length(names(results))] <- NULL
 #'
-#'ggplot(data=results, aes(x=index, y=as.numeric(f1), group=1)) + 
-#'  geom_line() +
-#'  xlab('') +
-#'  ylab('F1') +
-#'  geom_vline(xintercept = results[results['drift']==TRUE, 'index'],
-#'             linetype="dotted", 
-#'             color = "red", linewidth=0.5) +
-#'  theme_classic()
-#'
-#'
+#'detection <- as.data.frame(detection)
+#'detection[detection$type == 'drift',]
 #'@export
 dfr_ecdd <- function(lambda=0.2, min_run_instances=30, average_run_length=100) {
   obj <- error_based()
@@ -153,6 +95,9 @@ update_state.dfr_ecdd <- function(obj, value){
       obj$state <- state
       obj$drifted <- TRUE
       return(list(obj=obj, pred=TRUE))
+    }else{
+      obj$state <- state
+      return(list(obj=obj, pred=FALSE))
     }
   }else{
     obj$state <- state

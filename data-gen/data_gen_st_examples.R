@@ -26,6 +26,15 @@ gen_data <- function() {
     
     st_drift_examples$dataset1 <- s_data
   }
+  
+  {
+    set.seed(1)
+    n <- 100
+    x <- c(sin((1:n)/pi), 2*sin((1:n)/pi), 10 + sin((1:n)/pi), 10-10/n*(1:n)+sin((1:n)/pi)/2, sin((1:n)/pi)/2)
+    event <- rep(FALSE, length(x))
+    event[c(100,200,300,400)] <- TRUE
+    st_drift_examples$univariate <- data.frame(serie = x, event = event)
+  }
 
   return(st_drift_examples)
 }
