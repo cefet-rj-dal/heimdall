@@ -1,25 +1,25 @@
-library("daltoolbox")
-source("/home/lucas/lucas/cdr/stealthy.R")
-source("/home/lucas/lucas/cdr/drifter.R")
-source("/home/lucas/lucas/cdr/drift_techniques/dd_page_hinkley.R")
-source("/home/lucas/lucas/cdr/iterator.R")
+library(daltoolbox)
+library(heimdall)
 
-n <- 100  # Number of time points
-example_type='univariate'
-data <- as.data.frame(c(sin((1:n)/pi), 2*sin((1:n)/pi), 10 + sin((1:n)/pi), 10-10/n*(1:n)+sin((1:n)/pi)/2, sin((1:n)/pi)/2))
-names(data) <- c('serie1')
-if (example_type == 'multivariate'){
-  data['serie2'] <- c(sin((1:n)/pi), 2*sin((1:n)/pi), 10 + sin((1:n)/pi), 10-10/n*(1:n)+sin((1:n)/pi)/2, sin((1:n)/pi)/2) + runif(length(data), 0, 1)
+data(st_drift_examples)
+data <- st_drift_examples$univariate
+data$event <- NULL
+data$prediction <- st_drift_examples$univariate$serie > 4
+
+model <- dfr_ecdd()
+
+detection <- c()
+output <- list(obj=model, pred=FALSE)
+for (i in 1:length(data$serie)){
+  output <- update_state(output$obj, data$serie[i])
+  if (output$pred){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  }else{
+    type <- ''
+  }
+  detection <- rbind(detection, list(idx=i, event=output$pred, type=type))
 }
 
-
-dt <- dd_page_hinkley()
-
-detect(dt, data)
-
-#model <- fit(hcd_hddm(drift_confidence = 0.0000000001, warning_confidence=0.6), data)
-#detection <- detect(model, data)
-#grf <- har_plot(model, data$serie1, detection)
-#grf <- grf + ylab("value")
-#grf <- grf
-#plot(grf)
+detection <- as.data.frame(detection)
+detection[detection$type == 'drift',]
