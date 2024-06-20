@@ -7,8 +7,6 @@
 #KSWIN detection: Christoph Raab, Moritz Heusinger, Frank-Michael Schleif, Reactive Soft Prototype Computing for Concept Drift Streams, Neurocomputing, 2020.
 #KSWIN detection implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/kswin.py#L5
 #'@return `dfr_kldist` object
-#'@import ggplot2
-#'@importFrom daltoolbox cla_nb
 #'@examples
 #'library(daltoolbox)
 #'library(heimdall)
