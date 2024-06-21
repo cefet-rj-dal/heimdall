@@ -3,7 +3,7 @@
   #source("/home/lucas/heimdall/R/ac_stealthy.R")
   #source("/home/lucas/heimdall/R/dfr_ddm.R")
   #source("/home/lucas/heimdall/R/dfr_ecdd.R")
-  #source("/home/lucas/heimdall/R/dfr_adwin.R")
+  source("/home/lucas/heimdall/R/dfr_adwin.R")
   #source("/home/lucas/heimdall/R/dfr_cumsum.R")
   #source("/home/lucas/heimdall/development/drift_techniques/dfr_mcdd.R")
   #source("/home/lucas/heimdall/R/dfr_eddm.R")
@@ -52,7 +52,7 @@
   old_start_batch <- ordered_batches[1]
   
   # Classification Algorithm
-  model <- stealthy(cla_nb(target, slevels), dfr_mcdd(target_feat='depart_visibility', alpha=0.0001), verbose=TRUE)
+  model <- stealthy(cla_nb(target, slevels), dfr_adwin(target_feat='depart_visibility'), verbose=TRUE)
   
   for (batch in ordered_batches[2:length(ordered_batches)]){
     print(batch)

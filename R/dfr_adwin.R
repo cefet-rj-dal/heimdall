@@ -2,10 +2,6 @@
 #'@description Adaptive Windowing method for concept drift detection <doi:10.1137/1.9781611972771.42>.
 #'@param target_feat Feature to be monitored.
 #'@param delta The significance parameter for the ADWIN algorithm.
-#'@param clock How often ADWIN should check for changes. 1 means every new data point, default is 32. Higher values speed up processing, but may also lead to increased delay in change detection.
-#'@param max_buckets The maximum number of buckets of each size that ADWIN should keep before merging buckets. The idea of data buckets comes from the compression algorithm introduced in the ADWIN2, the second iteration of the ADWIN algorithm presented in the original research paper. This is the ADWIN version available in River.
-#'@param min_window_length The minimum length allowed for a subwindow when checking for concept drift. Subwindows whose size is smaller than this value will be ignored during concept drift evaluation. Lower values may decrease delay in change detection but may also lead to more false positives.
-#'@param grace_period ADWIN does not perform any change detection until at least this many data points have arrived.
 #ADWIN detection: Bifet, Albert, and Ricard Gavalda. “Learning from time-changing data with adaptive windowing.” In Proceedings of the 2007 SIAM international conference on data mining, pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 #'@return `dfr_adwin` object
 #'@examples
@@ -39,24 +35,16 @@
 #'detection[detection$type == 'drift',]
 #'@import reticulate
 #'@export
-dfr_adwin <- function(target_feat, delta=0.002, clock=32, max_buckets=5, min_window_length=5, grace_period=10) {
+dfr_adwin <- function(target_feat, delta=0.002) {
   obj <- dist_based(target_feat=target_feat)
   
   # Attributes
   state <- list()
   
   state$delta <- delta
-  state$clock <- clock
-  state$max_buckets <- max_buckets
-  state$min_window_length <- min_window_length
-  state$grace_period <- grace_period
-  adwin <- import('river.drift.adwin')
-  state$adwin <- adwin$ADWIN(
-    delta=delta,
-    clock=clock,
-    max_buckets=max_buckets,
-    min_window_length=min_window_length,
-    grace_period=grace_period
+  adwin <- reticulate::source_python(system.file("python", "adwin.py", package="heimdall"))
+  state$adwin <- ADWIN(
+    delta=delta
     )
 
   obj$drifted <- FALSE
@@ -70,11 +58,12 @@ update_state.dfr_adwin <- function(obj, value){
   
   state <- obj$state
   
-  state$adwin$update(value)
+  state$adwin$add_element(value)
   
   obj$state <- state
-  if (state$adwin$drift_detected){
-    obj$drifted <- state$adwin$drift_detected
+  has_drift <- state$adwin$detected_change()
+  if (has_drift){
+    obj$drifted <- has_drift
     return(list(obj=obj, pred=obj$drifted))
   }
   else{
@@ -97,11 +86,7 @@ reset_state.dfr_adwin <- function(obj) {
   obj$drifted <- FALSE
   obj$state <- dfr_adwin(
     target_feat = obj$target_feat,
-    delta=obj$state$delta,
-    clock=obj$state$clock,
-    max_buckets=obj$state$max_buckets,
-    min_window_length=obj$state$min_window_length,
-    grace_period=obj$state$grace_period
+    delta=obj$state$delta
   )$state
   return(obj) 
 }
