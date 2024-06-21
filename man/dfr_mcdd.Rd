@@ -31,7 +31,7 @@ data$event <- NULL
 data$prediction <- st_drift_examples$univariate$serie > 4
 
 
-model <- dfr_mcdd()
+model <- dfr_mcdd(target_feat='depart_visibility')
 
 detection <- c()
 output <- list(obj=model, pred=FALSE)

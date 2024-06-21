@@ -42,7 +42,8 @@ dfr_adwin <- function(target_feat, delta=0.002) {
   state <- list()
   
   state$delta <- delta
-  adwin <- reticulate::source_python(system.file("python", "adwin.py", package="heimdall"))
+  #adwin <- reticulate::source_python(system.file("python", "adwin.py", package="heimdall"))
+  adwin <- reticulate::source_python("/home/lucas/heimdall/inst/adwin.py")
   state$adwin <- ADWIN(
     delta=delta
     )
