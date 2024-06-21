@@ -18,32 +18,6 @@ dfr_adwin(target_feat, delta = 0.002)
 Adaptive Windowing method for concept drift detection \url{doi:10.1137/1.9781611972771.42}.
 }
 \examples{
-library(daltoolbox)
-library(heimdall)
-
-# This example assumes a model residual where 1 is an error and 0 is a correct prediction.
-
-data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
-data$prediction <- st_drift_examples$univariate$serie > 4
-
-
-model <- dfr_adwin(target_feat='serie')
-
-detection <- c()
-output <- list(obj=model, pred=FALSE)
-for (i in 1:length(data$serie)){
- output <- update_state(output$obj, data$serie[i])
- if (output$pred){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, list(idx=i, event=output$pred, type=type))
-}
-
-detection <- as.data.frame(detection)
-detection[detection$type == 'drift',]
+#Use the same example of dfr_cumsum changing the constructor to:
+#model <- dfr_adwin(target_feat='serie')
 }

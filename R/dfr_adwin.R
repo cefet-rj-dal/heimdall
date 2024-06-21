@@ -5,34 +5,8 @@
 #ADWIN detection: Bifet, Albert, and Ricard Gavalda. “Learning from time-changing data with adaptive windowing.” In Proceedings of the 2007 SIAM international conference on data mining, pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 #'@return `dfr_adwin` object
 #'@examples
-#'library(daltoolbox)
-#'library(heimdall)
-#'
-#'# This example assumes a model residual where 1 is an error and 0 is a correct prediction.
-#'
-#'data(st_drift_examples)
-#'data <- st_drift_examples$univariate
-#'data$event <- NULL
-#'data$prediction <- st_drift_examples$univariate$serie > 4
-#'
-#'
-#'model <- dfr_adwin(target_feat='serie')
-#'
-#'detection <- c()
-#'output <- list(obj=model, pred=FALSE)
-#'for (i in 1:length(data$serie)){
-#'  output <- update_state(output$obj, data$serie[i])
-#'  if (output$pred){
-#'    type <- 'drift'
-#'    output$obj <- reset_state(output$obj)
-#'  }else{
-#'    type <- ''
-#'  }
-#'  detection <- rbind(detection, list(idx=i, event=output$pred, type=type))
-#'}
-#'
-#'detection <- as.data.frame(detection)
-#'detection[detection$type == 'drift',]
+#'#Use the same example of dfr_cumsum changing the constructor to:
+#'#model <- dfr_adwin(target_feat='serie')
 #'@import reticulate
 #'@export
 dfr_adwin <- function(target_feat, delta=0.002) {
@@ -42,8 +16,7 @@ dfr_adwin <- function(target_feat, delta=0.002) {
   state <- list()
   
   state$delta <- delta
-  #adwin <- reticulate::source_python(system.file("python", "adwin.py", package="heimdall"))
-  adwin <- reticulate::source_python("/home/lucas/heimdall/inst/adwin.py")
+  adwin <- reticulate::source_python(system.file("python", "adwin.py", package="heimdall"))
   state$adwin <- ADWIN(
     delta=delta
     )
