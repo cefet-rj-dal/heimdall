@@ -40,7 +40,7 @@ gen_data <- function() {
 }
 
 
-if (FALSE) {
+if (TRUE) {
   #plot_examples <- function(st_drift_examples) {
   #  for (i in 1:length(st_drift_examples)) {
   #    data <- st__drift_examples[[i]]
@@ -53,7 +53,7 @@ if (FALSE) {
 
 
   save_examples <- function(st_drift_examples) {
-    save(st_drift_examples, file="data/st_drift_examples.RData", compress = 'xz', compression_level=6)
+    save(st_drift_examples, file="data/st_drift_examples.RData", compress = TRUE, version = 2)
   }
 
   st_drift_examples <- gen_data()
