@@ -19,6 +19,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 Imports: 
   stats,
+  caret,
   daltoolbox,
   ggplot2,
   reticulate
@@ -36,8 +37,5 @@ Config/reticulate:
       list(package = "sys")
     )
   )  
-Depends:
-  caret,
-  R (>= 3.5)
 
     
