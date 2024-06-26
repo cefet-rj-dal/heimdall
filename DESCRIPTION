@@ -20,6 +20,7 @@ RoxygenNote: 7.3.1
 Imports: 
   stats,
   caret,
+  class, 
   daltoolbox,
   ggplot2,
   reticulate
