@@ -11,17 +11,15 @@
 #'library(daltoolbox)
 #'library(heimdall)
 #'
-#'# This example assumes a model residual where 1 is an error and 0 is a correct prediction.
+#'# This example uses a dist-based drift detector with a synthetic dataset.
 #'
 #'data(st_drift_examples)
 #'data <- st_drift_examples$univariate
 #'data$event <- NULL
-#'data$prediction <- st_drift_examples$univariate$serie > 4
-#'
 #'
 #'model <- dfr_ecdd()
 #'
-#'detection <- c()
+#'detection <- NULL
 #'output <- list(obj=model, pred=FALSE)
 #'for (i in 1:length(data$serie)){
 #'  output <- update_state(output$obj, data$serie[i])
@@ -31,10 +29,9 @@
 #'  }else{
 #'    type <- ''
 #'  }
-#'  detection <- rbind(detection, list(idx=i, event=output$pred, type=type))
+#'  detection <- rbind(detection, data.frame(idx=i, event=output$pred, type=type))
 #'}
 #'
-#'detection <- as.data.frame(detection)
 #'detection[detection$type == 'drift',]
 #'@export
 dfr_ecdd <- function(lambda=0.2, min_run_instances=30, average_run_length=100) {
