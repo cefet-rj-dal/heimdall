@@ -42,7 +42,7 @@ mt_recall <- function() {
 
 #'@export
 evaluate.mt_recall <- function(obj, y_pred, y_true, ...){
-  return(mean(y_pred[y_true==TRUE], na.rm=TRUE))
+  return(mean(y_true[y_pred==TRUE] == TRUE, na.rm=TRUE))
 }
 
 #'@title FScore Calculator

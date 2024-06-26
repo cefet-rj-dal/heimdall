@@ -23,29 +23,28 @@ DDM is a concept change detection method based on the PAC learning model premise
 library(daltoolbox)
 library(heimdall)
 
-# This example assumes a model residual where 1 is an error and 0 is a correct prediction.
+# This example uses an error-based drift detector with a synthetic a 
+# model residual where 1 is an error and 0 is a correct prediction.
 
 data(st_drift_examples)
 data <- st_drift_examples$univariate
 data$event <- NULL
 data$prediction <- st_drift_examples$univariate$serie > 4
 
-
 model <- dfr_ddm()
 
-detection <- c()
+detection <- NULL
 output <- list(obj=model, pred=FALSE)
-for (i in 1:length(data$serie)){
- output <- update_state(output$obj, data$serie[i])
+for (i in 1:length(data$prediction)){
+ output <- update_state(output$obj, data$prediction[i])
  if (output$pred){
    type <- 'drift'
    output$obj <- reset_state(output$obj)
  }else{
    type <- ''
  }
- detection <- rbind(detection, list(idx=i, event=output$pred, type=type))
+ detection <- rbind(detection, data.frame(idx=i, event=output$pred, type=type))
 }
 
-detection <- as.data.frame(detection)
 detection[detection$type == 'drift',]
 }
