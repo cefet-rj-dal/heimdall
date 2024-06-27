@@ -22,16 +22,16 @@
 #'model <- dfr_eddm()
 #'
 #'detection <- NULL
-#'output <- list(obj=model, pred=FALSE)
+#'output <- list(obj=model, drift=FALSE)
 #'for (i in 1:length(data$prediction)){
 #'  output <- update_state(output$obj, data$prediction[i])
-#'  if (output$pred){
+#'  if (output$drift){
 #'    type <- 'drift'
 #'    output$obj <- reset_state(output$obj)
 #'  }else{
 #'    type <- ''
 #'  }
-#'  detection <- rbind(detection, data.frame(idx=i, event=output$pred, type=type))
+#'  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 #'}
 #'
 #'detection[detection$type == 'drift',]
@@ -89,14 +89,14 @@ update_state.dfr_eddm <- function(obj, value){
     
     if(state$m_n < state$min_instances){
       obj$state <- state
-      return(list(obj=obj, pred=FALSE))
+      return(list(obj=obj, drift=FALSE))
     }
     
     if(m2s > state$m_m2s_max){
       state$m_m2s_max <- m2s
       
       obj$state <- state
-      return(list(obj=obj, pred=FALSE))
+      return(list(obj=obj, drift=FALSE))
     }
     else{
       p <- m2s / state$m_m2s_max
@@ -114,21 +114,21 @@ update_state.dfr_eddm <- function(obj, value){
         
         obj$drifted <- TRUE
         obj$state <- state
-        return(list(obj=obj, pred=TRUE))
+        return(list(obj=obj, drift=TRUE))
       }
       else if((state$m_num_errors > state$m_min_num_errors) & (p < state$warning_level)){
         obj$state <- state
-        return(list(obj=obj, pred=FALSE))
+        return(list(obj=obj, drift=FALSE))
       }
       else{
         obj$state <- state
-        return(list(obj=obj, pred=FALSE))
+        return(list(obj=obj, drift=FALSE))
       }
     }
   }
   else{
     obj$state <- state
-    return(list(obj=obj, pred=FALSE))
+    return(list(obj=obj, drift=FALSE))
   }
 }
 

@@ -21,16 +21,16 @@
 #'model <- dfr_hddm()
 #'
 #'detection <- NULL
-#'output <- list(obj=model, pred=FALSE)
+#'output <- list(obj=model, drift=FALSE)
 #'for (i in 1:length(data$prediction)){
 #'  output <- update_state(output$obj, data$prediction[i])
-#'  if (output$pred){
+#'  if (output$drift){
 #'    type <- 'drift'
 #'    output$obj <- reset_state(output$obj)
 #'  }else{
 #'    type <- ''
 #'  }
-#'  detection <- rbind(detection, data.frame(idx=i, event=output$pred, type=type))
+#'  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 #'}
 #'
 #'detection[detection$type == 'drift',]
@@ -147,7 +147,7 @@ update_state.dfr_hddm <- function(obj, value){
 
   obj$state <- state
   
-  return(list(obj=obj, pred=obj$drifted))
+  return(list(obj=obj, drift=obj$drifted))
 }
 
 #'@export

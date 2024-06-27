@@ -38,10 +38,10 @@ update_state.dfr_adwin <- function(obj, value){
   has_drift <- state$adwin$detected_change()
   if (has_drift){
     obj$drifted <- has_drift
-    return(list(obj=obj, pred=obj$drifted))
+    return(list(obj=obj, drift=obj$drifted))
   }
   else{
-    return(list(obj=obj, pred=FALSE))
+    return(list(obj=obj, drift=FALSE))
   }
 }
 

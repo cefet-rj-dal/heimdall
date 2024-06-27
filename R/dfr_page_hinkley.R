@@ -23,16 +23,16 @@
 #'model <- dfr_page_hinkley(target_feat='serie')
 #'
 #'detection <- c()
-#'output <- list(obj=model, pred=FALSE)
+#'output <- list(obj=model, drift=FALSE)
 #'for (i in 1:length(data$serie)){
 #'  output <- update_state(output$obj, data$serie[i])
-#'  if (output$pred){
+#'  if (output$drift){
 #'    type <- 'drift'
 #'    output$obj <- reset_state(output$obj)
 #'  }else{
 #'    type <- ''
 #'  }
-#'  detection <- rbind(detection, list(idx=i, event=output$pred, type=type))
+#'  detection <- rbind(detection, list(idx=i, event=output$drift, type=type))
 #'}
 #'
 #'detection <- as.data.frame(detection)
@@ -68,7 +68,7 @@ update_state.dfr_page_hinkley <- function(obj, value){
   
   if(state$sample_count < state$min_instances){
     obj$state <- state
-    return(list(obj=obj, pred=FALSE))
+    return(list(obj=obj, drift=FALSE))
   }
   else if(state$sum > state$threshold){
     state$x_mean <- 0
@@ -78,14 +78,14 @@ update_state.dfr_page_hinkley <- function(obj, value){
     obj$drifted <- TRUE
     
     obj$state <- state
-    return(list(obj=obj, pred=TRUE))
+    return(list(obj=obj, drift=TRUE))
   }
   else{
     obj$state <- state
-    return(list(obj=obj, pred=FALSE))
+    return(list(obj=obj, drift=FALSE))
   }
   
-  return(list(obj=obj, pred=obj$drifted))
+  return(list(obj=obj, drift=obj$drifted))
 }
 
 #'@export

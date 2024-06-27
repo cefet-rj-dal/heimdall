@@ -20,16 +20,16 @@
 #'model <- dfr_ecdd()
 #'
 #'detection <- NULL
-#'output <- list(obj=model, pred=FALSE)
+#'output <- list(obj=model, drift=FALSE)
 #'for (i in 1:length(data$serie)){
 #'  output <- update_state(output$obj, data$serie[i])
-#'  if (output$pred){
+#'  if (output$drift){
 #'    type <- 'drift'
 #'    output$obj <- reset_state(output$obj)
 #'  }else{
 #'    type <- ''
 #'  }
-#'  detection <- rbind(detection, data.frame(idx=i, event=output$pred, type=type))
+#'  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 #'}
 #'
 #'detection[detection$type == 'drift',]
@@ -91,14 +91,14 @@ update_state.dfr_ecdd <- function(obj, value){
     if (state$Z > (state$p + 1 * control_limit * z_variance)){
       obj$state <- state
       obj$drifted <- TRUE
-      return(list(obj=obj, pred=TRUE))
+      return(list(obj=obj, drift=TRUE))
     }else{
       obj$state <- state
-      return(list(obj=obj, pred=FALSE))
+      return(list(obj=obj, drift=FALSE))
     }
   }else{
     obj$state <- state
-    return(list(obj=obj, pred=FALSE))
+    return(list(obj=obj, drift=FALSE))
   }
 }
 
