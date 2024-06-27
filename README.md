@@ -10,7 +10,14 @@ stars](https://img.shields.io/github/stars/cefet-rj-dal/heimdall?logo=Github)
 ![GitHub Repo stars](https://cranlogs.r-pkg.org/badges/heimdall)
 <!-- badges: end -->
 
-Describe heimdall
+## Heimdall
+
+By analyzing streaming datasets, it is possible to observe significant
+changes in the data distribution or models’ accuracy during their
+prediction (concept drift). The goal of Heimdall is to measure when
+concept drift occurs. The package makes available several
+state-of-the-art methods. It also tackles how to adapt models in a
+nonstationary context.
 
 ## Installation
 
@@ -40,9 +47,6 @@ General: <https://nbviewer.org/github/cefet-rj-dal/heimdall>
 
 ``` r
 library(heimdall)
-#> Loading required package: caret
-#> Loading required package: ggplot2
-#> Loading required package: lattice
 #> Registered S3 method overwritten by 'quantmod':
 #>   method            from
 #>   as.zoo.data.frame zoo

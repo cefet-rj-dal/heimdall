@@ -6,6 +6,7 @@
 ^data-gen$
 ^data-real$
 ^development$
+^examples$
 package.R
 jupyter.R
 

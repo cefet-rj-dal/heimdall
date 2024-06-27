@@ -20,7 +20,9 @@ knitr::opts_chunk$set(
 ![GitHub Repo stars](https://cranlogs.r-pkg.org/badges/heimdall)
 <!-- badges: end -->
 
-Describe heimdall
+## Heimdall
+
+By analyzing streaming datasets, it is possible to observe significant changes in the data distribution or models' accuracy during their prediction (concept drift). The goal of Heimdall is to measure when concept drift occurs. The package makes available several state-of-the-art methods. It also tackles how to adapt models in a nonstationary context. 
 
 ## Installation
 
