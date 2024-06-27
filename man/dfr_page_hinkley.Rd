@@ -44,16 +44,16 @@ data$prediction <- st_drift_examples$univariate$serie > 4
 model <- dfr_page_hinkley(target_feat='serie')
 
 detection <- c()
-output <- list(obj=model, pred=FALSE)
+output <- list(obj=model, drift=FALSE)
 for (i in 1:length(data$serie)){
  output <- update_state(output$obj, data$serie[i])
- if (output$pred){
+ if (output$drift){
    type <- 'drift'
    output$obj <- reset_state(output$obj)
  }else{
    type <- ''
  }
- detection <- rbind(detection, list(idx=i, event=output$pred, type=type))
+ detection <- rbind(detection, list(idx=i, event=output$drift, type=type))
 }
 
 detection <- as.data.frame(detection)
