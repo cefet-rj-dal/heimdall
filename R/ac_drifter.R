@@ -73,17 +73,17 @@ fit.drifter <- function(obj, data, prediction, ...) {
 #'@examples
 #'# See ?hcd_ddm for an example of DDM drift detector
 #'@export
-inactive <- function(){
+dfr_inactive <- function(){
   obj <- drifter()
   obj$state <- NULL
   
   obj$drifted <- FALSE
-  class(obj) <- append('inactive', class(obj))
+  class(obj) <- append('dfr_inactive', class(obj))
   return(obj)
 }
 
 #'@export
-reset_state.inactive <- function(obj){
+reset_state.dfr_inactive <- function(obj){
   return(obj)
 }
 
@@ -93,17 +93,17 @@ reset_state.inactive <- function(obj){
 #'@examples
 #'# See ?hcd_ddm for an example of DDM drift detector
 #'@export
-passive <- function(){
+dfr_passive <- function(){
   obj <- drifter()
   obj$state <- NULL
   
   obj$drifted <- TRUE
-  class(obj) <- append('passive', class(obj))
+  class(obj) <- append('dfr_passive', class(obj))
   return(obj)
 }
 
 #'@export
-reset_state.passive <- function(obj){
+reset_state.dfr_passive <- function(obj){
   return(obj)
 }
 
