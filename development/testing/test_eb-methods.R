@@ -20,7 +20,7 @@
   library('ggplot2')
   library('heimdall')
   library('reticulate')
-  library('caret')
+  #library('caret')
   
   #data("st_real_examples")
   load('/home/lucas/heimdall/development/testing/data/bfd_2023.rdata')
@@ -53,7 +53,7 @@
   old_start_batch <- ordered_batches[1]
   
   # Classification Algorithm
-  model <- stealthy(cla_nb(target, slevels), dfr_passive(), verbose=TRUE)
+  model <- stealthy(cla_nb(target, slevels), dfr_ddm(), verbose=TRUE)
   
   for (batch in ordered_batches[2:length(ordered_batches)]){
     print(batch)
