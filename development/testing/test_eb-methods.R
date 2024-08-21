@@ -20,7 +20,7 @@
   library('ggplot2')
   library('heimdall')
   library('reticulate')
-  #library('caret')
+  library('caret')
   
   #data("st_real_examples")
   load('/home/lucas/heimdall/development/testing/data/bfd_2023.rdata')
