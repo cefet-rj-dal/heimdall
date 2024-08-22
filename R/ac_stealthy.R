@@ -60,6 +60,10 @@ fit.stealthy <- function(obj, x, y, ...){
       obj$drift_method <- fit(obj$drift_method, x_oh[,obj$drift_method$target_feat])
     }
     
+    if ('mv_dist_based' %in% class(obj$drift_method)){
+      obj$drift_method <- fit(obj$drift_method, x_oh[,obj$drift_method$features])
+    }
+    
     if(obj$drift_method$drifted){
       if(obj$verbose){
         message('Stealthy detected a drift, discarding old data')

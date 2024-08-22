@@ -1,11 +1,13 @@
+  library('heimdall')  
   source("/home/lucas/heimdall/R/ac_drifter.R")
   #source("/home/lucas/heimdall/R/ac_metrics.R")
-  #source("/home/lucas/heimdall/R/ac_stealthy.R")
+  source("/home/lucas/heimdall/R/ac_stealthy.R")
   #source("/home/lucas/heimdall/R/dfr_ddm.R")
   #source("/home/lucas/heimdall/R/dfr_ecdd.R")
   #source("/home/lucas/heimdall/R/dfr_adwin.R")
   #source("/home/lucas/heimdall/R/dfr_cumsum.R")
-  #source("/home/lucas/heimdall/development/drift_techniques/dfr_mcdd.R")
+  #source("/home/lucas/heimdall/R/dfr_mcdd.R")
+  source("/home/lucas/heimdall/R/dfr_aedd.R")
   #source("/home/lucas/heimdall/R/dfr_eddm.R")
   #source("/home/lucas/heimdall/R/dfr_hddm.R")
   #source("/home/lucas/heimdall/R/dfr_page_hinkley.R")
@@ -18,7 +20,6 @@
   library("daltoolbox")
   library("dplyr")
   library('ggplot2')
-  library('heimdall')
   library('reticulate')
   library('caret')
   
@@ -32,8 +33,11 @@
   
   # Model features
   features <- c(
-    'depart_elevation', 'depart_wind_direction_cat', 'depart_visibility', 'depart_day_period', 'depart_pressure', 
-    'depart_relative_humidity', 'depart_dew_point', 'depart_sky_coverage', 'depart_wind_speed_scale'
+    'depart_elevation', #'depart_wind_direction_cat', 
+    'depart_visibility', #'depart_day_period', 
+    'depart_pressure', 
+    'depart_relative_humidity', 'depart_dew_point'#, 
+    #'depart_sky_coverage', 'depart_wind_speed_scale'
     #'delay_depart_bin'
     )
   
@@ -53,7 +57,7 @@
   old_start_batch <- ordered_batches[1]
   
   # Classification Algorithm
-  model <- stealthy(cla_nb(target, slevels), dfr_ddm(), verbose=TRUE)
+  model <- stealthy(cla_nb(target, slevels), dfr_aedd(features=features, input_size=length(features), encoding_size=3, window_size=1800), verbose=TRUE)
   
   for (batch in ordered_batches[2:length(ordered_batches)]){
     print(batch)
@@ -97,8 +101,14 @@
   results['index'] <- as.Date(results$index)
   names(results) <- c('index', 'precision', 'recall', 'f1', 'drift')
   
-  ggplot(data=results, aes(x=index, y=as.numeric(f1), group=1)) + 
+  results_plot <- ggplot(data=results, aes(x=index, y=as.numeric(f1), group=1)) + 
     geom_line() +
     xlab('') +
     ylab('F1') +
     theme_classic()
+  
+  for (detection in results[results['drift'] == TRUE, 'index']){
+    results_plot <- results_plot + geom_vline(xintercept=detection, linetype='dotted', color='red')
+  }
+  
+  results_plot
