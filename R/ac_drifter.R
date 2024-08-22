@@ -131,6 +131,18 @@ dist_based <- function(target_feat){
   return(obj)
 }
 
+#'@title Multivariate Distribution Based Drifter sub-class
+#'@description Implements Multivariate Distribution Based drift detectors
+#'@param features Features to be monitored.
+#'@return Drifter object
+#'@export
+mv_dist_based <- function(features){
+  obj <- drifter()
+  obj$features <- features
+  class(obj) <- append('mv_dist_based', class(obj))
+  return(obj)
+}
+
 #'@title Multi Criteria Drifter sub-class
 #'@description Implements Multi Criteria drift detectors
 #'@return Drifter object
