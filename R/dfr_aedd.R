@@ -95,7 +95,7 @@
 #'  theme_classic()
 #'
 #'@export
-dfr_aedd <- function(features, input_size, encoding_size, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700) {
+dfr_aedd <- function(features, input_size, encoding_size, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney') {
   obj <- mv_dist_based(features=features)
   
   # Attributes
@@ -109,6 +109,7 @@ dfr_aedd <- function(features, input_size, encoding_size, batch_size = 32, num_e
   state$learning_rate <- learning_rate
   state$window_size <- window_size
   state$monitoring_step <- monitoring_step
+  state$criteria <- criteria
   
   state$autoencoder <- autoenc_encode_decode(input_size=input_size, encoding_size=encoding_size, batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate)
   state$is_fitted <- FALSE
@@ -150,15 +151,52 @@ update_state.dfr_aedd <- function(obj, value){
       state$is_fitted <- TRUE
     }
     
+    state$drifted <- FALSE
+    
     history_window_proj <- transform(state$autoencoder, history_window)
     history_rec_error <- (history_window_proj - history_window)
     recent_window_proj <- transform(state$autoencoder, recent_window)
     recent_rec_error <- (recent_window_proj - recent_window)
     
-    median_history_rec_error <- abs(median(apply(history_rec_error, 2, median)))
-    median_recent_rec_error <- abs(median(apply(recent_rec_error, 2, median)))
+    if (state$criteria == 'mann_whitney'){
+      mw_results <- wilcox.test(unlist(as.vector(t(history_rec_error))), unlist(as.vector(t(recent_rec_error))))
+      
+      if (mw_results['p.value'] < 0.01){
+        state$drifted <- TRUE
+      }
+      
+    }
     
-    if(median_recent_rec_error >= (2*median_history_rec_error)){
+    if (state$criteria == 'kolmogorov_smirnov'){
+      ks_results <- ks.test(unlist(as.vector(t(history_rec_error))), unlist(as.vector(t(recent_rec_error))))
+      
+      if (ks_results['p.value'] < 0.01){
+        state$drifted <- TRUE
+      }
+      
+    }
+    
+    if (state$criteria == 'parametric_threshold'){
+      mean_history_rec_error <- abs(mean(apply(history_rec_error, 2, mean)))
+      sd_history_rec_error <- abs(mean(apply(history_rec_error, 2, sd)))
+      mean_recent_rec_error <- abs(mean(apply(recent_rec_error, 2, mean)))
+      
+      if(mean_recent_rec_error >= (mean_history_rec_error + (3*sd_history_rec_error))){
+        state$drifted <- TRUE
+      }
+    }
+    
+    if (state$criteria == 'nonparametric_threshold'){
+      top_limit <- as.vector(quantile(unlist(as.vector(t(history_rec_error))), 0.99))
+      median_recent_rec_error <- abs(median(apply(recent_rec_error, 2, median)))
+      
+      if(median_recent_rec_error >= top_limit){
+        state$drifted <- TRUE
+      }
+    }
+    
+    
+    if(state$drifted){
 
       obj$drifted <- TRUE
       
