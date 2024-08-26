@@ -79,12 +79,13 @@ fit.stealthy <- function(obj, x, y, ...){
   obj$y_train <- rbind(obj$y_train, y)
   
   # One Hot Encoding
-  obj$dummy <- caret::dummyVars(" ~ .", data=x_train)
-  x_train <- data.frame(predict(obj$dummy, newdata = obj$x_train))
-  obj$dummy$feat_names <- names(x_train)
+  obj$dummy <- caret::dummyVars(" ~ .", data=obj$x_train)
+  x_train_dummy <- data.frame(predict(obj$dummy, newdata = obj$x_train))
+  obj$dummy$feat_names <- names(x_train_dummy)
   
   # Define train data
-  data <- cbind(x_train, obj$y_train)
+  data <- cbind(x_train_dummy, obj$y_train)
+  
   # Fit model
   obj$model <- fit(obj$model, data)
   obj$model$feat_names <- names(data)
