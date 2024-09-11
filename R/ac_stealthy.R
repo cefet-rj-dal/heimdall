@@ -91,7 +91,7 @@ fit.stealthy <- function(obj, x, y, ...){
   # Normalize
   obj$norm_model <- fit(obj$norm_model, data)
   norm_data <- transform(obj$norm_model, data)
-  
+
   # Fit model
   obj$model <- fit(obj$model, norm_data)
   obj$model$feat_names <- names(data)
