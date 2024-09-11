@@ -21,6 +21,7 @@ stealthy <- function(model, drift_method, th=0.5, verbose=FALSE){
   obj$x_train <- c()
   obj$y_train <- c()
   obj$th <- th
+  obj$norm_model <- minmax()
   obj$verbose <- verbose
   attr(obj, 'class') <- 'stealthy'
   return(obj)
@@ -38,6 +39,7 @@ fit.stealthy <- function(obj, x, y, ...){
   obj$drifted <- FALSE
   if (obj$fitted){
     x_oh <- data.frame(predict(obj$dummy, newdata = x))
+    norm_x_oh <- transform(obj$norm_model, x_oh)
     if (!all(obj$dummy$feat_names %in% names(x_oh))){
       warning('Some categories present on train are not on the most recent dataset. Creating zero columns.')
       for (feat in obj$dummy$feat_names){
@@ -61,7 +63,7 @@ fit.stealthy <- function(obj, x, y, ...){
     }
     
     if ('mv_dist_based' %in% class(obj$drift_method)){
-      obj$drift_method <- fit(obj$drift_method, x_oh[,obj$drift_method$features])
+      obj$drift_method <- fit(obj$drift_method, norm_x_oh[,obj$drift_method$features])
     }
     
     if(obj$drift_method$drifted){
@@ -79,14 +81,19 @@ fit.stealthy <- function(obj, x, y, ...){
   obj$y_train <- rbind(obj$y_train, y)
   
   # One Hot Encoding
-  obj$dummy <- caret::dummyVars(" ~ .", data=x_train)
-  x_train <- data.frame(predict(obj$dummy, newdata = obj$x_train))
-  obj$dummy$feat_names <- names(x_train)
+  obj$dummy <- caret::dummyVars(" ~ .", data=obj$x_train)
+  x_train_dummy <- data.frame(predict(obj$dummy, newdata = obj$x_train))
+  obj$dummy$feat_names <- names(x_train_dummy)
   
   # Define train data
-  data <- cbind(x_train, obj$y_train)
+  data <- cbind(x_train_dummy, obj$y_train)
+  
+  # Normalize
+  obj$norm_model <- fit(obj$norm_model, data)
+  norm_data <- transform(obj$norm_model, data)
+  
   # Fit model
-  obj$model <- fit(obj$model, data)
+  obj$model <- fit(obj$model, norm_data)
   obj$model$feat_names <- names(data)
   obj$fitted <- TRUE
   return(obj)
@@ -100,5 +107,6 @@ predict.stealthy <- function(object, data, ...){
       data_oh[feat] <- 0
     }
   }
-  return(predict(object$model, data_oh))
+  norm_data_oh <- transform(object$norm_model, data_oh)
+  return(predict(object$model, norm_data_oh))
 }

@@ -1,13 +1,16 @@
-library('heimdall')    
-source("/home/lucas/heimdall/R/ac_drifter.R")
+#library('heimdall')
+library(devtools)
+load_all('/home/lucas/heimdall/R/')
+load_all("/home/lucas/daltoolbox/R/")
+#source("/home/lucas/heimdall/R/ac_drifter.R")
 #source("/home/lucas/heimdall/R/ac_metrics.R")
-source("/home/lucas/heimdall/R/ac_stealthy.R")
+#source("/home/lucas/heimdall/R/ac_stealthy.R")
 #source("/home/lucas/heimdall/R/dfr_ddm.R")
 #source("/home/lucas/heimdall/R/dfr_ecdd.R")
 #source("/home/lucas/heimdall/R/dfr_adwin.R")
 #source("/home/lucas/heimdall/R/dfr_cumsum.R")
 #source("/home/lucas/heimdall/R/dfr_mcdd.R")
-source("/home/lucas/heimdall/R/dfr_aedd.R")
+#source("/home/lucas/heimdall/R/dfr_aedd.R")
 #source("/home/lucas/heimdall/R/dfr_eddm.R")
 #source("/home/lucas/heimdall/R/dfr_hddm.R")
 #source("/home/lucas/heimdall/R/dfr_page_hinkley.R")
@@ -18,19 +21,20 @@ source("/home/lucas/heimdall/R/dfr_aedd.R")
 #                 type = "source")
 
 
-library("daltoolbox")
+#library("daltoolbox")
 library("dplyr")
 library('ggplot2')
 library('reticulate')
 library('caret')
 
 #data("st_real_examples")
-load('/home/lucas/heimdall/development/testing/data/bfd_2023.rdata')
+load('/home/lucas/heimdall/development/testing/data/bfd_2019.rdata')
 
 #bfd <- st_real_examples$bfd1
 
 bfd['batch_index'] <- format(bfd['expected_depart'], '%V')
 bfd <- bfd[bfd['depart'] == 'SBSP',]
+bfd <- subset(bfd, !is.na(depart_visibility))
 
 # Model features
 features <- c(
@@ -58,7 +62,8 @@ ordered_batches <- sort(unique(bfd$batch_index))
 old_start_batch <- ordered_batches[1]
 
 # Classification Algorithm
-model <- stealthy(cla_nb(target, slevels), dfr_aedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='kolmogorov_smirnov'), verbose=TRUE)
+#dfr_aedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='kolmogorov_smirnov')
+model <- stealthy(cla_nb(target, slevels), dfr_vaedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='mann_whitney'), verbose=TRUE)
 
 for (batch in ordered_batches[2:length(ordered_batches)]){
   print(batch)
@@ -75,7 +80,7 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
   x_test <- new_batch[, features]
   y_test <- new_batch[, target]
   
-  model <- fit(model, x_train, y_train)
+  model <- fit(model, x_train[complete.cases(x_train),], y_train[complete.cases(x_train), target, drop=FALSE])
   
   test_predictions <- predict(model, x_test)
   y_pred <- test_predictions[, 2] > th
