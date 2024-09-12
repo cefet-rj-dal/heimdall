@@ -16,7 +16,7 @@ License: MIT + file LICENSE
 URL: https://github.com/cefet-rj-dal/heimdall, https://cefet-rj-dal.github.io/heimdall/
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Imports: 
   stats,
   caret,
@@ -37,5 +37,3 @@ Config/reticulate:
       list(package = "sys")
     )
   )  
-
-    

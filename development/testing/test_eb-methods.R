@@ -1,13 +1,16 @@
-library('heimdall')    
-source("/home/lucas/heimdall/R/ac_drifter.R")
+#library('heimdall')
+library(devtools)
+load_all('/home/lucas/heimdall/R/')
+load_all("/home/lucas/daltoolbox/R/")
+#source("/home/lucas/heimdall/R/ac_drifter.R")
 #source("/home/lucas/heimdall/R/ac_metrics.R")
-source("/home/lucas/heimdall/R/ac_stealthy.R")
+#source("/home/lucas/heimdall/R/ac_stealthy.R")
 #source("/home/lucas/heimdall/R/dfr_ddm.R")
 #source("/home/lucas/heimdall/R/dfr_ecdd.R")
 #source("/home/lucas/heimdall/R/dfr_adwin.R")
 #source("/home/lucas/heimdall/R/dfr_cumsum.R")
 #source("/home/lucas/heimdall/R/dfr_mcdd.R")
-source("/home/lucas/heimdall/R/dfr_aedd.R")
+#source("/home/lucas/heimdall/R/dfr_aedd.R")
 #source("/home/lucas/heimdall/R/dfr_eddm.R")
 #source("/home/lucas/heimdall/R/dfr_hddm.R")
 #source("/home/lucas/heimdall/R/dfr_page_hinkley.R")
@@ -18,19 +21,20 @@ source("/home/lucas/heimdall/R/dfr_aedd.R")
 #                 type = "source")
 
 
-library("daltoolbox")
+#library("daltoolbox")
 library("dplyr")
 library('ggplot2')
 library('reticulate')
 library('caret')
 
 #data("st_real_examples")
-load('/home/lucas/heimdall/development/testing/data/bfd_2023.rdata')
+load('/home/lucas/heimdall/development/testing/data/bfd_2019.rdata')
 
 #bfd <- st_real_examples$bfd1
 
 bfd['batch_index'] <- format(bfd['expected_depart'], '%V')
 bfd <- bfd[bfd['depart'] == 'SBSP',]
+bfd <- subset(bfd, !is.na(depart_visibility))
 
 # Model features
 features <- c(
@@ -41,6 +45,9 @@ features <- c(
   #'depart_sky_coverage', 'depart_wind_speed_scale'
   #'delay_depart_bin'
   )
+
+# Remove NA
+bfd <- bfd[complete.cases(bfd[,features]),]
 
 ## Target
 bfd$delay_depart_bin <- bfd$delay_depart > 0
@@ -58,7 +65,8 @@ ordered_batches <- sort(unique(bfd$batch_index))
 old_start_batch <- ordered_batches[1]
 
 # Classification Algorithm
-model <- stealthy(cla_nb(target, slevels), dfr_aedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='kolmogorov_smirnov'), verbose=TRUE)
+#dfr_aedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='kolmogorov_smirnov')
+model <- stealthy(cla_nb(target, slevels), dfr_vaedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='mann_whitney'), verbose=TRUE)
 
 for (batch in ordered_batches[2:length(ordered_batches)]){
   print(batch)
@@ -81,6 +89,7 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
   y_pred <- test_predictions[, 2] > th
   
   # Evaluation
+  accuracy <- evaluate(mt_accuracy(), y_pred, y_test)
   precision <- evaluate(mt_precision(), y_pred, y_test)
   recall <- evaluate(mt_recall(), y_pred, y_test)
   f1 <- evaluate(mt_fscore(), y_pred, y_test)
@@ -88,24 +97,26 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
   results <- rbind(results, 
                    c(
                      batch,
+                     accuracy,
                      precision,
                      recall,
                      f1,
                      model$drifted
                      )
                    )
-  
+  print(accuracy)
+  print(results)
   print(nrow(new_batch))
   print(nrow(last_batch))
 }
 results <- as.data.frame(results)
 results['index'] <- as.Date(results$index)
-names(results) <- c('index', 'precision', 'recall', 'f1', 'drift')
+names(results) <- c('index', 'accuracy', 'precision', 'recall', 'f1', 'drift')
 
-results_plot <- ggplot(data=results, aes(x=index, y=as.numeric(f1), group=1)) + 
+results_plot <- ggplot(data=results, aes(x=index, y=as.numeric(accuracy), group=1)) + 
   geom_line() +
   xlab('') +
-  ylab('F1') +
+  ylab('Recall') +
   theme_classic()
 
 for (detection in results[results['drift'] == TRUE, 'index']){
