@@ -11,6 +11,23 @@ metric <- function(){
   return(obj)
 }
 
+#'@title Accuracy Calculator
+#'@description Class for accuracy calculation
+#'@return Metric object
+#'@examples
+#'# See ?mt_accuracy for an example of Accuracy Calculator
+#'@export
+mt_accuracy <- function(){
+  obj <- metric()
+  class(obj) <- append("mt_accuracy", class(obj))
+  return(obj)
+}
+
+#'@export
+evaluate.mt_accuracy <- function(obj, y_pred, y_true, ...){
+  return(mean(y_pred==y_true, na.rm=TRUE))
+}
+
 #'@title Precision Calculator
 #'@description Class for precision calculation
 #'@return Metric object

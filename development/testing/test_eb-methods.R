@@ -46,6 +46,9 @@ features <- c(
   #'delay_depart_bin'
   )
 
+# Remove NA
+bfd <- bfd[complete.cases(bfd[,features]),]
+
 ## Target
 bfd$delay_depart_bin <- bfd$delay_depart > 0
 target = 'delay_depart_bin'
@@ -80,12 +83,13 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
   x_test <- new_batch[, features]
   y_test <- new_batch[, target]
   
-  model <- fit(model, x_train[complete.cases(x_train),], y_train[complete.cases(x_train), target, drop=FALSE])
+  model <- fit(model, x_train, y_train)
   
   test_predictions <- predict(model, x_test)
   y_pred <- test_predictions[, 2] > th
   
   # Evaluation
+  accuracy <- evaluate(mt_accuracy(), y_pred, y_test)
   precision <- evaluate(mt_precision(), y_pred, y_test)
   recall <- evaluate(mt_recall(), y_pred, y_test)
   f1 <- evaluate(mt_fscore(), y_pred, y_test)
@@ -93,24 +97,26 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
   results <- rbind(results, 
                    c(
                      batch,
+                     accuracy,
                      precision,
                      recall,
                      f1,
                      model$drifted
                      )
                    )
-  
+  print(accuracy)
+  print(results)
   print(nrow(new_batch))
   print(nrow(last_batch))
 }
 results <- as.data.frame(results)
 results['index'] <- as.Date(results$index)
-names(results) <- c('index', 'precision', 'recall', 'f1', 'drift')
+names(results) <- c('index', 'accuracy', 'precision', 'recall', 'f1', 'drift')
 
-results_plot <- ggplot(data=results, aes(x=index, y=as.numeric(f1), group=1)) + 
+results_plot <- ggplot(data=results, aes(x=index, y=as.numeric(accuracy), group=1)) + 
   geom_line() +
   xlab('') +
-  ylab('F1') +
+  ylab('Recall') +
   theme_classic()
 
 for (detection in results[results['drift'] == TRUE, 'index']){

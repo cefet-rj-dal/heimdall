@@ -161,9 +161,7 @@ update_state.dfr_vaedd <- function(obj, value){
     recent_rec_error <- (recent_window_proj - recent_window)
     
     if (state$criteria == 'mann_whitney'){
-      history_data <- history_rec_error[complete.cases(history_rec_error),]
-      recent_data <- recent_rec_error[complete.cases(recent_rec_error),]
-      mw_results <- wilcox.test(unlist(as.vector(t(history_data))), unlist(as.vector(t(recent_data))))
+      mw_results <- wilcox.test(unlist(as.vector(t(history_rec_error))), unlist(as.vector(t(recent_rec_error))))
       
       if (mw_results['p.value'] < 0.01){
         state$drifted <- TRUE
