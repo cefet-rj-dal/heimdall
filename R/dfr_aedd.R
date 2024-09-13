@@ -8,6 +8,7 @@
 #'@param learning_rate Learning Rate
 #'@param window_size Size of the most recent data to be used
 #'@param monitoring_step The number of rows that the drifter waits to be is updated
+#'@param criteria The method to be used to check if there is a drift. May be mann_whitney (default) or kolmogorov_smirnov
 #AEDD detection: Daniil Kaminskyi, Bin Li and Emmanuel Müller. “Reconstruction-based unsupervised drift detection over multivariate streaming data.” 2022 IEEE International Conference on Data Mining Workshops (ICDMW).
 #'@return `dfr_aedd` object
 #'@examples

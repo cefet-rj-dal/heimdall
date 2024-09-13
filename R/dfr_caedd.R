@@ -1,5 +1,5 @@
-#'@title Variational Autoencoder-Based Drift Detection method
-#'@description Variational Autoencoder-Based method for concept drift detection <doi:0.1109/ICDMW58026.2022.00109>.
+#'@title Convolutional Autoencoder-Based Drift Detection method
+#'@description Convolutional Autoencoder-Based method for concept drift detection <doi:0.1109/ICDMW58026.2022.00109>.
 #'@param features Features to be monitored
 #'@param input_size Input size
 #'@param encoding_size Encoding Size
@@ -10,7 +10,7 @@
 #'@param monitoring_step The number of rows that the drifter waits to be is updated
 #'@param criteria The method to be used to check if there is a drift. May be mann_whitney (default) or kolmogorov_smirnov
 #AEDD detection: Daniil Kaminskyi, Bin Li and Emmanuel Müller. “Reconstruction-based unsupervised drift detection over multivariate streaming data.” 2022 IEEE International Conference on Data Mining Workshops (ICDMW).
-#'@return `dfr_vaedd` object
+#'@return `dfr_caedd` object
 #'@examples
 #'require("daltoolbox")
 #'require('ggplot2')
@@ -45,7 +45,7 @@
 #'old_start_batch <- ordered_batches[1]
 #'
 #'# Classification Algorithm
-#'model <- stealthy(cla_nb(target, slevels), dfr_vaedd(features=features, input_size=length(features), encoding_size=3, window_size=1800))
+#'model <- stealthy(cla_nb(target, slevels), dfr_caedd(features=features, input_size=length(features), encoding_size=3, window_size=1800))
 #'
 #'for (batch in ordered_batches[2:length(ordered_batches)]){
 #'  print(batch)
@@ -96,7 +96,7 @@
 #'  theme_classic()
 #'
 #'@export
-dfr_vaedd <- function(features, input_size, encoding_size, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney') {
+dfr_caedd <- function(features, input_size, encoding_size, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney') {
   obj <- mv_dist_based(features=features)
   
   # Attributes
@@ -112,18 +112,17 @@ dfr_vaedd <- function(features, input_size, encoding_size, batch_size = 32, num_
   state$monitoring_step <- monitoring_step
   state$criteria <- criteria
   
-  state$autoencoder <- vae_encode_decode(input_size=input_size, encoding_size=encoding_size, batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate)
+  state$autoencoder <- cae_encode_decode(input_size=input_size, encoding_size=encoding_size, batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate)
   state$is_fitted <- FALSE
   
   obj$drifted <- FALSE
   obj$state <- state
-  class(obj) <- append("dfr_vaedd", class(obj))
+  class(obj) <- append("dfr_caedd", class(obj))
   return(obj)
 }
 
 #'@export
-update_state.dfr_vaedd <- function(obj, value){
-  #print('Update State')
+update_state.dfr_caedd <- function(obj, value){
   
   state <- obj$state
   
@@ -223,7 +222,7 @@ update_state.dfr_vaedd <- function(obj, value){
 }
 
 #'@export
-fit.dfr_vaedd <- function(obj, data, ...){
+fit.dfr_caedd <- function(obj, data, ...){
   output <- update_state(obj, data[1,])
   for (i in 2:nrow(data)){
     output <- update_state(output$obj, data[i,])
@@ -233,9 +232,9 @@ fit.dfr_vaedd <- function(obj, data, ...){
 }
 
 #'@export
-reset_state.dfr_vaedd <- function(obj) {
+reset_state.dfr_caedd <- function(obj) {
   obj$drifted <- FALSE
-  obj$state <- dfr_vaedd(
+  obj$state <- dfr_caedd(
     features=obj$features,
     input_size=obj$state$input_size, 
     encoding_size=obj$state$encoding_size, 

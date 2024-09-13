@@ -32,6 +32,8 @@ dfr_aedd(
 \item{window_size}{Size of the most recent data to be used}
 
 \item{monitoring_step}{The number of rows that the drifter waits to be is updated}
+
+\item{criteria}{The method to be used to check if there is a drift. May be mann_whitney (default) or kolmogorov_smirnov}
 }
 \value{
 \code{dfr_aedd} object

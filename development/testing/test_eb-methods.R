@@ -66,7 +66,7 @@ old_start_batch <- ordered_batches[1]
 
 # Classification Algorithm
 #dfr_aedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='kolmogorov_smirnov')
-model <- stealthy(cla_nb(target, slevels), dfr_vaedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='mann_whitney'), verbose=TRUE)
+model <- stealthy(cla_nb(target, slevels), dfr_caedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='mann_whitney'), verbose=TRUE)
 
 for (batch in ordered_batches[2:length(ordered_batches)]){
   print(batch)
@@ -104,8 +104,7 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
                      model$drifted
                      )
                    )
-  print(accuracy)
-  print(results)
+
   print(nrow(new_batch))
   print(nrow(last_batch))
 }
@@ -116,7 +115,7 @@ names(results) <- c('index', 'accuracy', 'precision', 'recall', 'f1', 'drift')
 results_plot <- ggplot(data=results, aes(x=index, y=as.numeric(accuracy), group=1)) + 
   geom_line() +
   xlab('') +
-  ylab('Recall') +
+  ylab('Accuracy') +
   theme_classic()
 
 for (detection in results[results['drift'] == TRUE, 'index']){
