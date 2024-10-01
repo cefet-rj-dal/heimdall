@@ -36,23 +36,24 @@ bfd['batch_index'] <- format(bfd['expected_depart'], '%V')
 bfd <- bfd[bfd['depart'] == 'SBSP',]
 bfd <- subset(bfd, !is.na(depart_visibility))
 
+## Target
+bfd$delay_depart_bin <- bfd$delay_depart > 0
+target = 'delay_depart_bin'
+slevels <- c(TRUE, FALSE)
+
 # Model features
 features <- c(
   'depart_elevation', #'depart_wind_direction_cat', 
   'depart_visibility', #'depart_day_period', 
   'depart_pressure', 
-  'depart_relative_humidity', 'depart_dew_point'#, 
+  'depart_relative_humidity', 
+  'depart_dew_point'#,
   #'depart_sky_coverage', 'depart_wind_speed_scale'
   #'delay_depart_bin'
   )
 
 # Remove NA
-bfd <- bfd[complete.cases(bfd[,features]),]
-
-## Target
-bfd$delay_depart_bin <- bfd$delay_depart > 0
-target = 'delay_depart_bin'
-slevels <- c(TRUE, FALSE)
+bfd <- bfd[complete.cases(bfd[,c(features, target)]),]
 
 # Save bfd data
 #write.csv(bfd, '/home/lucas/bfd.csv')
@@ -67,7 +68,7 @@ old_start_batch <- ordered_batches[1]
 # Classification Algorithm
 #dfr_aedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='kolmogorov_smirnov')
 #dfr_caedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='mann_whitney')
-model <- stealthy(cla_nb(target, slevels), dfr_kswin() , verbose=TRUE)
+model <- stealthy(cla_nb(target, slevels), dfr_kldist(target_feat='target', window_size=1000, p_th=0.8) , verbose=TRUE)
 
 for (batch in ordered_batches[2:length(ordered_batches)]){
   print(batch)
