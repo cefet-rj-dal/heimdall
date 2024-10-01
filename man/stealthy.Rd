@@ -19,6 +19,8 @@ stealthy(
 
 \item{th}{The threshold to be used with classification algorithms}
 
+\item{target_uni_drifter}{Passes the prediction target to the drifts as the target feat when the drifter is univariate and dist_based.}
+
 \item{verbose}{if TRUE shows drift messages}
 }
 \value{
