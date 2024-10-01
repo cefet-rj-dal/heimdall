@@ -5,10 +5,10 @@
 \title{KSWIN method}
 \usage{
 dfr_kswin(
-  target_feat,
-  window_size = 100,
-  stat_size = 30,
-  alpha = 0.005,
+  target_feat = NULL,
+  window_size = 1500,
+  stat_size = 500,
+  alpha = 0.0000001,
   data = NULL
 )
 }

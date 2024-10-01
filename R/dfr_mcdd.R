@@ -32,7 +32,7 @@
 #'
 #'detection[detection$type == 'drift',]
 #'@export
-dfr_mcdd <- function(target_feat, alpha=0.05, window_size=100) {
+dfr_mcdd <- function(target_feat=NULL, alpha=0.00000001, window_size=1500) {
     obj <- dist_based(target_feat = target_feat)
     
     state <- list()

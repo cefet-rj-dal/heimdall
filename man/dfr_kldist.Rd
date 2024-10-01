@@ -4,7 +4,7 @@
 \alias{dfr_kldist}
 \title{KL Distance method}
 \usage{
-dfr_kldist(target_feat, window_size = 100, p_th = 0.9, data = NULL)
+dfr_kldist(target_feat = NULL, window_size = 100, p_th = 0.05, data = NULL)
 }
 \arguments{
 \item{target_feat}{Feature to be monitored.}

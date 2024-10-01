@@ -38,7 +38,7 @@
 #'detection <- as.data.frame(detection)
 #'detection[detection$type == 'drift',]
 #'@export
-dfr_page_hinkley <- function(target_feat, min_instances=30, delta=0.005, threshold=50, alpha=1-0.0001) {
+dfr_page_hinkley <- function(target_feat=NULL, min_instances=30, delta=0.005, threshold=50, alpha=1-0.0001) {
   obj <- dist_based(target_feat=target_feat)
   
   state <- list()

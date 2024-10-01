@@ -59,7 +59,12 @@ fit.stealthy <- function(obj, x, y, ...){
     }
     
     if ('dist_based' %in% class(obj$drift_method)){
-      obj$drift_method <- fit(obj$drift_method, x_oh[,obj$drift_method$target_feat])
+      if (is.null(obj$drift_method$target_feat)){
+        norm_x_oh[,'mean'] <- rowMeans(norm_x_oh)
+        obj$drift_method <- fit(obj$drift_method, norm_x_oh[,'mean'])
+      }else{
+        obj$drift_method <- fit(obj$drift_method, x_oh[,obj$drift_method$target_feat])
+      }
     }
     
     if ('mv_dist_based' %in% class(obj$drift_method)){

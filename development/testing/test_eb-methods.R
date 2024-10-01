@@ -66,7 +66,8 @@ old_start_batch <- ordered_batches[1]
 
 # Classification Algorithm
 #dfr_aedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='kolmogorov_smirnov')
-model <- stealthy(cla_nb(target, slevels), dfr_caedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='mann_whitney'), verbose=TRUE)
+#dfr_caedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='mann_whitney')
+model <- stealthy(cla_nb(target, slevels), dfr_kswin() , verbose=TRUE)
 
 for (batch in ordered_batches[2:length(ordered_batches)]){
   print(batch)
