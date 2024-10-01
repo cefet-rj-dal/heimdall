@@ -4,7 +4,7 @@
 \alias{dfr_mcdd}
 \title{Mean Comparison Distance method}
 \usage{
-dfr_mcdd(target_feat, alpha = 0.05, window_size = 100)
+dfr_mcdd(target_feat = NULL, alpha = 0.00000001, window_size = 1500)
 }
 \arguments{
 \item{target_feat}{Feature to be monitored}

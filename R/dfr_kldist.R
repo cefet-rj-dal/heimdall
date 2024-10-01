@@ -34,7 +34,7 @@
 #'
 #'detection[detection$type == 'drift',]
 #'@export
-dfr_kldist <- function(target_feat, window_size=100, p_th=0.9, data=NULL) {
+dfr_kldist <- function(target_feat=NULL, window_size=100, p_th=0.05, data=NULL) {
     obj <- dist_based(target_feat=target_feat)
     
     state <- list()

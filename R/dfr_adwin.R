@@ -9,7 +9,7 @@
 #'#model <- dfr_adwin(target_feat='serie')
 #'@import reticulate
 #'@export
-dfr_adwin <- function(target_feat, delta=0.002) {
+dfr_adwin <- function(target_feat=NULL, delta=0.00002) {
   obj <- dist_based(target_feat=target_feat)
   
   # Attributes
