@@ -4,7 +4,13 @@
 \alias{stealthy}
 \title{Stealthy}
 \usage{
-stealthy(model, drift_method, th = 0.5, verbose = FALSE)
+stealthy(
+  model,
+  drift_method,
+  th = 0.5,
+  target_uni_drifter = FALSE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{model}{The algorithm object to be used for predictions}
