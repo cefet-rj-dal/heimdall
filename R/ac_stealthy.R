@@ -3,6 +3,7 @@
 #'@param model The algorithm object to be used for predictions
 #'@param drift_method The algorithm object to detect drifts
 #'@param th The threshold to be used with classification algorithms
+#'@param target_uni_drifter Passes the prediction target to the drifts as the target feat when the drifter is univariate and dist_based.
 #'@param verbose if TRUE shows drift messages
 #'@return Stealthy object
 #'@examples
@@ -11,7 +12,7 @@
 #'@import stats
 #'@importFrom caret dummyVars
 #'@export
-stealthy <- function(model, drift_method, th=0.5, verbose=FALSE){
+stealthy <- function(model, drift_method, th=0.5, target_uni_drifter=FALSE, verbose=FALSE){
   obj <- dal_base()
   obj$dummy <- NULL
   obj$model <- model
@@ -22,6 +23,7 @@ stealthy <- function(model, drift_method, th=0.5, verbose=FALSE){
   obj$y_train <- c()
   obj$th <- th
   obj$norm_model <- minmax()
+  obj$target_uni_drifter <- target_uni_drifter
   obj$verbose <- verbose
   attr(obj, 'class') <- 'stealthy'
   return(obj)
@@ -62,7 +64,7 @@ fit.stealthy <- function(obj, x, y, ...){
       if (is.null(obj$drift_method$target_feat)){
         norm_x_oh[,'mean'] <- rowMeans(norm_x_oh)
         obj$drift_method <- fit(obj$drift_method, norm_x_oh[,'mean'])
-      }else if(obj$drift_method$target_feat == 'target'){
+      }else if(obj$target_uni_drifter){
         obj$drift_method <- fit(obj$drift_method, y[, 1]*1)
       }else{
         obj$drift_method <- fit(obj$drift_method, x_oh[,obj$drift_method$target_feat])
