@@ -62,6 +62,8 @@ fit.stealthy <- function(obj, x, y, ...){
       if (is.null(obj$drift_method$target_feat)){
         norm_x_oh[,'mean'] <- rowMeans(norm_x_oh)
         obj$drift_method <- fit(obj$drift_method, norm_x_oh[,'mean'])
+      }else if(obj$drift_method$target_feat == 'target'){
+        obj$drift_method <- fit(obj$drift_method, y[, 1]*1)
       }else{
         obj$drift_method <- fit(obj$drift_method, x_oh[,obj$drift_method$target_feat])
       }
