@@ -8,7 +8,7 @@ dfr_kswin(
   target_feat = NULL,
   window_size = 1500,
   stat_size = 500,
-  alpha = 0.0000001,
+  alpha = 1e-07,
   data = NULL
 )
 }
