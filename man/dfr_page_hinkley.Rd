@@ -9,7 +9,7 @@ dfr_page_hinkley(
   min_instances = 30,
   delta = 0.005,
   threshold = 50,
-  alpha = 1 - 0.0001
+  alpha = 1 - 1e-04
 )
 }
 \arguments{

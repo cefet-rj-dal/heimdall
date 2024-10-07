@@ -4,7 +4,7 @@
 \alias{dfr_adwin}
 \title{ADWIN method}
 \usage{
-dfr_adwin(target_feat = NULL, delta = 0.00002)
+dfr_adwin(target_feat = NULL, delta = 2e-05)
 }
 \arguments{
 \item{target_feat}{Feature to be monitored.}
