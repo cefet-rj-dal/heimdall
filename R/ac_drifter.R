@@ -13,6 +13,7 @@ drifter <- function() {
   return(obj)
 }
 
+
 #'@title Reset State 
 #'@description Reset Drifter State
 #'@param obj Drifter object
