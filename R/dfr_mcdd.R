@@ -67,7 +67,7 @@ update_state.dfr_mcdd <- function(obj, value) {
     new_window <- tail(state$window, state$window_size/2)
     old_window <- head(state$window, state$window_size/2)
     
-    if (mean(new_window==old_window) == 1){
+    if (mean(new_window==old_window, na.rm=TRUE) == 1){
       state$window <- rbind(state$window, value)
       
       obj$state <- state
@@ -103,8 +103,10 @@ update_state.dfr_mcdd <- function(obj, value) {
 #'@export
 fit.dfr_mcdd <- function(obj, data, ...){
   output <- update_state(obj, data[1])
-  for (i in 2:length(data)){
-    output <- update_state(output$obj, data[i])
+  if (length(data) > 1){
+    for (i in 2:length(data)){
+      output <- update_state(output$obj, data[i])
+    }
   }
   
   return(output$obj)
@@ -115,7 +117,8 @@ reset_state.dfr_mcdd <- function(obj) {
   obj$drifted <- FALSE
   obj$state <- dfr_mcdd(
     target_feat = obj$target_feat,
-    alpha = obj$state$alpha
+    alpha = obj$state$alpha,
+    window_size = obj$state$window_size
   )$state
   return(obj)  
 }

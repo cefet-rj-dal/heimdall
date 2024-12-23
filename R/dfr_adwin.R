@@ -48,8 +48,10 @@ update_state.dfr_adwin <- function(obj, value){
 #'@export
 fit.dfr_adwin <- function(obj, data, ...){
   output <- update_state(obj, data[1])
-  for (i in 2:length(data)){
-    output <- update_state(output$obj, data[i])
+  if (length(data) > 1){
+    for (i in 2:length(data)){
+      output <- update_state(output$obj, data[i])
+    }
   }
   
   return(output$obj)

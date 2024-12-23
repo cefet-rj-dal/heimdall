@@ -16,5 +16,5 @@ Metric object
 Class for FScore calculation
 }
 \examples{
-# See ?mt_precision for an example of FScore Calculator
+# See ?mt_fscore for an example of FScore Calculator
 }

@@ -148,8 +148,96 @@ mv_dist_based <- function(features){
 #'@description Implements Multi Criteria drift detectors
 #'@return Drifter object
 #'@export
-multi_criteria <- function(){
+dfr_multi_criteria <- function(drifter_list, combination='or', fuzzy_window=10){
   obj <- drifter()
+  obj$drifter_list <- drifter_list
+  obj$combination <- combination
+  obj$fuzzy_window <- fuzzy_window
+  obj$drifts_fuzzy <- c()
+  obj$drifts <- c()
+  
+  state <- list()
+  state$drifter_list <- drifter_list
+  
+  obj$state <- state
+  
+  obj$drifted <- FALSE
   class(obj) <- append('multi_criteria', class(obj))
   return(obj)
 }
+
+#'@export
+update_state.multi_criteria <- function(obj, value){
+  state <- obj$state
+  
+  state$row_data <- c()
+  for(dft in names(state$drifter_list)){
+    if ('dist_based' %in% class(state$drifter_list[[dft]])){
+      if (is.null(state$drifter_list[[dft]]$target_feat)){
+        value_mean <- mean(as.numeric(unlist(value)))
+        drifter_output <- update_state(state$drifter_list[[dft]], value_mean)
+        state$drifter_list[[dft]] <- drifter_output$obj
+      }else{
+        drifter_output <- update_state(state$drifter_list[[dft]], value[[state$drifter_list[[dft]]$target_feat]])
+        state$drifter_list[[dft]] <- drifter_output$obj
+      }
+    }
+    
+    if ('mv_dist_based' %in% class(state$drifter_list[[dft]])){
+      drifter_output <- update_state(state$drifter_list[[dft]], value)
+      state$drifter_list[[dft]] <- drifter_output$obj
+    }
+    state$row_data <- cbind(state$row_data, drifter_output$drift)
+  }
+  obj$drifts <- rbind(obj$drifts, state$row_data)
+
+  if(obj$combination == 'or'){
+    if(mean(state$row_data) > 0){has_drift <- TRUE}else{has_drift <- FALSE}
+  }else if(obj$combination == 'and'){
+    if(mean(state$row_data) == 1){has_drift <- TRUE}else{has_drift <- FALSE}
+  }else if(obj$combination == 'fuzzy'){
+    obj$drifts_fuzzy <- c()
+    for(drifter_col in 1:ncol(obj$drifts)){
+      drifter_fuzzy <- rep(0, nrow(obj$drifts))
+      drifts_index <- which(obj$drifts[, drifter_col]==TRUE)
+      for(i in drifts_index){
+        umbrella_vector <- max(1, i-obj$fuzzy_window + 1):min(i + (obj$fuzzy_window-1), nrow(df))
+        drifter_fuzzy[min(umbrella_vector):i] <- ((obj$fuzzy_window - length(min(umbrella_vector):i)) + 1):(obj$fuzzy_window) / obj$fuzzy_window
+        drifter_fuzzy[i:max(umbrella_vector)] <- obj$fuzzy_window:(obj$fuzzy_window-length(i:max(umbrella_vector)) + 1) / obj$fuzzy_window
+      }
+      obj$drifts_fuzzy <- cbind(obj$drifts_fuzzy, drifter_fuzzy)
+    }
+    if(sum(rowSums(obj$drifts_fuzzy) > (length(ncol(obj$drifts))/2))){has_drift <- TRUE}else{has_drift <- FALSE}
+  }
+  
+  obj$state <- state
+  if (has_drift){
+    obj$drifted <- has_drift
+    return(list(obj=obj, drift=obj$drifted))
+  }
+  else{
+    return(list(obj=obj, drift=FALSE))
+  }
+}
+
+#'@export
+fit.multi_criteria <- function(obj, data, ...){
+  output <- update_state(obj, data[1,])
+  if(nrow(data) > 1){
+    for (i in 2:nrow(data)){
+      output <- update_state(output$obj, data[i,])
+    }
+  }
+  return(output$obj)
+}
+
+#'@export
+reset_state.multi_criteria <- function(obj) {
+  obj <- dfr_multi_criteria(
+    drifter_list=obj$drifter_list,
+    combination=obj$combination, 
+    fuzzy_window=obj$fuzzy_window
+  )
+  return(obj) 
+}
+

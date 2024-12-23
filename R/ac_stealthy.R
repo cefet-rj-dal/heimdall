@@ -12,7 +12,7 @@
 #'@import stats
 #'@importFrom caret dummyVars
 #'@export
-stealthy <- function(model, drift_method, th=0.5, target_uni_drifter=FALSE, verbose=FALSE){
+stealthy <- function(model, drift_method, norm_class=fixed_zscore(), warmup_size=100, th=0.5, target_uni_drifter=FALSE, incremental_memory=TRUE, verbose=FALSE){
   obj <- dal_base()
   obj$dummy <- NULL
   obj$model <- model
@@ -22,8 +22,10 @@ stealthy <- function(model, drift_method, th=0.5, target_uni_drifter=FALSE, verb
   obj$x_train <- c()
   obj$y_train <- c()
   obj$th <- th
-  obj$norm_model <- minmax()
+  obj$norm_model <- norm_class
+  obj$warmup_size <- warmup_size
   obj$target_uni_drifter <- target_uni_drifter
+  obj$incremental_memory <- incremental_memory
   obj$verbose <- verbose
   attr(obj, 'class') <- 'stealthy'
   return(obj)
@@ -40,76 +42,99 @@ fit.stealthy <- function(obj, x, y, ...){
   # Check Drift
   obj$drifted <- FALSE
   if (obj$fitted){
-    x_oh <- data.frame(predict(obj$dummy, newdata = x))
-    norm_x_oh <- transform(obj$norm_model, x_oh)
-    if (!all(obj$dummy$feat_names %in% names(x_oh))){
-      warning('Some categories present on train are not on the most recent dataset. Creating zero columns.')
-      for (feat in obj$dummy$feat_names){
-        if (!(feat %in% names(x_oh))){
-          x_oh[feat] <- 0
+    if (nrow(obj$x_train) >= obj$warmup_size){
+      x_oh <- data.frame(predict(obj$dummy, newdata = x))
+      if (!all(obj$dummy$feat_names %in% names(x_oh))){
+        warning('Some categories present on train are not on the most recent dataset. Creating zero columns.')
+        for (feat in obj$dummy$feat_names){
+          if (!(feat %in% names(x_oh))){
+            x_oh[feat] <- 0
+          }
+        }
+      }
+      norm_x_oh <- transform(obj$norm_model, x_oh)
+      if ('error_based' %in% class(obj$drift_method)){
+        predictions <- predict(obj$model, x_oh)
+        y_pred <- predictions[, 2] > obj$th
+        
+        model_result = y==y_pred
+        model_result <- model_result[complete.cases(model_result)]
+        
+        obj$drift_method <- fit(obj$drift_method, model_result)
+      }
+      
+      if ('dist_based' %in% class(obj$drift_method)){
+        if (is.null(obj$drift_method$target_feat)){
+          norm_x_oh[,'mean'] <- rowMeans(norm_x_oh)
+          obj$drift_method <- fit(obj$drift_method, norm_x_oh[,'mean'])
+        }else if(obj$target_uni_drifter){
+          obj$drift_method <- fit(obj$drift_method, y[, 1]*1)
+        }else{
+          obj$drift_method <- fit(obj$drift_method, x_oh[,obj$drift_method$target_feat])
+        }
+      }
+      
+      if ('mv_dist_based' %in% class(obj$drift_method)){
+        obj$drift_method <- fit(obj$drift_method, norm_x_oh)
+      }
+      
+      if ('multi_criteria' %in% class(obj$drift_method)){
+        obj$drift_method <- fit(obj$drift_method, norm_x_oh)
+      }
+      
+      if(obj$drift_method$drifted){
+        if(obj$verbose){
+          message('Stealthy detected a drift, discarding old data')
+        }
+        obj$x_train <- c()
+        obj$y_train <- c()  
+        obj$drift_method <- reset_state(obj$drift_method)
+        obj$drifted <- TRUE
+        obj$fitted <- FALSE
         }
       }
     }
-    if ('error_based' %in% class(obj$drift_method)){
-      predictions <- predict(obj$model, x_oh)
-      y_pred <- predictions[, 2] > obj$th
+    # Define train data
+    if(obj$incremental_memory | (!obj$fitted)){
+      # Aggregate new data
+      obj$x_train <- rbind(obj$x_train, x)
+      obj$y_train <- rbind(obj$y_train, y)
       
-      model_result = y==y_pred
-      model_result <- model_result[complete.cases(model_result)]
-      
-      obj$drift_method <- fit(obj$drift_method, model_result)
-    }
-    
-    if ('dist_based' %in% class(obj$drift_method)){
-      if (is.null(obj$drift_method$target_feat)){
-        norm_x_oh[,'mean'] <- rowMeans(norm_x_oh)
-        obj$drift_method <- fit(obj$drift_method, norm_x_oh[,'mean'])
-      }else if(obj$target_uni_drifter){
-        obj$drift_method <- fit(obj$drift_method, y[, 1]*1)
-      }else{
-        obj$drift_method <- fit(obj$drift_method, x_oh[,obj$drift_method$target_feat])
+      if((nrow(obj$x_train) >= obj$warmup_size)){
+        # One Hot Encoding
+        obj$dummy <- caret::dummyVars(" ~ .", data=obj$x_train)
+        x_train_dummy <- data.frame(predict(obj$dummy, newdata = obj$x_train))
+        obj$dummy$feat_names <- names(x_train_dummy)
+        
+        # Normalize 
+        obj$norm_model <- fit(obj$norm_model, x_train_dummy)
+        norm_data <- cbind(transform(obj$norm_model, x_train_dummy), obj$y_train)
+        
+        # Fit model
+        obj$model <- fit(obj$model, norm_data)
+        obj$model$feat_names <- names(norm_data)
+        
+        obj$fitted <- TRUE
       }
     }
-    
-    if ('mv_dist_based' %in% class(obj$drift_method)){
-      obj$drift_method <- fit(obj$drift_method, norm_x_oh[,obj$drift_method$features])
-    }
-    
-    if(obj$drift_method$drifted){
-      if(obj$verbose){
-        message('Stealthy detected a drift, discarding old data')
-      }
-      obj$x_train <- c()
-      obj$y_train <- c()  
-      obj$drift_method <- reset_state(obj$drift_method)
-      obj$drifted <- TRUE
-    }
-  }
-  # Aggregate new data
-  obj$x_train <- rbind(obj$x_train, x)
-  obj$y_train <- rbind(obj$y_train, y)
   
-  # One Hot Encoding
-  obj$dummy <- caret::dummyVars(" ~ .", data=obj$x_train)
-  x_train_dummy <- data.frame(predict(obj$dummy, newdata = obj$x_train))
-  obj$dummy$feat_names <- names(x_train_dummy)
-  
-  # Define train data
-  data <- cbind(x_train_dummy, obj$y_train)
-  
-  # Normalize
-  obj$norm_model <- fit(obj$norm_model, data)
-  norm_data <- transform(obj$norm_model, data)
-
-  # Fit model
-  obj$model <- fit(obj$model, norm_data)
-  obj$model$feat_names <- names(data)
-  obj$fitted <- TRUE
   return(obj)
 }
 
 #'@export
 predict.stealthy <- function(object, data, ...){
+  # Return format if not fitted
+  if(!object$fitted){
+    output <- c()
+    for (i in 1:length(object$model$slevels)){
+      output <- cbind(output, vector(mode='logical', length=nrow(data)))
+    }
+    output <- as.data.frame(output)
+    names(output) <- object$model$slevels
+    return(output)
+  }
+  
+  # Prediction if fitted
   data_oh <- data.frame(predict(object$dummy, newdata = data))
   for (feat in object$model$feat_names){
     if (!(feat %in% names(data_oh))){

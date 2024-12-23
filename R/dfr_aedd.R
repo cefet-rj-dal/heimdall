@@ -96,14 +96,14 @@
 #'  theme_classic()
 #'
 #'@export
-dfr_aedd <- function(features, input_size, encoding_size, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney') {
+dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney') {
   obj <- mv_dist_based(features=features)
+  
+  obj$ae_class <- ae_class
   
   # Attributes
   state <- list()
   
-  state$features <- features
-  state$input_size <- input_size
   state$encoding_size <- encoding_size
   state$batch_size <- batch_size
   state$num_epochs <- num_epochs
@@ -111,8 +111,9 @@ dfr_aedd <- function(features, input_size, encoding_size, batch_size = 32, num_e
   state$window_size <- window_size
   state$monitoring_step <- monitoring_step
   state$criteria <- criteria
+  state$window <- c()
   
-  state$autoencoder <- autoenc_encode_decode(input_size=input_size, encoding_size=encoding_size, batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate)
+  state$autoencoder <- NULL
   state$is_fitted <- FALSE
   
   obj$drifted <- FALSE
@@ -123,29 +124,36 @@ dfr_aedd <- function(features, input_size, encoding_size, batch_size = 32, num_e
 
 #'@export
 update_state.dfr_aedd <- function(obj, value){
-  #print('Update State')
-  
   state <- obj$state
+  
+  if(!all(names(value) %in% names(state$data))){
+    warning('dfr_aedd::update_state: Some categories present in most recent data are not on the history dataset. Creating zero columns.')
+    for (feat in names(value)){
+      if (!(feat %in% names(state$data))){
+        value[feat] <- NULL
+      }
+    }
+  }
+  
+  state$data <- rbind(state$data, value)
   
   state$n <- state$n + 1
   if (state$n >= state$monitoring_step){
     state$n <- 0
   }else{
-    state$window <- rbind(state$window, value)
-    
     obj$state <- state
     return(list(obj=obj, drift=FALSE))
   }
   
-  currentLength <- nrow(state$window)
+  currentLength <- nrow(state$data)
   if (is.null(currentLength)){
     currentLength <- 0
   }
   
   if (currentLength >= state$window_size){
-    state$window <- tail(state$window, -1)
-    history_window <- tail(state$window, state$window_size/2)
-    recent_window <- head(state$window, state$window_size/2)
+    state$data <- tail(state$data, -1)
+    history_window <- tail(state$data, state$window_size/2)
+    recent_window <- head(state$data, state$window_size/2)
     
     if (!state$is_fitted){
       state$autoencoder <- fit(state$autoencoder, value)
@@ -198,31 +206,52 @@ update_state.dfr_aedd <- function(obj, value){
     
     
     if(state$drifted){
-
       obj$drifted <- TRUE
-      
-      obj$state <- state
-      return(list(obj=obj, drift=TRUE))
     }
-    else{
-      state$window <- rbind(state$window, value)
-      
-      obj$state <- state
-      return(list(obj=obj, drift=FALSE))
-    }
-  }else{
-    state$window <- rbind(state$window, value)
-    
-    obj$state <- state
-    return(list(obj=obj, drift=FALSE))
   }
-  
   obj$state <- state
-  return(list(obj=obj, pred=obj$drifted))
+  return(list(obj=obj, drift=obj$drifted))
 }
 
 #'@export
 fit.dfr_aedd <- function(obj, data, ...){
+  state <- obj$state
+  
+  if(!state$is_fitted){
+    if(is.null(ncol(data))){
+      input_size <- 1
+    }else{
+      input_size <- ncol(data)
+    }
+
+    state$autoencoder <- obj$ae_class(input_size=input_size, encoding_size=state$encoding_size, batch_size=state$batch_size, num_epochs=state$num_epochs, learning_rate=state$learning_rate)
+  }
+  
+  if((!is.null(state$data))){
+    if(nrow(state$data) & (!is.null(ncol(state$data)))){
+      if(!state$is_fitted){
+        if(!all(names(data) %in% names(state$data))){
+          warning('dfr_aedd: Some categories present in most recent data are not on the history dataset. Creating zero columns.')
+          for (feat in names(data)){
+            if (!(feat %in% names(state$data))){
+              state$data[feat] <- 0
+            }
+          }
+        }
+      }
+      if(!all(names(state$data) %in% names(data))){
+        warning('dfr_aedd: Some categories present in history data are not on the most recent dataset. Creating zero columns.')
+        for (feat in names(state$data)){
+          if (!(feat %in% names(data))){
+            data[feat] <- 0
+          }
+        }
+      }
+    }
+  }
+  
+  obj$state <- state
+  
   output <- update_state(obj, data[1,])
   for (i in 2:nrow(data)){
     output <- update_state(output$obj, data[i,])

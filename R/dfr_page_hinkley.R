@@ -63,38 +63,51 @@ update_state.dfr_page_hinkley <- function(obj, value){
   state <- obj$state
   
   state$x_mean <- state$x_mean + (value - state$x_mean)/state$sample_count
-  state$sum <- max(0, state$alpha * state$sum + (value - state$x_mean - state$delta))
+  state$sum <- max(0, abs(state$alpha * state$sum + (value - state$x_mean - state$delta)))
   state$sample_count <- state$sample_count + 1
   
-  if(state$sample_count < state$min_instances){
-    obj$state <- state
-    return(list(obj=obj, drift=FALSE))
-  }
-  else if(state$sum > state$threshold){
-    state$x_mean <- 0
-    state$sum <- 0
-    state$sample_count <- 1
-    
-    obj$drifted <- TRUE
-    
-    obj$state <- state
-    return(list(obj=obj, drift=TRUE))
-  }
-  else{
-    obj$state <- state
-    return(list(obj=obj, drift=FALSE))
-  }
-  
-  return(list(obj=obj, drift=obj$drifted))
+  tryCatch(
+    {
+      if(state$sample_count < state$min_instances){
+        obj$state <- state
+        return(list(obj=obj, drift=FALSE))
+      }
+      else if(state$sum > state$threshold){
+        state$x_mean <- 0
+        state$sum <- 0
+        state$sample_count <- 1
+        
+        obj$drifted <- TRUE
+        
+        obj$state <- state
+        return(list(obj=obj, drift=TRUE))
+      }
+      else{
+        obj$state <- state
+        return(list(obj=obj, drift=FALSE))
+      }
+      
+      return(list(obj=obj, drift=obj$drifted))
+    },
+    error=function(cond){
+      message(conditionMessage(cond))
+      if(is.na(value)){
+        message('Input is null')
+      }else{
+        message(value)
+      }
+      }
+    )
 }
 
 #'@export
 fit.dfr_page_hinkley <- function(obj, data, ...){
   output <- update_state(obj, data[1])
-  for (i in 2:length(data)){
-    output <- update_state(output$obj, data[i])
+  if (length(data) > 1){
+    for (i in 2:length(data)){
+      output <- update_state(output$obj, data[i])
+    }
   }
-  
   return(output$obj)
 }
 

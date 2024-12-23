@@ -112,7 +112,7 @@ dfr_vaedd <- function(features, input_size, encoding_size, batch_size = 32, num_
   state$monitoring_step <- monitoring_step
   state$criteria <- criteria
   
-  state$autoencoder <- vae_encode_decode(input_size=input_size, encoding_size=encoding_size, batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate)
+  state$autoencoder <- varae_encode_decode(input_size=input_size, encoding_size=encoding_size, batch_size=batch_size, num_epochs=num_epochs, learning_rate=learning_rate)
   state$is_fitted <- FALSE
   
   obj$drifted <- FALSE
