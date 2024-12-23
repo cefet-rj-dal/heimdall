@@ -1,6 +1,6 @@
 Package: heimdall
 Title: Drift Adaptable Models
-Version: 1.0.717
+Version: 1.0.727
 Authors@R: 
   c(
         person(given = "Lucas", family = "Tavares", role = c("aut"), email = "lucas.giusti@eic.cefet-rj.br"),
