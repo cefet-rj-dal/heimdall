@@ -3,11 +3,8 @@
 This example uses a distribuition-based drift detector with a synthetic variable.
 
 ```{r}
-# library(daltoolbox)
-# library(heimdall)
-library(devtools)
-load_all('/home/lucas/daltoolbox')
-load_all('/home/lucas/heimdall')
+library(daltoolbox)
+library(heimdall)
 seed<-1
 set.seed(seed)
 py_set_seed(seed, disable_hash_randomization = TRUE)
