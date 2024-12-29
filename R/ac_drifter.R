@@ -146,6 +146,9 @@ mv_dist_based <- function(features){
 
 #'@title Multi Criteria Drifter sub-class
 #'@description Implements Multi Criteria drift detectors
+#'@param drifter_list List of drifters to combine.
+#'@param combination How the drifters will be combined. Possible values: 'fuzzy', 'or', 'and'.
+#'@param fuzzy_window Sets the fuzzy window size. Only if combination = 'fuzzy'.
 #'@return Drifter object
 #'@export
 dfr_multi_criteria <- function(drifter_list, combination='or', fuzzy_window=10){

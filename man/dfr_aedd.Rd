@@ -5,9 +5,9 @@
 \title{Autoencoder-Based Drift Detection method}
 \usage{
 dfr_aedd(
-  features,
-  input_size,
   encoding_size,
+  features,
+  ae_class = autoenc_encode_decode,
   batch_size = 32,
   num_epochs = 1000,
   learning_rate = 0.001,
@@ -17,11 +17,11 @@ dfr_aedd(
 )
 }
 \arguments{
+\item{encoding_size}{Encoding Size}
+
 \item{features}{Features to be monitored}
 
-\item{input_size}{Input size}
-
-\item{encoding_size}{Encoding Size}
+\item{ae_class}{Autoencoder Class}
 
 \item{batch_size}{Batch Size for batch learning}
 
@@ -40,4 +40,8 @@ dfr_aedd(
 }
 \description{
 Autoencoder-Based method for concept drift detection \url{doi:0.1109/ICDMW58026.2022.00109}.
+}
+\examples{
+#See an example of using `dfr_aedd` at this
+#https://github.com/cefet-rj-dal/heimdall/blob/main/multivariate/dfr_aedd.md
 }

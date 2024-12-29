@@ -1,5 +1,6 @@
 #'@title Norm
-#'@description Ancestor class for normalizarion techniques
+#'@description Ancestor class for normalization techniques
+#'@param norm_class Normalizer class
 #'@return Norm object
 #'@examples
 #'# See ?norm for an example of DDM drift detector
@@ -17,6 +18,7 @@ norm <- function(norm_class){
 
 #'@title Memory Normalizer
 #'@description Normalizer that has own memory
+#'@param norm_class Normalizer class
 #'@return Norm object
 #'@examples
 #'# See ?nrm_mimax for an example of Memory Normalizer

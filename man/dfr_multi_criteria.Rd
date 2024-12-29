@@ -6,6 +6,13 @@
 \usage{
 dfr_multi_criteria(drifter_list, combination = "or", fuzzy_window = 10)
 }
+\arguments{
+\item{drifter_list}{List of drifters to combine.}
+
+\item{combination}{How the drifters will be combined. Possible values: 'fuzzy', 'or', 'and'.}
+
+\item{fuzzy_window}{Sets the fuzzy window size. Only if combination = 'fuzzy'.}
+}
 \value{
 Drifter object
 }

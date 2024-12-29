@@ -6,11 +6,14 @@
 \usage{
 norm(norm_class)
 }
+\arguments{
+\item{norm_class}{Normalizer class}
+}
 \value{
 Norm object
 }
 \description{
-Ancestor class for normalizarion techniques
+Ancestor class for normalization techniques
 }
 \examples{
 # See ?norm for an example of DDM drift detector

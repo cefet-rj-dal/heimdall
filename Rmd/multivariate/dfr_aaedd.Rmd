@@ -1,0 +1,58 @@
+# Autoencoder Multivariate Drifter Example
+
+This example uses a distribuition-based drift detector with a synthetic variable.
+
+```{r}
+library(daltoolbox)
+library(heimdall)
+```
+
+## Load Data
+
+```{r}
+data(st_drift_examples)
+serie <- st_drift_examples$dataset1
+```
+
+### Plot Serie
+
+```{r}
+plot(x=serie[['i']], y=serie[['serie1']])
+plot(x=serie[['i']], y=serie[['serie2']])
+```
+
+### Instantiate Model
+
+```{r}
+model <- dfr_aedd(encoding_size=1, window_size=100, criteria='kolmogorov-smirnov')
+```
+
+## Detection
+
+```{r}
+detection <- NULL
+output <- list(obj=model, drift=FALSE)
+for (i in 1:length(data$prediction)){
+ output <- update_state(output$obj, data$prediction[i])
+ if (output$drift){
+   type <- 'drift'
+   output$obj <- reset_state(output$obj)
+ }else{
+   type <- ''
+ }
+ detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+}
+```
+
+## Plot Drifts
+
+```{r}
+detection[detection$type == 'drift',]
+```
+
+```{r}
+plot(x=serie[['i']], y=serie[['serie2']])
+for(drift_index in detection[detection$type == 'drift', 'idx']){
+  abline(v=drift_index, col='red', lty=2)
+}
+```

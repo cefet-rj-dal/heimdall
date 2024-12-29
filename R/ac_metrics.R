@@ -98,6 +98,7 @@ mt_rocauc <- function() {
   return(obj)
 }
 
+#'@import pROC
 #'@export
 evaluate.mt_rocauc <- function(obj, y_pred, y_true, ...){
   y_pred[is.na(y_pred)] <- FALSE
@@ -105,7 +106,7 @@ evaluate.mt_rocauc <- function(obj, y_pred, y_true, ...){
   if((sum(as.numeric(unlist(y_pred))-1) == 0) | (sum(as.numeric(unlist(y_true))-1) == 0)){
     return(0)
   }else{
-    rocauc <- auc(roc(y_true, y_pred, levels=levels(y_true), direction='<'))
+    rocauc <- pROC::auc(pROC::roc(y_true, y_pred, levels=levels(y_true), direction='<'))
     
     return(rocauc)
   }

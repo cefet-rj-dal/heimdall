@@ -22,7 +22,8 @@ Imports:
   caret,
   daltoolbox,
   ggplot2,
-  reticulate
+  reticulate,
+  pROC
 Config/reticulate:
   list(
     packages = list(

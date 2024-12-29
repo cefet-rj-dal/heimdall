@@ -2,8 +2,11 @@
 #'@description Ancestor class for drift adaptive models
 #'@param model The algorithm object to be used for predictions
 #'@param drift_method The algorithm object to detect drifts
+#'@param norm_class Class used to perform normalization
+#'@param warmup_size Number of rows used to warmup the drifter. No drift will be detected during this phase
 #'@param th The threshold to be used with classification algorithms
 #'@param target_uni_drifter Passes the prediction target to the drifts as the target feat when the drifter is univariate and dist_based.
+#'@param incremental_memory If true, the model will retrain with all available data whenever the fit is called. If false, it only retrains when a drift is detected.
 #'@param verbose if TRUE shows drift messages
 #'@return Stealthy object
 #'@examples
@@ -12,7 +15,7 @@
 #'@import stats
 #'@importFrom caret dummyVars
 #'@export
-stealthy <- function(model, drift_method, norm_class=fixed_zscore(), warmup_size=100, th=0.5, target_uni_drifter=FALSE, incremental_memory=TRUE, verbose=FALSE){
+stealthy <- function(model, drift_method, norm_class=daltoolbox::fixed_zscore(), warmup_size=100, th=0.5, target_uni_drifter=FALSE, incremental_memory=TRUE, verbose=FALSE){
   obj <- dal_base()
   obj$dummy <- NULL
   obj$model <- model

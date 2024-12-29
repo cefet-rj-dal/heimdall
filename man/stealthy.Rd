@@ -7,7 +7,7 @@
 stealthy(
   model,
   drift_method,
-  norm_class = zscore(),
+  norm_class = daltoolbox::fixed_zscore(),
   warmup_size = 100,
   th = 0.5,
   target_uni_drifter = FALSE,
@@ -20,9 +20,15 @@ stealthy(
 
 \item{drift_method}{The algorithm object to detect drifts}
 
+\item{norm_class}{Class used to perform normalization}
+
+\item{warmup_size}{Number of rows used to warmup the drifter. No drift will be detected during this phase}
+
 \item{th}{The threshold to be used with classification algorithms}
 
 \item{target_uni_drifter}{Passes the prediction target to the drifts as the target feat when the drifter is univariate and dist_based.}
+
+\item{incremental_memory}{If true, the model will retrain with all available data whenever the fit is called. If false, it only retrains when a drift is detected.}
 
 \item{verbose}{if TRUE shows drift messages}
 }

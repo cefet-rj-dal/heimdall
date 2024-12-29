@@ -6,6 +6,9 @@
 \usage{
 nrm_memory(norm_class = minmax())
 }
+\arguments{
+\item{norm_class}{Normalizer class}
+}
 \value{
 Norm object
 }
