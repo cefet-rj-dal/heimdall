@@ -5,6 +5,9 @@ This example uses an distribuition-based drift detector with a synthetic variabl
 ```{r}
 library(daltoolbox)
 library(heimdall)
+seed <- 1
+set.seed(seed)
+py_set_seed(seed, disable_hash_randomization = TRUE)
 ```
 
 ## Load Data

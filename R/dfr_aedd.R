@@ -1,7 +1,6 @@
 #'@title Autoencoder-Based Drift Detection method
 #'@description Autoencoder-Based method for concept drift detection <doi:0.1109/ICDMW58026.2022.00109>.
 #'@param encoding_size Encoding Size
-#'@param features Features to be monitored
 #'@param ae_class Autoencoder Class
 #'@param batch_size Batch Size for batch learning
 #'@param num_epochs Number of Epochs for training
@@ -15,8 +14,8 @@
 #'#See an example of using `dfr_aedd` at this
 #'#https://github.com/cefet-rj-dal/heimdall/blob/main/multivariate/dfr_aedd.md
 #'@export
-dfr_aedd <- function(encoding_size, features, ae_class=autoenc_encode_decode, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney') {
-  obj <- mv_dist_based(features=features)
+dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney') {
+  obj <- mv_dist_based()
   
   obj$ae_class <- ae_class
   
@@ -30,7 +29,7 @@ dfr_aedd <- function(encoding_size, features, ae_class=autoenc_encode_decode, ba
   state$window_size <- window_size
   state$monitoring_step <- monitoring_step
   state$criteria <- criteria
-  state$window <- c()
+  state$data <- c()
   
   state$autoencoder <- NULL
   state$is_fitted <- FALSE
@@ -45,16 +44,18 @@ dfr_aedd <- function(encoding_size, features, ae_class=autoenc_encode_decode, ba
 update_state.dfr_aedd <- function(obj, value){
   state <- obj$state
   
-  if(!all(names(value) %in% names(state$data))){
-    warning('dfr_aedd::update_state: Some categories present in most recent data are not on the history dataset. Creating zero columns.')
-    for (feat in names(value)){
-      if (!(feat %in% names(state$data))){
-        value[feat] <- NULL
+  if(!is.null(state$data)){
+    if(!all(names(value) %in% names(state$data))){
+      warning('dfr_aedd::update_state: Some categories present in most recent data are not on the history dataset. Creating zero columns.')
+      for (feat in names(value)){
+        if (!(feat %in% names(state$data))){
+          value[feat] <- NULL
+        }
       }
     }
   }
   
-  state$data <- rbind(state$data, value)
+  state$data <- rbind(state$data, as.data.frame(value))
   
   state$n <- state$n + 1
   if (state$n >= state$monitoring_step){
@@ -74,9 +75,17 @@ update_state.dfr_aedd <- function(obj, value){
     history_window <- tail(state$data, state$window_size/2)
     recent_window <- head(state$data, state$window_size/2)
     
-    if (!state$is_fitted){
-      state$autoencoder <- fit(state$autoencoder, value)
-      state$is_fitted <- TRUE
+    
+    if(!state$is_fitted){
+      if(is.null(ncol(state$data))){
+        input_size <- 1
+      }else{
+        input_size <- ncol(state$data)
+      }
+      
+
+      state$autoencoder <- obj$ae_class(input_size=input_size, encoding_size=state$encoding_size, batch_size=state$batch_size, num_epochs=state$num_epochs, learning_rate=state$learning_rate)
+      state$autoencoder <- fit(state$autoencoder, history_window)
     }
     
     state$drifted <- FALSE
@@ -137,10 +146,10 @@ fit.dfr_aedd <- function(obj, data, ...){
   state <- obj$state
   
   if(!state$is_fitted){
-    if(is.null(ncol(data))){
+    if(is.null(ncol(state$data))){
       input_size <- 1
     }else{
-      input_size <- ncol(data)
+      input_size <- ncol(state$data)
     }
 
     state$autoencoder <- obj$ae_class(input_size=input_size, encoding_size=state$encoding_size, batch_size=state$batch_size, num_epochs=state$num_epochs, learning_rate=state$learning_rate)
@@ -184,7 +193,6 @@ reset_state.dfr_aedd <- function(obj) {
   obj$drifted <- FALSE
   obj$state <- dfr_aedd(
     encoding_size=obj$state$encoding_size, 
-    features=obj$features,
     ae_class=obj$ae_class,
     batch_size=obj$state$batch_size, 
     num_epochs=obj$state$num_epochs, 

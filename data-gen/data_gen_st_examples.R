@@ -9,22 +9,53 @@ gen_data <- function() {
     require(ggplot2)
     set.seed(1)
     n <- 500  # Number of time points
-    example_type='multivariate'
-    # Multivariate Example
+    example_type='multivariate_real_drift'
+    # Multivariate Real Drift Example
     data <- as.data.frame(rnorm(n))
     names(data) <- c('serie1')
     data['serie2'] <- rnorm(n)
     
-    data$drift <- ((data$serie1 > 0) & (data$serie2 > 0)) | ( (data$serie1 < 0) & (data$serie2 < 0))
-    
-    tsantes <- data[data$drift==FALSE,]
+    tsantes <- data[1:(n/2),]
     posdrift <- nrow(tsantes) + 1
-    tsdepois <- data[data$drift==TRUE,]
+    tsdepois <- data[posdrift:nrow(data),]
+    
+    tsantes$target <- ((tsantes$serie1 > 0) & (tsantes$serie2 > 0)) | ( (tsantes$serie1 < 0) & (tsantes$serie2 < 0))
+    tsdepois$target <- ((tsdepois$serie1 < 0) & (tsdepois$serie2 > 0)) | ( (tsdepois$serie1 > 0) & (tsdepois$serie2 < 0))
     
     s_data <- rbind(tsantes, tsdepois)
     s_data$i <- 1:nrow(s_data)
     
+    s_data$drift <- 0
+    s_data$drift[n/2] <- 1
+    
     st_drift_examples$dataset1 <- s_data
+  }
+  
+  { # dataset 2
+    
+    require(ggplot2)
+    set.seed(1)
+    n <- 500  # Number of time points
+    example_type='multivariate_virtual_drift'
+    # Multivariate Virtual Drift Example
+    data <- as.data.frame(rnorm(n))
+    names(data) <- c('serie1')
+    data['serie2'] <- rnorm(n)
+    
+    tsantes <- data[1:(n/2),]
+    posdrift <- nrow(tsantes) + 1
+    tsdepois <- data[posdrift:nrow(data),]
+    
+    tsdepois['serie1'] <- tsdepois['serie1'] + (3*sd(tsantes$serie1))
+    tsdepois['serie2'] <- tsdepois['serie2'] + (3*sd(tsantes$serie2))
+    
+    s_data <- rbind(tsantes, tsdepois)
+    s_data$i <- 1:nrow(s_data)
+    
+    s_data$drift <- 0
+    s_data$drift[n/2] <- 1
+    
+    st_drift_examples$dataset2 <- s_data
   }
   
   {

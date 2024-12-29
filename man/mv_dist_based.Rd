@@ -4,10 +4,7 @@
 \alias{mv_dist_based}
 \title{Multivariate Distribution Based Drifter sub-class}
 \usage{
-mv_dist_based(features)
-}
-\arguments{
-\item{features}{Features to be monitored.}
+mv_dist_based()
 }
 \value{
 Drifter object

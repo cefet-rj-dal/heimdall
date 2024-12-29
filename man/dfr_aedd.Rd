@@ -6,7 +6,6 @@
 \usage{
 dfr_aedd(
   encoding_size,
-  features,
   ae_class = autoenc_encode_decode,
   batch_size = 32,
   num_epochs = 1000,
@@ -18,8 +17,6 @@ dfr_aedd(
 }
 \arguments{
 \item{encoding_size}{Encoding Size}
-
-\item{features}{Features to be monitored}
 
 \item{ae_class}{Autoencoder Class}
 

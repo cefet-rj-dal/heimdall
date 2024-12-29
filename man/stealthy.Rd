@@ -7,6 +7,7 @@
 stealthy(
   model,
   drift_method,
+  monitored_features = NULL,
   norm_class = daltoolbox::fixed_zscore(),
   warmup_size = 100,
   th = 0.5,
@@ -19,6 +20,8 @@ stealthy(
 \item{model}{The algorithm object to be used for predictions}
 
 \item{drift_method}{The algorithm object to detect drifts}
+
+\item{monitored_features}{List of features that will be monitored by the drifter}
 
 \item{norm_class}{Class used to perform normalization}
 

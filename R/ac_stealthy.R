@@ -2,6 +2,7 @@
 #'@description Ancestor class for drift adaptive models
 #'@param model The algorithm object to be used for predictions
 #'@param drift_method The algorithm object to detect drifts
+#'@param monitored_features List of features that will be monitored by the drifter
 #'@param norm_class Class used to perform normalization
 #'@param warmup_size Number of rows used to warmup the drifter. No drift will be detected during this phase
 #'@param th The threshold to be used with classification algorithms
@@ -15,13 +16,14 @@
 #'@import stats
 #'@importFrom caret dummyVars
 #'@export
-stealthy <- function(model, drift_method, norm_class=daltoolbox::fixed_zscore(), warmup_size=100, th=0.5, target_uni_drifter=FALSE, incremental_memory=TRUE, verbose=FALSE){
+stealthy <- function(model, drift_method, monitored_features=NULL, norm_class=daltoolbox::fixed_zscore(), warmup_size=100, th=0.5, target_uni_drifter=FALSE, incremental_memory=TRUE, verbose=FALSE){
   obj <- dal_base()
   obj$dummy <- NULL
   obj$model <- model
   obj$fitted <- FALSE
   obj$drift_method <- drift_method
   obj$drifted <- FALSE
+  obj$monitored_features <- monitored_features
   obj$x_train <- c()
   obj$y_train <- c()
   obj$th <- th
@@ -42,6 +44,11 @@ update_state.stealthy <- function(obj, value, ...){
 
 #'@export
 fit.stealthy <- function(obj, x, y, ...){
+  if(is.null(obj$monitored_features)){
+    monitored_features <- names(x)
+  }else{
+    monitored_features <- obj$monitored_features
+  }
   # Check Drift
   obj$drifted <- FALSE
   if (obj$fitted){
