@@ -43,7 +43,7 @@ dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size =
 #'@export
 update_state.dfr_aedd <- function(obj, value){
   state <- obj$state
-  
+
   if(!is.null(state$data)){
     if(!all(names(value) %in% names(state$data))){
       warning('dfr_aedd::update_state: Some categories present in most recent data are not on the history dataset. Creating zero columns.')
@@ -56,6 +56,7 @@ update_state.dfr_aedd <- function(obj, value){
   }
   
   state$data <- rbind(state$data, as.data.frame(value))
+  rownames(state$data) <- 1:nrow(state$data)
   
   state$n <- state$n + 1
   if (state$n >= state$monitoring_step){
@@ -145,16 +146,6 @@ update_state.dfr_aedd <- function(obj, value){
 fit.dfr_aedd <- function(obj, data, ...){
   state <- obj$state
   
-  if(!state$is_fitted){
-    if(is.null(ncol(state$data))){
-      input_size <- 1
-    }else{
-      input_size <- ncol(state$data)
-    }
-
-    state$autoencoder <- obj$ae_class(input_size=input_size, encoding_size=state$encoding_size, batch_size=state$batch_size, num_epochs=state$num_epochs, learning_rate=state$learning_rate)
-  }
-  
   if((!is.null(state$data))){
     if(nrow(state$data) & (!is.null(ncol(state$data)))){
       if(!state$is_fitted){
@@ -179,10 +170,12 @@ fit.dfr_aedd <- function(obj, data, ...){
   }
   
   obj$state <- state
-  
+
   output <- update_state(obj, data[1,])
-  for (i in 2:nrow(data)){
-    output <- update_state(output$obj, data[i,])
+  if(nrow(data) >= 2){
+    for (i in 2:nrow(data)){
+      output <- update_state(output$obj, data[i,])
+    }
   }
   
   return(output$obj)
