@@ -14,7 +14,7 @@
 #'#See an example of using `dfr_aedd` at this
 #'#https://github.com/cefet-rj-dal/heimdall/blob/main/multivariate/dfr_aedd.md
 #'@export
-dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney') {
+dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney', reporting=FALSE) {
   obj <- mv_dist_based()
   
   obj$ae_class <- ae_class
@@ -29,6 +29,7 @@ dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size =
   state$window_size <- window_size
   state$monitoring_step <- monitoring_step
   state$criteria <- criteria
+  state$reporting <- reporting
   state$data <- c()
   
   state$autoencoder <- NULL
@@ -83,10 +84,12 @@ update_state.dfr_aedd <- function(obj, value){
       }else{
         input_size <- ncol(state$data)
       }
-      
+      print('Fitting Autoencoder')
 
       state$autoencoder <- obj$ae_class(input_size=input_size, encoding_size=state$encoding_size, batch_size=state$batch_size, num_epochs=state$num_epochs, learning_rate=state$learning_rate)
       state$autoencoder <- fit(state$autoencoder, history_window)
+      
+      state$is_fitted <- TRUE
     }
     
     state$drifted <- FALSE
@@ -95,6 +98,11 @@ update_state.dfr_aedd <- function(obj, value){
     history_rec_error <- (history_window_proj - history_window)
     recent_window_proj <- transform(state$autoencoder, recent_window)
     recent_rec_error <- (recent_window_proj - recent_window)
+    
+    if(state$reporting){
+        obj$history_window_proj <- history_window_proj
+        obj$recent_window_proj <- recent_window_proj
+      }
     
     if (state$criteria == 'mann_whitney'){
       mw_results <- wilcox.test(unlist(as.vector(t(history_rec_error))), unlist(as.vector(t(recent_rec_error))))
@@ -109,6 +117,22 @@ update_state.dfr_aedd <- function(obj, value){
       ks_results <- ks.test(unlist(as.vector(t(history_rec_error))), unlist(as.vector(t(recent_rec_error))))
       
       if (ks_results['p.value'] < 0.01){
+        state$drifted <- TRUE
+      }
+      
+    }
+    
+    if (state$criteria == 'levene'){
+      history_window_proj <- as.data.frame(history_window_proj)
+      recent_window_proj <- as.data.frame(recent_window_proj)
+      history_window_proj['window'] <- 'History'
+      recent_window_proj['window'] <- 'Recent'
+      levene_df <- as.data.frame(rbind(history_window_proj, recent_window_proj))
+      levene_df['window'] <- factor(levene_df[['window']])
+      
+      levene_results <- leveneTest(V1 ~ window, data=as.data.frame(levene_df))
+      
+      if (levene_results['group', 'Pr(>F)'] < 0.05){
         state$drifted <- TRUE
       }
       
@@ -136,6 +160,7 @@ update_state.dfr_aedd <- function(obj, value){
     
     if(state$drifted){
       obj$drifted <- TRUE
+      state$is_fitted <- FALSE
     }
   }
   obj$state <- state
@@ -145,6 +170,10 @@ update_state.dfr_aedd <- function(obj, value){
 #'@export
 fit.dfr_aedd <- function(obj, data, ...){
   state <- obj$state
+  if(state$reporting){
+      obj$hist_proj <- c()
+      obj$recent_proj <- c()
+  }
   
   if((!is.null(state$data))){
     if(nrow(state$data) & (!is.null(ncol(state$data)))){
@@ -175,8 +204,14 @@ fit.dfr_aedd <- function(obj, data, ...){
   if(nrow(data) >= 2){
     for (i in 2:nrow(data)){
       output <- update_state(output$obj, data[i,])
+      if(state$reporting){
+        output$obj$hist_proj <- rbind(output$obj$hist_proj, output$obj$history_window_proj)
+        output$obj$recent_proj <- rbind(output$obj$recent_proj, output$obj$recent_window_proj)
+      }
     }
   }
+  
+  
   
   return(output$obj)
 }
