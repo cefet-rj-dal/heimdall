@@ -12,7 +12,8 @@ dfr_aedd(
   learning_rate = 0.001,
   window_size = 100,
   monitoring_step = 1700,
-  criteria = "mann_whitney"
+  criteria = "mann_whitney",
+  reporting = FALSE
 )
 }
 \arguments{

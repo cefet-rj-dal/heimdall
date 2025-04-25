@@ -13,7 +13,8 @@ stealthy(
   th = 0.5,
   target_uni_drifter = FALSE,
   incremental_memory = TRUE,
-  verbose = FALSE
+  verbose = FALSE,
+  reporting = FALSE
 )
 }
 \arguments{

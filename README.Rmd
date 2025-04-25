@@ -13,48 +13,52 @@ knitr::opts_chunk$set(
 )
 ```
 
-# <img src='https://raw.githubusercontent.com/cefet-rj-dal/heimdall/master/inst/logo.png' align='centre' height='150' width='129'/> heimdall
+# <img src='https://raw.githubusercontent.com/cefet-rj-dal/heimdall/master/inst/logo.png' alt='Logo do pacote heimdall' align='centre' height='150' width='129'/> Heimdall
 
 <!-- badges: start -->
-![GitHub Repo stars](https://img.shields.io/github/stars/cefet-rj-dal/heimdall?logo=Github)
-![GitHub Repo stars](https://cranlogs.r-pkg.org/badges/heimdall)
+![GitHub Stars](https://img.shields.io/github/stars/cefet-rj-dal/heimdall?logo=Github)
+![CRAN Downloads](https://cranlogs.r-pkg.org/badges/heimdall)
 <!-- badges: end -->
 
-## Heimdall
+**Heimdall** é uma ferramenta projetada para **detecção de drift (mudança) de conceito** em fluxos de dados contínuos. Ao analisar dados de séries temporais, é possível observar mudanças significativas na distribuição dos dados ou na acurácia dos modelos preditivos durante o processo de previsão. Essas mudanças são conhecidas como **concept drift**.
 
-By analyzing streaming datasets, it is possible to observe significant changes in the data distribution or models' accuracy during their prediction (concept drift). The goal of Heimdall is to measure when concept drift occurs. The package makes available several state-of-the-art methods. It also tackles how to adapt models in a nonstationary context. 
+O objetivo do pacote **Heimdall** é medir quando o drift de conceito ocorre, permitindo a detecção e adaptação de modelos em contextos não estacionários. O pacote oferece diversos métodos de ponta para identificar e lidar com o drift de conceito, além de técnicas para **adaptação de modelos** de forma eficiente.
 
-## Installation
+---
 
-The latest version of heimdall at CRAN is available at:
-<https://CRAN.R-project.org/package=heimdall>
+## Instalação
 
-You can install the stable version of heimdall from CRAN with:
+A versão mais recente de **Heimdall** está disponível no CRAN:
 
-``` r
+```r
 install.packages("heimdall")
 ```
 
-You can install the development version of heimdall from GitHub [https://github.com/cefet-rj-dal/heimdall](https://github.com/cefet-rj-dal/heimdall) with:
+Você pode instalar a versão de desenvolvimento diretamente do GitHub:
 
-``` r
+```r
 # install.packages("devtools")
 library(devtools)
-devtools::install_github("cefet-rj-dal/heimdall", force=TRUE, upgrade="never")
+devtools::install_github("cefet-rj-dal/heimdall", force = TRUE, upgrade = "never")
 ```
 
-## Examples
+---
 
-Examples of heimdall are organized according to drift detection.
+## Exemplos
 
-General: https://github.com/cefet-rj-dal/heimdall/tree/main/examples
+Os exemplos de uso do **Heimdall** estão organizados conforme a **detecção de drift**:
 
+- [Exemplos gerais](https://github.com/cefet-rj-dal/heimdall/tree/main/examples)
 
 ```{r example}
 library(heimdall)
-## basic example code
+
 ```
 
-## Bugs and new features request
-<https://github.com/cefet-rj-dal/heimdall/issues>
+---
 
+## Bugs e solicitações de novas funcionalidades
+
+Se você encontrar algum problema ou desejar sugerir novas funcionalidades, por favor, registre uma issue:
+
+- [GitHub Issues](https://github.com/cefet-rj-dal/heimdall/issues)
