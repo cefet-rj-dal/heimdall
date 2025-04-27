@@ -9,6 +9,7 @@
 #'@param target_uni_drifter Passes the prediction target to the drifts as the target feat when the drifter is univariate and dist_based.
 #'@param incremental_memory If true, the model will retrain with all available data whenever the fit is called. If false, it only retrains when a drift is detected.
 #'@param verbose if TRUE shows drift messages
+#'@param reporting If TRUE, some data are returned as norm_x_oh, drift_input, hist_proj, and recent_proj.
 #'@return Stealthy object
 #'@examples
 #'# See ?dd_ddm for an example of DDM drift detector

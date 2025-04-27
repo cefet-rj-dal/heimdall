@@ -13,7 +13,8 @@ stealthy(
   th = 0.5,
   target_uni_drifter = FALSE,
   incremental_memory = TRUE,
-  verbose = FALSE
+  verbose = FALSE,
+  reporting = FALSE
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ stealthy(
 \item{incremental_memory}{If true, the model will retrain with all available data whenever the fit is called. If false, it only retrains when a drift is detected.}
 
 \item{verbose}{if TRUE shows drift messages}
+
+\item{reporting}{If TRUE, some data are returned as norm_x_oh, drift_input, hist_proj, and recent_proj.}
 }
 \value{
 Stealthy object

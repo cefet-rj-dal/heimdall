@@ -12,7 +12,9 @@ dfr_aedd(
   learning_rate = 0.001,
   window_size = 100,
   monitoring_step = 1700,
-  criteria = "mann_whitney"
+  criteria = "mann_whitney",
+  alpha = 0.01,
+  reporting = FALSE
 )
 }
 \arguments{
@@ -30,7 +32,11 @@ dfr_aedd(
 
 \item{monitoring_step}{The number of rows that the drifter waits to be is updated}
 
-\item{criteria}{The method to be used to check if there is a drift. May be mann_whitney (default) or kolmogorov_smirnov}
+\item{criteria}{The method to be used to check if there is a drift. May be mann_whitney (default), kolmogorov_smirnov, levene}
+
+\item{alpha}{The significance threshold for the statistical test used in criteria}
+
+\item{reporting}{If TRUE, some data are returned as norm_x_oh, drift_input, hist_proj, and recent_proj.}
 }
 \value{
 \code{dfr_aedd} object

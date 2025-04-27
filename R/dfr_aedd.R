@@ -7,14 +7,16 @@
 #'@param learning_rate Learning Rate
 #'@param window_size Size of the most recent data to be used
 #'@param monitoring_step The number of rows that the drifter waits to be is updated
-#'@param criteria The method to be used to check if there is a drift. May be mann_whitney (default) or kolmogorov_smirnov
+#'@param criteria The method to be used to check if there is a drift. May be mann_whitney (default), kolmogorov_smirnov, levene
+#'@param alpha The significance threshold for the statistical test used in criteria
+#'@param reporting If TRUE, some data are returned as norm_x_oh, drift_input, hist_proj, and recent_proj.
 #AEDD detection: Daniil Kaminskyi, Bin Li and Emmanuel Müller. “Reconstruction-based unsupervised drift detection over multivariate streaming data.” 2022 IEEE International Conference on Data Mining Workshops (ICDMW).
 #'@return `dfr_aedd` object
 #'@examples
 #'#See an example of using `dfr_aedd` at this
 #'#https://github.com/cefet-rj-dal/heimdall/blob/main/multivariate/dfr_aedd.md
 #'@export
-dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney', reporting=FALSE) {
+dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney', alpha=0.01, reporting=FALSE) {
   obj <- mv_dist_based()
   
   obj$ae_class <- ae_class
@@ -130,7 +132,7 @@ update_state.dfr_aedd <- function(obj, value){
       levene_df <- as.data.frame(rbind(history_window_proj, recent_window_proj))
       levene_df['window'] <- factor(levene_df[['window']])
       
-      levene_results <- leveneTest(V1 ~ window, data=as.data.frame(levene_df))
+      levene_results <- car::leveneTest(V1 ~ window, data=as.data.frame(levene_df))
       
       if (levene_results['group', 'Pr(>F)'] < 0.05){
         state$drifted <- TRUE
