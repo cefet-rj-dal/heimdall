@@ -1,0 +1,81 @@
+# MCDD Drifter Example
+
+This example uses a distribuition-based drift detector with a synthetic variable.
+
+
+``` r
+library(daltoolbox)
+library(heimdall)
+seed <- 1
+set.seed(seed)
+```
+
+## Load Data
+
+
+``` r
+data(st_drift_examples)
+serie <- st_drift_examples$univariate
+```
+
+### Plot Serie
+
+
+``` r
+plot(x=rownames(serie), y=serie[['serie']])
+```
+
+![plot of chunk unnamed-chunk-3](fig/dfr_mcdd/unnamed-chunk-3-1.png)
+
+### Instantiate Model
+
+
+``` r
+model <- dfr_mcdd(target_feat='serie', window_size=100)
+```
+
+## Detection
+
+
+``` r
+detection <- NULL
+output <- list(obj=model, drift=FALSE)
+for (i in 1:length(data$prediction)){
+ output <- update_state(output$obj, data$prediction[i])
+ if (output$drift){
+   type <- 'drift'
+   output$obj <- reset_state(output$obj)
+ }else{
+   type <- ''
+ }
+ detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+}
+```
+
+```
+## Error in data$prediction: object of type 'closure' is not subsettable
+```
+
+## Plot Drifts
+
+
+``` r
+detection[detection$type == 'drift',]
+```
+
+```
+## NULL
+```
+
+
+``` r
+plot(x=rownames(serie), y=serie[['serie']])
+```
+
+![plot of chunk unnamed-chunk-7](fig/dfr_mcdd/unnamed-chunk-7-1.png)
+
+``` r
+for(drift_index in detection[detection$type == 'drift', 'idx']){
+  abline(v=drift_index, col='red', lty=2)
+}
+```
