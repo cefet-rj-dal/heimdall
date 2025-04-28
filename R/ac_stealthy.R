@@ -17,7 +17,7 @@
 #'@import stats
 #'@importFrom caret dummyVars
 #'@export
-stealthy <- function(model, drift_method, monitored_features=NULL, norm_class=daltoolbox::fixed_zscore(), warmup_size=100, th=0.5, target_uni_drifter=FALSE, incremental_memory=TRUE, verbose=FALSE, reporting=FALSE){
+stealthy <- function(model, drift_method, monitored_features=NULL, norm_class=daltoolbox::zscore(), warmup_size=100, th=0.5, target_uni_drifter=FALSE, incremental_memory=TRUE, verbose=FALSE, reporting=FALSE){
   obj <- dal_base()
   obj$dummy <- NULL
   obj$model <- model

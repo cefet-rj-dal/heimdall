@@ -98,7 +98,7 @@ mt_rocauc <- function() {
   return(obj)
 }
 
-#'@import pROC
+#'@importFrom pROC auc
 #'@export
 evaluate.mt_rocauc <- function(obj, y_pred, y_true, ...){
   y_pred[is.na(y_pred)] <- FALSE
