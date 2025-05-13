@@ -20,21 +20,21 @@ knitr::opts_chunk$set(
 ![CRAN Downloads](https://cranlogs.r-pkg.org/badges/heimdall)
 <!-- badges: end -->
 
-**Heimdall** é uma ferramenta projetada para **detecção de drift (mudança) de conceito** em fluxos de dados contínuos. Ao analisar dados de séries temporais, é possível observar mudanças significativas na distribuição dos dados ou na acurácia dos modelos preditivos durante o processo de previsão. Essas mudanças são conhecidas como **concept drift**.
+Heimdall is a tool designed for concept drift detection in continuous data streams. When analyzing time series data, it is possible to observe significant changes in the data distribution or in the accuracy of predictive models during the forecasting process. These changes are known as concept drift.
 
-O objetivo do pacote **Heimdall** é medir quando o drift de conceito ocorre, permitindo a detecção e adaptação de modelos em contextos não estacionários. O pacote oferece diversos métodos de ponta para identificar e lidar com o drift de conceito, além de técnicas para **adaptação de modelos** de forma eficiente.
+The goal of the Heimdall package is to detect when concept drift occurs, enabling the detection and adaptation of models in non-stationary contexts. The package offers several state-of-the-art methods to identify and handle concept drift, as well as techniques for efficient model adaptation.
 
 ---
 
-## Instalação
+## Installation
 
-A versão mais recente de **Heimdall** está disponível no CRAN:
+The latest version of Heimdall is available on CRAN:
 
 ```r
 install.packages("heimdall")
 ```
 
-Você pode instalar a versão de desenvolvimento diretamente do GitHub:
+You can install the development version directly from GitHub:
 
 ```r
 # install.packages("devtools")
@@ -46,9 +46,9 @@ devtools::install_github("cefet-rj-dal/heimdall", force = TRUE, upgrade = "never
 
 ## Exemplos
 
-Os exemplos de uso do **Heimdall** estão organizados conforme a **detecção de drift**:
+Heimdall usage examples are organized according to drift detection:
 
-- [Exemplos gerais](https://github.com/cefet-rj-dal/heimdall/tree/main/examples)
+- [Examples](https://github.com/cefet-rj-dal/heimdall/tree/main/examples)
 
 ```{r example}
 library(heimdall)
@@ -57,8 +57,8 @@ library(heimdall)
 
 ---
 
-## Bugs e solicitações de novas funcionalidades
+## Bugs and Feature Requests
 
-Se você encontrar algum problema ou desejar sugerir novas funcionalidades, por favor, registre uma issue:
+If you encounter any issues or would like to suggest new features, please open an issue:
 
 - [GitHub Issues](https://github.com/cefet-rj-dal/heimdall/issues)
