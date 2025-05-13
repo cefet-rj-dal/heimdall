@@ -15,14 +15,16 @@ set.seed(seed)
 
 ``` r
 data(st_drift_examples)
-serie <- st_drift_examples$univariate
+data <- st_drift_examples$univariate
+data$event <- NULL
+data$prediction <- st_drift_examples$univariate$serie > 4
 ```
 
 ### Plot Serie
 
 
 ``` r
-plot(x=rownames(serie), y=serie[['serie']])
+plot(x=1:length(data$serie), y=data$serie)
 ```
 
 ![plot of chunk unnamed-chunk-3](fig/dfr_kswin/unnamed-chunk-3-1.png)
@@ -52,10 +54,6 @@ for (i in 1:length(data$prediction)){
 }
 ```
 
-```
-## Error in data$prediction: object of type 'closure' is not subsettable
-```
-
 ## Plot Drifts
 
 
@@ -64,18 +62,17 @@ detection[detection$type == 'drift',]
 ```
 
 ```
-## NULL
+##     idx event  type
+## 222 222  TRUE drift
+## 384 384  TRUE drift
 ```
 
 
 ``` r
-plot(x=rownames(serie), y=serie[['serie']])
-```
-
-![plot of chunk unnamed-chunk-7](fig/dfr_kswin/unnamed-chunk-7-1.png)
-
-``` r
+plot(x=1:length(data$serie), y=data$serie)
 for(drift_index in detection[detection$type == 'drift', 'idx']){
   abline(v=drift_index, col='red', lty=2)
 }
 ```
+
+![plot of chunk unnamed-chunk-7](fig/dfr_kswin/unnamed-chunk-7-1.png)

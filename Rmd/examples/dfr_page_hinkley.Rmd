@@ -13,13 +13,15 @@ set.seed(seed)
 
 ```{r}
 data(st_drift_examples)
-serie <- st_drift_examples$univariate
+data <- st_drift_examples$univariate
+data$event <- NULL
+data$prediction <- st_drift_examples$univariate$serie > 4
 ```
 
 ### Plot Serie
 
 ```{r}
-plot(x=rownames(serie), y=serie[['serie']])
+plot(x=1:length(data$serie), y=data$serie)
 ```
 
 ### Instantiate Model
@@ -52,7 +54,7 @@ detection[detection$type == 'drift',]
 ```
 
 ```{r}
-plot(x=rownames(serie), y=serie[['serie']])
+plot(x=1:length(data$serie), y=data$serie)
 for(drift_index in detection[detection$type == 'drift', 'idx']){
   abline(v=drift_index, col='red', lty=2)
 }
