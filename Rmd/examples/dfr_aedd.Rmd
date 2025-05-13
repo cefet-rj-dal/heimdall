@@ -4,6 +4,7 @@ This example uses a distribuition-based drift detector with a synthetic variable
 
 ```{r}
 library(daltoolbox)
+library(daltoolboxdp)
 library(heimdall)
 seed<-1
 set.seed(seed)
@@ -27,7 +28,7 @@ plot(x=serie[['i']], y=serie[['serie2']])
 ### Instantiate Model
 
 ```{r}
-model <- dfr_aedd(encoding_size=1, ae_class=autoenc_encode_decode, batch_size=64, monitoring_step=10, window_size=256)
+model <- dfr_aedd(encoding_size=1, ae_class=autoenc_ed, batch_size=64, monitoring_step=10, window_size=256)
 monitored_features <- c('serie1', 'serie2')
 ```
 

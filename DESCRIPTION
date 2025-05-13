@@ -1,15 +1,17 @@
 Package: heimdall
 Title: Drift Adaptable Models
-Version: 1.0.737
+Version: 1.2.707
 Authors@R: 
   c(
     person(given = "Lucas", family = "Tavares", role = c("aut"), email = "lucas.giusti@eic.cefet-rj.br"),
     person(given = "Leonardo", family = "Carvalho", role = c("aut"), email = "lm.carvalho@petrobras.com.br"),
-    person(given = "Diego", family = "Carvalho", role = c("aut"), email = "d.carvalho@ieee.org"),
-    person(given = "Esther", family = "Pacitti", role = c("aut"), email = "Esther.Pacitti@lirmm.fr"),
-    person(given = "Fabio", family = "Porto", role = c("aut"), email = "fporto@lncc.br"),
-    person(given = "Eduardo", family = "Ogasawara", role = c("aut", "ths", "cre"), email = "eogasawara@ieee.org", comment = c(ORCID = "0000-0002-0466-0626")),
-    person(given = "Federal Center for Technological Education of Rio de Janeiro (CEFET/RJ)", role = "cph")
+    person(given = "Rodrigo", family = "Machado", role = c("aut"), email = "rodrigo.machado@eic.cefet-rj.br"),
+    person(given = "Diego", family = "Carvalho", role = c("ctb"), email = "d.carvalho@ieee.org"),
+    person(given = "Esther", family = "Pacitti", role = c("ctb"), email = "Esther.Pacitti@lirmm.fr"),
+    person(given = "Fabio", family = "Porto", role = c("ctb"), email = "fporto@lncc.br"),
+    person(given = "Eduardo", family = "Ogasawara", role = c("aut", "ths", "cre"), 
+               email = "eogasawara@ieee.org", comment = c(ORCID = "0000-0002-0466-0626")),
+    person(given = "CEFET/RJ", role = "cph")
   )
 Description: 
   In streaming data analysis, it is crucial to detect significant shifts in the data distribution or the accuracy of predictive models over time, a phenomenon known as concept drift. The package aims to identify when concept drift occurs and provide methodologies for adapting models in non-stationary environments. 

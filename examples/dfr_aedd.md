@@ -5,6 +5,7 @@ This example uses a distribuition-based drift detector with a synthetic variable
 
 ``` r
 library(daltoolbox)
+library(daltoolboxdp)
 library(heimdall)
 seed<-1
 set.seed(seed)
@@ -38,14 +39,7 @@ plot(x=serie[['i']], y=serie[['serie2']])
 
 
 ``` r
-model <- dfr_aedd(encoding_size=1, ae_class=autoenc_encode_decode, batch_size=64, monitoring_step=10, window_size=256)
-```
-
-```
-## Error: object 'autoenc_encode_decode' not found
-```
-
-``` r
+model <- dfr_aedd(encoding_size=1, ae_class=autoenc_ed, batch_size=64, monitoring_step=10, window_size=256)
 monitored_features <- c('serie1', 'serie2')
 ```
 
@@ -55,13 +49,6 @@ monitored_features <- c('serie1', 'serie2')
 ``` r
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-```
-
-```
-## Error: object 'model' not found
-```
-
-``` r
 for (i in 1:nrow(serie)){
  output <- update_state(output$obj, serie[i, monitored_features])
  if (output$drift){
@@ -75,7 +62,7 @@ for (i in 1:nrow(serie)){
 ```
 
 ```
-## Error: object 'output' not found
+## [1] "Fitting Autoencoder"
 ```
 
 ## Plot Drifts
@@ -86,7 +73,8 @@ detection[detection$type == 'drift',]
 ```
 
 ```
-## NULL
+## [1] idx   event type 
+## <0 rows> (or 0-length row.names)
 ```
 
 
