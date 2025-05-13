@@ -207,8 +207,8 @@ fit.dfr_aedd <- function(obj, data, ...){
     for (i in 2:nrow(data)){
       output <- update_state(output$obj, data[i,])
       if(state$reporting){
-        output$obj$hist_proj <- rbind(output$obj$hist_proj, output$obj$history_window_proj)
-        output$obj$recent_proj <- rbind(output$obj$recent_proj, output$obj$recent_window_proj)
+        output$obj$hist_proj <- rbind(output$obj$hist_proj, output$obj$history_window_proj[nrow(output$obj$history_window_proj),])
+        output$obj$recent_proj <- rbind(output$obj$recent_proj, output$obj$recent_window_proj[nrow(output$obj$recent_window_proj),])
       }
     }
   }
