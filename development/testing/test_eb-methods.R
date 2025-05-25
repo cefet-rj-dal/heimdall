@@ -1,7 +1,7 @@
 #library('heimdall')
 library(devtools)
 load_all('/home/lucas/heimdall/R/')
-load_all("/home/lucas/daltoolbox/R/")
+# load_all("/home/lucas/daltoolbox/R/")
 #source("/home/lucas/heimdall/R/ac_drifter.R")
 #source("/home/lucas/heimdall/R/ac_metrics.R")
 #source("/home/lucas/heimdall/R/ac_stealthy.R")
@@ -21,7 +21,7 @@ load_all("/home/lucas/daltoolbox/R/")
 #                 type = "source")
 
 
-#library("daltoolbox")
+library("daltoolbox")
 library("dplyr")
 library('ggplot2')
 library('reticulate')
@@ -68,7 +68,7 @@ old_start_batch <- ordered_batches[1]
 # Classification Algorithm
 #dfr_aedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='kolmogorov_smirnov')
 #dfr_caedd(features=features, input_size=length(features), encoding_size=3, window_size=1800, criteria='mann_whitney')
-model <- stealthy(cla_nb(target, slevels), dfr_page_hinkley(), target_uni_drifter=TRUE, verbose=TRUE)
+model <- stealthy(manager(algorithm=cla_nb(target, slevels), model_selector=selector(), model_deleter=selector()), dfr_page_hinkley(), target_uni_drifter=TRUE, verbose=TRUE)
 
 for (batch in ordered_batches[2:length(ordered_batches)]){
   print(batch)
