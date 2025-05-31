@@ -1,37 +1,43 @@
-# ADWIN Drifter Example
-
-This example uses an distribuition-based drift detector with a synthetic variable.
-
 ```{r}
-library(daltoolbox)
-library(heimdall)
-seed <- 1
-set.seed(seed)
-py_set_seed(seed, disable_hash_randomization = TRUE)
+# Installing heimdall
+install.packages("heimdall")
 ```
 
-## Load Data
+```{r}
+# Loading heimdall
+library(daltoolbox)
+library(heimdall) 
+```
 
 ```{r}
+# ADWIN Drifter Example
+# This example uses an distribuition-based drift detector with a synthetic variable.
+seed <- 1
+set.seed(seed)
+```
+
+```{r}
+# Load Data
+
 data(st_drift_examples)
 serie <- st_drift_examples$univariate
 ```
 
-### Plot Serie
-
 ```{r}
+# Plot Serie
+
 plot(x=rownames(serie), y=serie[['serie']])
 ```
 
-### Instantiate Model
-
 ```{r}
+# Instantiate Model
+
 model <- dfr_adwin(target_feat='serie')
 ```
 
-## Detection
-
 ```{r}
+# Detection
+
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in 1:length(serie$serie)){
@@ -46,9 +52,9 @@ for (i in 1:length(serie$serie)){
 }
 ```
 
-## Plot Drifts
-
 ```{r}
+# Plot Drifts
+
 detection[detection$type == 'drift',]
 ```
 

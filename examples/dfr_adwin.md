@@ -1,44 +1,56 @@
-# ADWIN Drifter Example
-
-This example uses an distribuition-based drift detector with a synthetic variable.
-
 
 ``` r
-library(daltoolbox)
-library(heimdall)
-seed <- 1
-set.seed(seed)
-py_set_seed(seed, disable_hash_randomization = TRUE)
+# Installing heimdall
+install.packages("heimdall")
 ```
 
-## Load Data
+```
+
+```
 
 
 ``` r
+# Loading heimdall
+library(daltoolbox)
+library(heimdall) 
+```
+
+
+``` r
+# ADWIN Drifter Example
+# This example uses an distribuition-based drift detector with a synthetic variable.
+seed <- 1
+set.seed(seed)
+```
+
+
+``` r
+# Load Data
+
 data(st_drift_examples)
 serie <- st_drift_examples$univariate
 ```
 
-### Plot Serie
-
 
 ``` r
+# Plot Serie
+
 plot(x=rownames(serie), y=serie[['serie']])
 ```
 
-![plot of chunk unnamed-chunk-3](fig/dfr_adwin/unnamed-chunk-3-1.png)
-
-### Instantiate Model
+![plot of chunk unnamed-chunk-5](fig/dfr_adwin/unnamed-chunk-5-1.png)
 
 
 ``` r
+# Instantiate Model
+
 model <- dfr_adwin(target_feat='serie')
 ```
 
-## Detection
-
 
 ``` r
+# Detection
+
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in 1:length(serie$serie)){
@@ -53,10 +65,10 @@ for (i in 1:length(serie$serie)){
 }
 ```
 
-## Plot Drifts
-
 
 ``` r
+# Plot Drifts
+
 detection[detection$type == 'drift',]
 ```
 
@@ -75,4 +87,4 @@ for(drift_index in detection[detection$type == 'drift', 'idx']){
 }
 ```
 
-![plot of chunk unnamed-chunk-7](fig/dfr_adwin/unnamed-chunk-7-1.png)
+![plot of chunk unnamed-chunk-9](fig/dfr_adwin/unnamed-chunk-9-1.png)

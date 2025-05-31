@@ -1,40 +1,47 @@
-# Autoencoder Multivariate Drifter Example
-
-This example uses a distribuition-based drift detector with a synthetic variable.
-
 ```{r}
-library(daltoolbox)
-library(daltoolboxdp)
-library(heimdall)
-seed<-1
-set.seed(seed)
-py_set_seed(seed, disable_hash_randomization = TRUE)
+# Installing heimdall
+install.packages("heimdall")
 ```
 
-## Load Data
+```{r}
+# Loading heimdall
+library(daltoolbox)
+library(daltoolboxdp)
+library(heimdall) 
+```
 
 ```{r}
+# Autoencoder Multivariate Drifter Example
+# This example uses a distribuition-based drift detector with a synthetic variable.
+seed <- 1
+set.seed(seed)
+```
+
+
+```{r}
+# Load Data
+
 data(st_drift_examples)
 serie <- st_drift_examples$dataset2
 ```
 
-### Plot Serie
-
 ```{r}
+# Plot Serie
+
 plot(x=serie[['i']], y=serie[['serie1']])
 plot(x=serie[['i']], y=serie[['serie2']])
 ```
 
-### Instantiate Model
-
 ```{r}
+# Instantiate Model
+
 model <- dfr_aedd(encoding_size=1, ae_class=autoenc_ed, batch_size=64, monitoring_step=10, window_size=256)
 monitored_features <- c('serie1', 'serie2')
 ```
 
-## Detection
-
 ```{r}
+# Detection
+
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in 1:nrow(serie)){
@@ -49,9 +56,9 @@ for (i in 1:nrow(serie)){
 }
 ```
 
-## Plot Drifts
-
 ```{r}
+# Plot Drifts
+
 detection[detection$type == 'drift',]
 ```
 
