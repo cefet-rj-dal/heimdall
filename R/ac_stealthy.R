@@ -72,7 +72,7 @@ fit.stealthy <- function(obj, x, y, ...){
           predictions <- predict(obj$model, norm_x_oh)
           y_pred <- predictions[, 2] > obj$th
           
-          model_result <- !(as.logical(y[['target']])==y_pred)
+          model_result <- !(as.logical(y[, 1])==y_pred)
           model_result <- model_result[complete.cases(model_result)]
           
           if(obj$reporting){drift_input <- model_result}
@@ -107,8 +107,8 @@ fit.stealthy <- function(obj, x, y, ...){
           if(obj$verbose){
             message('Stealthy detected a drift, discarding old data')
           }
-          obj$x_train <- x
-          obj$y_train <- y  
+          obj$x_train <- c()
+          obj$y_train <- c()
           obj$drift_method <- reset_state(obj$drift_method)
           obj$drifted <- TRUE
           obj$fitted <- FALSE

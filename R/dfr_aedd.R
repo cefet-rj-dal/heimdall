@@ -31,12 +31,12 @@ dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size =
   state$window_size <- window_size
   state$monitoring_step <- monitoring_step
   state$criteria <- criteria
-  state$reporting <- reporting
   state$data <- c()
   
   state$autoencoder <- NULL
   state$is_fitted <- FALSE
   
+  obj$reporting <- reporting
   obj$drifted <- FALSE
   obj$state <- state
   class(obj) <- append("dfr_aedd", class(obj))
@@ -46,6 +46,13 @@ dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size =
 #'@export
 update_state.dfr_aedd <- function(obj, value){
   state <- obj$state
+  
+  if(length(value) == 1){
+    if(value > 1){value <- 1}else if(value < 0){value <- 0}
+  }else if(length(value) > 1){
+    value[value > 1] <- 1
+    value[value < 0] <- 0
+    }
 
   if(!is.null(state$data)){
     if(!all(names(value) %in% names(state$data))){
@@ -86,7 +93,6 @@ update_state.dfr_aedd <- function(obj, value){
       }else{
         input_size <- ncol(state$data)
       }
-      print('Fitting Autoencoder')
 
       state$autoencoder <- obj$ae_class(input_size=input_size, encoding_size=state$encoding_size, batch_size=state$batch_size, num_epochs=state$num_epochs, learning_rate=state$learning_rate)
       state$autoencoder <- fit(state$autoencoder, history_window)
@@ -101,15 +107,15 @@ update_state.dfr_aedd <- function(obj, value){
     recent_window_proj <- transform(state$autoencoder, recent_window)
     recent_rec_error <- (recent_window_proj - recent_window)
     
-    if(state$reporting){
-        obj$history_window_proj <- history_window_proj
-        obj$recent_window_proj <- recent_window_proj
+    if(obj$reporting){
+      obj$history_window_proj <- history_window_proj
+      obj$recent_window_proj <- transform(state$autoencoder, value)
       }
     
     if (state$criteria == 'mann_whitney'){
       mw_results <- wilcox.test(unlist(as.vector(t(history_rec_error))), unlist(as.vector(t(recent_rec_error))))
       
-      if (mw_results['p.value'] < 0.01){
+      if (mw_results['p.value'] < 0.05){
         state$drifted <- TRUE
       }
       
@@ -118,7 +124,7 @@ update_state.dfr_aedd <- function(obj, value){
     if (state$criteria == 'kolmogorov_smirnov'){
       ks_results <- ks.test(unlist(as.vector(t(history_rec_error))), unlist(as.vector(t(recent_rec_error))))
       
-      if (ks_results['p.value'] < 0.01){
+      if (ks_results['p.value'] < 0.05){
         state$drifted <- TRUE
       }
       
@@ -164,6 +170,10 @@ update_state.dfr_aedd <- function(obj, value){
       obj$drifted <- TRUE
       state$is_fitted <- FALSE
     }
+  }else{
+    if(obj$reporting){
+      obj$recent_window_proj <- 0
+    }
   }
   obj$state <- state
   return(list(obj=obj, drift=obj$drifted))
@@ -172,7 +182,7 @@ update_state.dfr_aedd <- function(obj, value){
 #'@export
 fit.dfr_aedd <- function(obj, data, ...){
   state <- obj$state
-  if(state$reporting){
+  if(obj$reporting){
       obj$hist_proj <- c()
       obj$recent_proj <- c()
   }
@@ -206,14 +216,12 @@ fit.dfr_aedd <- function(obj, data, ...){
   if(nrow(data) >= 2){
     for (i in 2:nrow(data)){
       output <- update_state(output$obj, data[i,])
-      if(state$reporting){
+      if(obj$reporting){
         output$obj$hist_proj <- rbind(output$obj$hist_proj, output$obj$history_window_proj[nrow(output$obj$history_window_proj),])
-        output$obj$recent_proj <- rbind(output$obj$recent_proj, output$obj$recent_window_proj[nrow(output$obj$recent_window_proj),])
+        output$obj$recent_proj <- rbind(output$obj$recent_proj, output$obj$recent_window_proj)
       }
     }
   }
-  
-  
   
   return(output$obj)
 }
@@ -222,11 +230,16 @@ fit.dfr_aedd <- function(obj, data, ...){
 reset_state.dfr_aedd <- function(obj) {
   obj$drifted <- FALSE
   obj$state <- dfr_aedd(
-    encoding_size=obj$state$encoding_size, 
+    encoding_size=obj$state$encoding_size,
     ae_class=obj$ae_class,
-    batch_size=obj$state$batch_size, 
-    num_epochs=obj$state$num_epochs, 
-    learning_rate=obj$state$learning_rate
+    batch_size=obj$state$batch_size,
+    num_epochs=obj$state$num_epochs,
+    learning_rate=obj$state$learning_rate,
+    window_size=obj$state$window_size,
+    monitoring_step=obj$state$monitoring_step,
+    criteria=obj$state$criteria,
+    alpha=obj$state$alpha,
+    reporting=obj$state$reporting
   )$state
   return(obj) 
 }
