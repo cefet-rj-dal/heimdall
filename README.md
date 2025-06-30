@@ -24,6 +24,14 @@ model adaptation.
 
 ------------------------------------------------------------------------
 
+## Examples
+
+Heimdall usage examples are organized according to drift detection:
+
+- [Examples](https://github.com/cefet-rj-dal/heimdall/tree/main/examples)
+
+------------------------------------------------------------------------
+
 ## Installation
 
 The latest version of Heimdall is available on CRAN:
@@ -38,30 +46,6 @@ You can install the development version directly from GitHub:
 # install.packages("devtools")
 library(devtools)
 devtools::install_github("cefet-rj-dal/heimdall", force = TRUE, upgrade = "never")
-```
-
-------------------------------------------------------------------------
-
-## Exemplos
-
-Heimdall usage examples are organized according to drift detection:
-
-- [Examples](https://github.com/cefet-rj-dal/heimdall/tree/main/examples)
-
-``` r
-library(heimdall)
-#> Registered S3 method overwritten by 'quantmod':
-#>   method            from
-#>   as.zoo.data.frame zoo
-#> Registered S3 methods overwritten by 'forecast':
-#>   method  from 
-#>   head.ts stats
-#>   tail.ts stats
-#> 
-#> Attaching package: 'heimdall'
-#> The following object is masked from 'package:base':
-#> 
-#>     norm
 ```
 
 ------------------------------------------------------------------------

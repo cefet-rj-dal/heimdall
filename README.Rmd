@@ -26,6 +26,14 @@ The goal of the Heimdall package is to detect when concept drift occurs, enablin
 
 ---
 
+## Examples
+
+Heimdall usage examples are organized according to drift detection:
+
+- [Examples](https://github.com/cefet-rj-dal/heimdall/tree/main/examples)
+
+---
+
 ## Installation
 
 The latest version of Heimdall is available on CRAN:
@@ -40,19 +48,6 @@ You can install the development version directly from GitHub:
 # install.packages("devtools")
 library(devtools)
 devtools::install_github("cefet-rj-dal/heimdall", force = TRUE, upgrade = "never")
-```
-
----
-
-## Exemplos
-
-Heimdall usage examples are organized according to drift detection:
-
-- [Examples](https://github.com/cefet-rj-dal/heimdall/tree/main/examples)
-
-```{r example}
-library(heimdall)
-
 ```
 
 ---
