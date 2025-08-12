@@ -20,6 +20,7 @@ dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size =
   obj <- mv_dist_based()
   
   obj$ae_class <- ae_class
+  obj$alpha <- alpha
   
   # Attributes
   state <- list()
@@ -115,7 +116,7 @@ update_state.dfr_aedd <- function(obj, value){
     if (state$criteria == 'mann_whitney'){
       mw_results <- wilcox.test(unlist(as.vector(t(history_rec_error))), unlist(as.vector(t(recent_rec_error))))
       
-      if (mw_results['p.value'] < 0.05){
+      if (mw_results['p.value'] < obj$alpha){
         state$drifted <- TRUE
       }
       
@@ -124,7 +125,7 @@ update_state.dfr_aedd <- function(obj, value){
     if (state$criteria == 'kolmogorov_smirnov'){
       ks_results <- ks.test(unlist(as.vector(t(history_rec_error))), unlist(as.vector(t(recent_rec_error))))
       
-      if (ks_results['p.value'] < 0.05){
+      if (ks_results['p.value'] < obj$alpha){
         state$drifted <- TRUE
       }
       
@@ -140,7 +141,7 @@ update_state.dfr_aedd <- function(obj, value){
       
       levene_results <- car::leveneTest(V1 ~ window, data=as.data.frame(levene_df))
       
-      if (levene_results['group', 'Pr(>F)'] < 0.05){
+      if (levene_results['group', 'Pr(>F)'] < obj$alpha){
         state$drifted <- TRUE
       }
       
