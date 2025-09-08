@@ -62,6 +62,8 @@ dfr_page_hinkley <- function(target_feat=NULL, min_instances=30, delta=0.005, th
 update_state.dfr_page_hinkley <- function(obj, value){
   state <- obj$state
   
+  value <- value[,1]
+  
   state$x_mean <- state$x_mean + (value - state$x_mean)/state$sample_count
   state$sum <- max(0, abs(state$alpha * state$sum + (value - state$x_mean - state$delta)))
   state$sample_count <- state$sample_count + 1

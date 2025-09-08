@@ -4,6 +4,7 @@
 #'@examples
 #'# See ?metric for an example of DDM drift detector
 #'@import daltoolbox
+#'@import 'Metrics'
 #'@export
 metric <- function(){
   obj <- dal_base()
@@ -42,7 +43,7 @@ mt_precision <- function(){
 
 #'@export
 evaluate.mt_precision <- function(obj, y_pred, y_true, ...){
-  return(mean(y_true[y_pred==TRUE], na.rm=TRUE))
+  return(Metrics::precision(y_true, y_pred))
 }
 
 #'@title Recall Calculator
@@ -59,7 +60,7 @@ mt_recall <- function() {
 
 #'@export
 evaluate.mt_recall <- function(obj, y_pred, y_true, ...){
-  return(mean(y_pred[(y_true==TRUE)], na.rm=TRUE))
+  return(Metrics::recall(y_true, y_pred))
 }
 
 #'@title FScore Calculator

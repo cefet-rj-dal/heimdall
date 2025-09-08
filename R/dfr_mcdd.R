@@ -76,7 +76,7 @@ update_state.dfr_mcdd <- function(obj, value) {
     
     # Normality Test
     if ((nrow(unique(new_window)) >= 2) & (nrow(unique(old_window)) >= 2)){
-      if ((shapiro.test(new_window)$p > state$alpha) & (shapiro.test(old_window)$p > state$alpha)){
+      if ((shapiro.test(as.numeric(new_window[,1]))$p > state$alpha) & (shapiro.test(as.numeric(old_window[,1]))$p > state$alpha)){
         # T Test
         if (t.test(new_window, old_window)$p.value < state$alpha){
           obj$drifted <- TRUE
@@ -87,7 +87,7 @@ update_state.dfr_mcdd <- function(obj, value) {
         }
       }
     # Mann Whitney
-    if (wilcox.test(new_window, old_window)$p.value < state$alpha){
+    if (wilcox.test(as.numeric(new_window[,1]), as.numeric(old_window[,1]))$p.value < state$alpha){
       obj$drifted <- TRUE
       
       obj$state <- state
