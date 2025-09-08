@@ -84,6 +84,8 @@ update_state.dfr_lbdd <- function(obj, value) {
     levene_df <- as.data.frame(rbind(old_window, new_window))
     levene_df['window'] <- factor(levene_df[['window']])
     
+    names(levene_df) <- c('V1', 'window')
+    
     levene_results <- car::leveneTest(V1 ~ window, data=as.data.frame(levene_df))
     
     if (levene_results['group', 'Pr(>F)'] < state$alpha){

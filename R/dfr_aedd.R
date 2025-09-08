@@ -217,10 +217,10 @@ fit.dfr_aedd <- function(obj, data, ...){
   if(nrow(data) >= 2){
     for (i in 2:nrow(data)){
       output <- update_state(output$obj, data[i,])
-      if(obj$reporting){
-        output$obj$hist_proj <- rbind(output$obj$hist_proj, output$obj$history_window_proj[nrow(output$obj$history_window_proj),])
-        output$obj$recent_proj <- rbind(output$obj$recent_proj, output$obj$recent_window_proj)
-      }
+      # if(obj$reporting){
+      #   output$obj$hist_proj <- rbind(output$obj$hist_proj, output$obj$history_window_proj[nrow(output$obj$history_window_proj),])
+      #   output$obj$recent_proj <- rbind(output$obj$recent_proj, output$obj$recent_window_proj)
+      # }
     }
   }
   
