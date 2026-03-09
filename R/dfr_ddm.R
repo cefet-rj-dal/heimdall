@@ -67,7 +67,7 @@ update_state.dfr_ddm <- function(obj, value){
   }
   state <- obj$state
   state$miss_prob <- state$miss_prob + (value - state$miss_prob) / state$sample_count
-  state$miss_std <- sqrt(abs(state$miss_prob * (1 - state$miss_prob))) / state$sample_count
+  state$miss_std <- sqrt(max(0, state$miss_prob * (1 - state$miss_prob) / state$sample_count))
   state$sample_count <- state$sample_count + 1
   
   state$estimation <- state$miss_prob
@@ -84,8 +84,6 @@ update_state.dfr_ddm <- function(obj, value){
     state$miss_prob_min <- state$miss_prob
     state$miss_sd_min <- state$miss_std
     state$miss_prob_sd_min <- state$miss_prob + state$miss_std
-    state$sum <- 0
-    state$sample_count <- 1
   }
   
   if((state$miss_prob + state$miss_std) > (state$miss_prob_min + state$out_control_level * state$miss_sd_min)){

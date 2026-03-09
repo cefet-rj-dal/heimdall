@@ -50,10 +50,10 @@ dfr_kswin <- function(target_feat=NULL, window_size=1500, stat_size=500, alpha=0
     if (state$window_size < state$stat_size) stop("stat_size must be smaller than window_size")
 
     if (missing(data)){
-      state$window <- c()
+      state$window <- numeric(0)
     }
     else{
-      state$window <- data
+      state$window <- as.numeric(data)
     }
     
     obj$state <- state
@@ -68,22 +68,30 @@ update_state.dfr_kswin <- function(obj, value) {
   state <- obj$state
 
   state$n <- state$n + 1
-  currentLength <- nrow(state$window)
-  if (is.null(currentLength)){
-    currentLength <- 0
+  value <- as.numeric(value[1])
+  if (is.na(value)) {
+    obj$state <- state
+    return(list(obj=obj, drift=FALSE))
   }
+  currentLength <- length(state$window)
   
   if (currentLength >= state$window_size){
-    state$window <- tail(state$window, -1)
-    rnd_window <- state$window[1:(nrow(state$window)-state$stat_size),]
-    
-    ks_res <- stats::ks.test(rnd_window, state$window[(nrow(state$window)-state$stat_size):nrow(state$window),], exact=TRUE)
+    state$window <- tail(state$window, state$window_size - 1)
+    state$window <- c(state$window, value)
+
+    reference_window <- state$window[1:(state$window_size - state$stat_size)]
+    if (length(reference_window) > state$stat_size) {
+      reference_window <- sample(reference_window, state$stat_size)
+    }
+    stat_window <- tail(state$window, state$stat_size)
+
+    ks_res <- stats::ks.test(reference_window, stat_window, exact=TRUE)
     st <- unlist(ks_res[1])
     state$p_value <- unlist(ks_res[2])
+    threshold <- sqrt(-log(state$alpha) / state$stat_size)
     
-    if((state$p_value < state$alpha) & (st > 0.1)){
-      state$window <- tail(state$window, (state$stat_size))
-      state$window <- rbind(state$window, value)
+    if((state$p_value < state$alpha) & (st > threshold)){
+      state$window <- tail(state$window, state$stat_size)
       
       obj$drifted <- TRUE
       
@@ -91,13 +99,11 @@ update_state.dfr_kswin <- function(obj, value) {
       return(list(obj=obj, drift=TRUE))
     }
     else{
-      state$window <- rbind(state$window, value)
-      
       obj$state <- state
       return(list(obj=obj, drift=FALSE))
     }
   }else{
-    state$window <- rbind(state$window, value)
+    state$window <- c(state$window, value)
   
     obj$state <- state
     return(list(obj=obj, drift=FALSE))
@@ -126,7 +132,7 @@ reset_state.dfr_kswin <- function(obj) {
     window_size = obj$state$window_size,
     stat_size = obj$state$stat_size,
     alpha = obj$state$alpha,
-    data = obj$state$data
+    data = obj$state$window
   )$state
   return(obj)  
 }

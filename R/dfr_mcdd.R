@@ -57,44 +57,44 @@ update_state.dfr_mcdd <- function(obj, value) {
   state <- obj$state
 
   state$n <- state$n + 1
-  currentLength <- nrow(state$window)
-  if (is.null(currentLength)){
-    currentLength <- 0
+  value <- as.numeric(value[1])
+  if (is.na(value)) {
+    obj$state <- state
+    return(list(obj=obj, drift=FALSE))
   }
+  currentLength <- length(state$window)
   
   if (currentLength >= state$window_size){
-    state$window <- tail(state$window, -1)
+    state$window <- tail(state$window, state$window_size - 1)
+    state$window <- c(state$window, value)
     new_window <- tail(state$window, state$window_size/2)
     old_window <- head(state$window, state$window_size/2)
     
     if (mean(new_window==old_window, na.rm=TRUE) == 1){
-      state$window <- rbind(state$window, value)
-      
       obj$state <- state
       return(list(obj=obj, drift=FALSE))
     }
     
-    # Normality Test
-    if ((nrow(unique(new_window)) >= 2) & (nrow(unique(old_window)) >= 2)){
-      if ((shapiro.test(as.numeric(new_window[,1]))$p > state$alpha) & (shapiro.test(as.numeric(old_window[,1]))$p > state$alpha)){
-        # T Test
-        if (t.test(new_window, old_window)$p.value < state$alpha){
-          obj$drifted <- TRUE
-          
-          obj$state <- state
-          return(list(obj=obj, drift=TRUE))
-          }
-        }
+    # Choose only one hypothesis test based on normality assumptions.
+    use_ttest <- FALSE
+    if ((length(unique(new_window)) >= 3) & (length(unique(old_window)) >= 3)){
+      if ((shapiro.test(new_window)$p.value > 0.05) & (shapiro.test(old_window)$p.value > 0.05)){
+        use_ttest <- TRUE
       }
-    # Mann Whitney
-    if (wilcox.test(as.numeric(new_window[,1]), as.numeric(old_window[,1]))$p.value < state$alpha){
+    }
+    if (use_ttest){
+      p_value <- t.test(new_window, old_window)$p.value
+    } else {
+      p_value <- wilcox.test(new_window, old_window)$p.value
+    }
+    if (p_value < state$alpha){
       obj$drifted <- TRUE
       
       obj$state <- state
       return(list(obj=obj, drift=TRUE))
-      }
     }
-  state$window <- rbind(state$window, value)
+    }
+  state$window <- c(state$window, value)
   
   obj$state <- state
   return(list(obj=obj, drift=FALSE))

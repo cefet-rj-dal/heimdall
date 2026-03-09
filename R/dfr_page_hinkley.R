@@ -48,6 +48,7 @@ dfr_page_hinkley <- function(target_feat=NULL, min_instances=30, delta=0.005, th
   state$alpha = alpha
   state$x_mean <- 0
   state$sum <- 0
+  state$min_sum <- 0
   state$sample_count <- 1
   
   obj$state <- state
@@ -62,44 +63,39 @@ dfr_page_hinkley <- function(target_feat=NULL, min_instances=30, delta=0.005, th
 update_state.dfr_page_hinkley <- function(obj, value){
   state <- obj$state
   
-  value <- value[,1]
+  if (is.data.frame(value) || is.matrix(value)) {
+    value <- as.numeric(value[1, 1])
+  } else {
+    value <- as.numeric(value[1])
+  }
+  if (is.na(value)) {
+    obj$state <- state
+    return(list(obj=obj, drift=FALSE))
+  }
   
   state$x_mean <- state$x_mean + (value - state$x_mean)/state$sample_count
-  state$sum <- max(0, abs(state$alpha * state$sum + (value - state$x_mean - state$delta)))
+  state$sum <- state$alpha * state$sum + (value - state$x_mean - state$delta)
+  state$min_sum <- min(state$min_sum, state$sum)
   state$sample_count <- state$sample_count + 1
   
-  tryCatch(
-    {
-      if(state$sample_count < state$min_instances){
-        obj$state <- state
-        return(list(obj=obj, drift=FALSE))
-      }
-      else if(state$sum > state$threshold){
-        state$x_mean <- 0
-        state$sum <- 0
-        state$sample_count <- 1
-        
-        obj$drifted <- TRUE
-        
-        obj$state <- state
-        return(list(obj=obj, drift=TRUE))
-      }
-      else{
-        obj$state <- state
-        return(list(obj=obj, drift=FALSE))
-      }
-      
-      return(list(obj=obj, drift=obj$drifted))
-    },
-    error=function(cond){
-      message(conditionMessage(cond))
-      if(is.na(value)){
-        message('Input is null')
-      }else{
-        message(value)
-      }
-      }
-    )
+  if(state$sample_count < state$min_instances){
+    obj$state <- state
+    return(list(obj=obj, drift=FALSE))
+  }
+  
+  if((state$sum - state$min_sum) > state$threshold){
+    state$x_mean <- 0
+    state$sum <- 0
+    state$min_sum <- 0
+    state$sample_count <- 1
+    
+    obj$drifted <- TRUE
+    obj$state <- state
+    return(list(obj=obj, drift=TRUE))
+  }
+  
+  obj$state <- state
+  return(list(obj=obj, drift=FALSE))
 }
 
 #'@export

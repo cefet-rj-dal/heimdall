@@ -32,7 +32,7 @@ dfr_aedd(
 
 \item{monitoring_step}{The number of rows that the drifter waits to be is updated}
 
-\item{criteria}{The method to be used to check if there is a drift. May be mann_whitney (default), kolmogorov_smirnov, levene}
+\item{criteria}{The method to be used to check if there is a drift. May be mann_whitney (default), kolmogorov_smirnov, levene, parametric_threshold, nonparametric_threshold}
 
 \item{alpha}{The significance threshold for the statistical test used in criteria}
 

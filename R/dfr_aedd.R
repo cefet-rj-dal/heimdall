@@ -7,7 +7,7 @@
 #'@param learning_rate Learning Rate
 #'@param window_size Size of the most recent data to be used
 #'@param monitoring_step The number of rows that the drifter waits to be is updated
-#'@param criteria The method to be used to check if there is a drift. May be mann_whitney (default), kolmogorov_smirnov, levene
+#'@param criteria The method to be used to check if there is a drift. May be mann_whitney (default), kolmogorov_smirnov, levene, parametric_threshold, nonparametric_threshold
 #'@param alpha The significance threshold for the statistical test used in criteria
 #'@param reporting If TRUE, some data are returned as norm_x_oh, drift_input, hist_proj, and recent_proj.
 #AEDD detection: Daniil Kaminskyi, Bin Li and Emmanuel Müller. “Reconstruction-based unsupervised drift detection over multivariate streaming data.” 2022 IEEE International Conference on Data Mining Workshops (ICDMW).
@@ -32,7 +32,8 @@ dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size =
   state$window_size <- window_size
   state$monitoring_step <- monitoring_step
   state$criteria <- criteria
-  state$data <- c()
+  state$data <- NULL
+  state$n <- 0
   
   state$autoencoder <- NULL
   state$is_fitted <- FALSE
@@ -60,7 +61,14 @@ update_state.dfr_aedd <- function(obj, value){
       warning('dfr_aedd::update_state: Some categories present in most recent data are not on the history dataset. Creating zero columns.')
       for (feat in names(value)){
         if (!(feat %in% names(state$data))){
-          value[feat] <- NULL
+          state$data[feat] <- 0
+        }
+      }
+    }
+    if(!all(names(state$data) %in% names(value))){
+      for (feat in names(state$data)){
+        if (!(feat %in% names(value))){
+          value[feat] <- 0
         }
       }
     }
@@ -84,8 +92,8 @@ update_state.dfr_aedd <- function(obj, value){
   
   if (currentLength >= state$window_size){
     state$data <- tail(state$data, -1)
-    history_window <- tail(state$data, state$window_size/2)
-    recent_window <- head(state$data, state$window_size/2)
+    history_window <- head(state$data, state$window_size/2)
+    recent_window <- tail(state$data, state$window_size/2)
     
     
     if(!state$is_fitted){
@@ -239,8 +247,8 @@ reset_state.dfr_aedd <- function(obj) {
     window_size=obj$state$window_size,
     monitoring_step=obj$state$monitoring_step,
     criteria=obj$state$criteria,
-    alpha=obj$state$alpha,
-    reporting=obj$state$reporting
+    alpha=obj$alpha,
+    reporting=obj$reporting
   )$state
   return(obj) 
 }

@@ -9,9 +9,9 @@ dfr_kldist(target_feat = NULL, window_size = 100, p_th = 0.05, data = NULL)
 \arguments{
 \item{target_feat}{Feature to be monitored.}
 
-\item{window_size}{Size of the sliding window (must be > 2*stat_size)}
+\item{window_size}{Size of the sliding window}
 
-\item{p_th}{Probability theshold for the test statistic of the Kullback Leibler distance.}
+\item{p_th}{Drift threshold applied to the KL divergence}
 
 \item{data}{Already collected data to avoid cold start.}
 }

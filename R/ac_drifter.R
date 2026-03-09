@@ -202,13 +202,13 @@ update_state.multi_criteria <- function(obj, value){
       drifter_fuzzy <- rep(0, nrow(obj$drifts))
       drifts_index <- which(obj$drifts[, drifter_col]==TRUE)
       for(i in drifts_index){
-        umbrella_vector <- max(1, i-obj$fuzzy_window + 1):min(i + (obj$fuzzy_window-1), nrow(df))
+        umbrella_vector <- max(1, i-obj$fuzzy_window + 1):min(i + (obj$fuzzy_window-1), nrow(obj$drifts))
         drifter_fuzzy[min(umbrella_vector):i] <- ((obj$fuzzy_window - length(min(umbrella_vector):i)) + 1):(obj$fuzzy_window) / obj$fuzzy_window
         drifter_fuzzy[i:max(umbrella_vector)] <- obj$fuzzy_window:(obj$fuzzy_window-length(i:max(umbrella_vector)) + 1) / obj$fuzzy_window
       }
       obj$drifts_fuzzy <- cbind(obj$drifts_fuzzy, drifter_fuzzy)
     }
-    if(sum(rowSums(obj$drifts_fuzzy) > (length(ncol(obj$drifts))/2))){has_drift <- TRUE}else{has_drift <- FALSE}
+    if(tail(rowSums(obj$drifts_fuzzy), 1) > (ncol(obj$drifts)/2)){has_drift <- TRUE}else{has_drift <- FALSE}
   }
   
   obj$state <- state

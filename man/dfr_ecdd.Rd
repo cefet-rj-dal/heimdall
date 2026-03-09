@@ -7,11 +7,11 @@
 dfr_ecdd(lambda = 0.2, min_run_instances = 30, average_run_length = 100)
 }
 \arguments{
-\item{lambda}{The minimum number of instances before detecting change}
+\item{lambda}{EWMA smoothing parameter}
 
-\item{min_run_instances}{Necessary level for warning zone (2 standard deviation)}
+\item{min_run_instances}{The minimum number of instances before detecting change}
 
-\item{average_run_length}{Necessary level for a positive drift detection}
+\item{average_run_length}{Desired Average Run Length (ARL)}
 }
 \value{
 \code{dfr_ecdd} object
@@ -23,18 +23,19 @@ ECDD is a concept change detection method that uses an exponentially weighted mo
 library(daltoolbox)
 library(heimdall)
 
-# This example uses a dist-based drift detector with a synthetic dataset.
+# This example uses an error-based drift detector where 1 is an error and 0 is a correct prediction.
 
 data(st_drift_examples)
 data <- st_drift_examples$univariate
 data$event <- NULL
+data$prediction <- st_drift_examples$univariate$serie > 4
 
 model <- dfr_ecdd()
 
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$serie)){
- output <- update_state(output$obj, data$serie[i])
+for (i in 1:length(data$prediction)){
+ output <- update_state(output$obj, data$prediction[i])
  if (output$drift){
    type <- 'drift'
    output$obj <- reset_state(output$obj)

@@ -1,11 +1,10 @@
 #'@title KL Distance method
 #'@description Kullback Leibler Windowing method for concept drift detection.
 #'@param target_feat Feature to be monitored.
-#'@param p_th Probability theshold for the test statistic of the Kullback Leibler distance.
-#'@param window_size Size of the sliding window (must be > 2*stat_size)
+#'@param p_th Drift threshold applied to the KL divergence
+#'@param window_size Size of the sliding window
 #'@param data Already collected data to avoid cold start.
-#KSWIN detection: Christoph Raab, Moritz Heusinger, Frank-Michael Schleif, Reactive Soft Prototype Computing for Concept Drift Streams, Neurocomputing, 2020.
-#KSWIN detection implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/kswin.py#L5
+#KL divergence: Solomon Kullback and Richard A. Leibler. On information and sufficiency. Annals of Mathematical Statistics, 1951.
 #'@return `dfr_kldist` object
 #'@examples
 #'library(daltoolbox)
@@ -43,14 +42,14 @@ dfr_kldist <- function(target_feat=NULL, window_size=100, p_th=0.05, data=NULL) 
     state$p_value <- 0
     state$n <- 0
 
-    if ((state$p_th < 0) | (state$p_th > 1)) stop("Alpha must be between 0 and 1", call = FALSE)
+    if (state$p_th < 0) stop("p_th must be non-negative", call = FALSE)
     if (state$window_size < 0) stop("window_size must be greater than 0", call = FALSE)
 
     if (missing(data)){
-      state$window <- c()
+      state$window <- numeric(0)
     }
     else{
-      state$window <- data
+      state$window <- as.numeric(data)
     }
     
     obj$state <- state
@@ -65,28 +64,36 @@ update_state.dfr_kldist <- function(obj, value) {
   state <- obj$state
 
   state$n <- state$n + 1
-  currentLength <- nrow(state$window)
-  if (is.null(currentLength)){
-    currentLength <- 0
+  value <- as.numeric(value[1])
+  if (is.na(value)) {
+    obj$state <- state
+    return(list(obj=obj, drift=FALSE))
   }
+  currentLength <- length(state$window)
   
   if (currentLength >= state$window_size){
-    state$window <- tail(state$window, -1)
-    p_window <- tail(state$window, state$window_size/2)
-    q_window <- head(state$window, state$window_size/2)
-    
-    p <- p_window / sum(p_window)
-    q <- q_window / sum(q_window)
-    
-    p <- p[q!=0]
-    q <- q[q!=0]
-    
-    
+    state$window <- tail(state$window, state$window_size - 1)
+    state$window <- c(state$window, value)
+    p_window <- head(state$window, state$window_size/2)
+    q_window <- tail(state$window, state$window_size/2)
+
+    bins <- pretty(range(c(p_window, q_window), na.rm=TRUE), n=10)
+    if (length(unique(bins)) < 2) {
+      obj$state <- state
+      return(list(obj=obj, drift=FALSE))
+    }
+    p_hist <- hist(p_window, breaks=bins, plot=FALSE)$density
+    q_hist <- hist(q_window, breaks=bins, plot=FALSE)$density
+    eps <- 1e-12
+    p <- p_hist + eps
+    q <- q_hist + eps
+    p <- p / sum(p)
+    q <- q / sum(q)
+
     state$kl <- sum(p * log(p/q, base=2), na.rm=TRUE)
     
     if((state$kl >= state$p_th)){
       state$window <- tail(state$window, state$window_size/2)
-      state$window <- rbind(state$window, value)
       
       obj$drifted <- TRUE
       
@@ -94,13 +101,11 @@ update_state.dfr_kldist <- function(obj, value) {
       return(list(obj=obj, drift=TRUE))
     }
     else{
-      state$window <- rbind(state$window, value)
-      
       obj$state <- state
       return(list(obj=obj, drift=FALSE))
     }
   }else{
-    state$window <- rbind(state$window, value)
+    state$window <- c(state$window, value)
   
     obj$state <- state
     return(list(obj=obj, drift=FALSE))
@@ -125,7 +130,9 @@ reset_state.dfr_kldist <- function(obj) {
   obj$drifted <- FALSE
   obj$state <- dfr_kldist(
     target_feat = obj$target_feat,
-    p_th = obj$state$p_th
+    p_th = obj$state$p_th,
+    window_size = obj$state$window_size,
+    data = obj$state$window
   )$state
   return(obj)  
 }
