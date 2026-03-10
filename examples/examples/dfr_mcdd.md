@@ -6,8 +6,8 @@ library(heimdall)
 
 
 ``` r
-# ADWIN example
-# ADWIN is shown here as a virtual concept drift detector over a numeric stream.
+# MCDD example
+# MCDD is shown here as a virtual concept drift detector over a numeric stream.
 seed <- 1
 set.seed(seed)
 ```
@@ -27,13 +27,13 @@ serie <- st_drift_examples$univariate
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 ```
 
-![plot of chunk unnamed-chunk-4](fig/dfr_adwin/unnamed-chunk-4-1.png)
+![plot of chunk unnamed-chunk-4](fig/dfr_mcdd/unnamed-chunk-4-1.png)
 
 
 ``` r
 # Instantiate model
 
-model <- dfr_adwin(target_feat='serie')
+model <- dfr_mcdd(target_feat='serie', window_size=100)
 ```
 
 
@@ -63,9 +63,9 @@ detection[detection$type == 'drift',]
 
 ```
 ##     idx event  type
-## 224 224  TRUE drift
-## 352 352  TRUE drift
-## 448 448  TRUE drift
+## 219 219  TRUE drift
+## 328 328  TRUE drift
+## 428 428  TRUE drift
 ```
 
 
@@ -78,4 +78,4 @@ for (drift_index in detection[detection$type == 'drift', 'idx']) {
 }
 ```
 
-![plot of chunk unnamed-chunk-8](fig/dfr_adwin/unnamed-chunk-8-1.png)
+![plot of chunk unnamed-chunk-8](fig/dfr_mcdd/unnamed-chunk-8-1.png)

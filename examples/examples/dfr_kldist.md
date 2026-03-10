@@ -6,8 +6,8 @@ library(heimdall)
 
 
 ``` r
-# ADWIN example
-# ADWIN is shown here as a virtual concept drift detector over a numeric stream.
+# KLDIST example
+# KLDIST is shown here as a virtual concept drift detector over a numeric stream.
 seed <- 1
 set.seed(seed)
 ```
@@ -27,13 +27,13 @@ serie <- st_drift_examples$univariate
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 ```
 
-![plot of chunk unnamed-chunk-4](fig/dfr_adwin/unnamed-chunk-4-1.png)
+![plot of chunk unnamed-chunk-4](fig/dfr_kldist/unnamed-chunk-4-1.png)
 
 
 ``` r
 # Instantiate model
 
-model <- dfr_adwin(target_feat='serie')
+model <- dfr_kldist(target_feat='serie', window_size=100)
 ```
 
 
@@ -63,9 +63,14 @@ detection[detection$type == 'drift',]
 
 ```
 ##     idx event  type
-## 224 224  TRUE drift
-## 352 352  TRUE drift
-## 448 448  TRUE drift
+## 101 101  TRUE drift
+## 152 152  TRUE drift
+## 203 203  TRUE drift
+## 254 254  TRUE drift
+## 305 305  TRUE drift
+## 356 356  TRUE drift
+## 407 407  TRUE drift
+## 458 458  TRUE drift
 ```
 
 
@@ -78,4 +83,4 @@ for (drift_index in detection[detection$type == 'drift', 'idx']) {
 }
 ```
 
-![plot of chunk unnamed-chunk-8](fig/dfr_adwin/unnamed-chunk-8-1.png)
+![plot of chunk unnamed-chunk-8](fig/dfr_kldist/unnamed-chunk-8-1.png)

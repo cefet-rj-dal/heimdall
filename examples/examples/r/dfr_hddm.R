@@ -1,30 +1,31 @@
 # Loading heimdall
 library(heimdall)
 
-# ADWIN example
-# ADWIN is shown here as a virtual concept drift detector over a numeric stream.
+# HDDM example
+# HDDM_A is shown here as a real concept drift detector over a binary error stream.
 seed <- 1
 set.seed(seed)
 
 # Load data
 
 data(st_drift_examples)
-serie <- st_drift_examples$univariate
+data <- st_drift_examples$univariate
+data$prediction <- st_drift_examples$univariate$serie > 4
 
-# Plot series
+# Plot binary error stream
 
-plot(x=seq_len(nrow(serie)), y=serie$serie)
+plot(x=seq_len(nrow(data)), y=data$prediction)
 
 # Instantiate model
 
-model <- dfr_adwin(target_feat='serie')
+model <- dfr_hddm()
 
 # Detection
 
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in seq_len(nrow(serie))){
-  output <- update_state(output$obj, serie$serie[i])
+for (i in seq_len(nrow(data))){
+  output <- update_state(output$obj, data$prediction[i])
   if (output$drift){
     type <- 'drift'
     output$obj <- reset_state(output$obj)
@@ -38,9 +39,9 @@ for (i in seq_len(nrow(serie))){
 
 detection[detection$type == 'drift',]
 
-# Plot drifts
+# Plot drifts over the original signal
 
-plot(x=seq_len(nrow(serie)), y=serie$serie)
+plot(x=seq_len(nrow(data)), y=data$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
 }

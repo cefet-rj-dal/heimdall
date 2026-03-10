@@ -1,30 +1,39 @@
 # Loading heimdall
+library(daltoolboxdp)
 library(heimdall)
 
-# ADWIN example
-# ADWIN is shown here as a virtual concept drift detector over a numeric stream.
+# AEDD example
+# AEDD is an unsupervised detector for virtual concept drift in multivariate data.
 seed <- 1
 set.seed(seed)
 
 # Load data
 
 data(st_drift_examples)
-serie <- st_drift_examples$univariate
+serie <- st_drift_examples$dataset2
 
-# Plot series
+# Plot monitored variables
 
-plot(x=seq_len(nrow(serie)), y=serie$serie)
+plot(x=serie$i, y=serie$serie1)
+plot(x=serie$i, y=serie$serie2)
 
 # Instantiate model
 
-model <- dfr_adwin(target_feat='serie')
+model <- dfr_aedd(
+  encoding_size=1,
+  ae_class=autoenc_ed,
+  batch_size=64,
+  monitoring_step=10,
+  window_size=256
+)
+monitored_features <- c('serie1', 'serie2')
 
 # Detection
 
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in seq_len(nrow(serie))){
-  output <- update_state(output$obj, serie$serie[i])
+  output <- update_state(output$obj, serie[i, monitored_features])
   if (output$drift){
     type <- 'drift'
     output$obj <- reset_state(output$obj)
@@ -40,7 +49,7 @@ detection[detection$type == 'drift',]
 
 # Plot drifts
 
-plot(x=seq_len(nrow(serie)), y=serie$serie)
+plot(x=serie$i, y=serie$serie2)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
 }

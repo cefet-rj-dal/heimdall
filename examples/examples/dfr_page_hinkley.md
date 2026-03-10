@@ -6,8 +6,8 @@ library(heimdall)
 
 
 ``` r
-# ADWIN example
-# ADWIN is shown here as a virtual concept drift detector over a numeric stream.
+# Page-Hinkley example
+# Page-Hinkley is shown here as a virtual concept drift detector over a numeric stream.
 seed <- 1
 set.seed(seed)
 ```
@@ -27,13 +27,13 @@ serie <- st_drift_examples$univariate
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 ```
 
-![plot of chunk unnamed-chunk-4](fig/dfr_adwin/unnamed-chunk-4-1.png)
+![plot of chunk unnamed-chunk-4](fig/dfr_page_hinkley/unnamed-chunk-4-1.png)
 
 
 ``` r
 # Instantiate model
 
-model <- dfr_adwin(target_feat='serie')
+model <- dfr_page_hinkley(target_feat='serie')
 ```
 
 
@@ -63,9 +63,7 @@ detection[detection$type == 'drift',]
 
 ```
 ##     idx event  type
-## 224 224  TRUE drift
-## 352 352  TRUE drift
-## 448 448  TRUE drift
+## 205 205  TRUE drift
 ```
 
 
@@ -78,4 +76,4 @@ for (drift_index in detection[detection$type == 'drift', 'idx']) {
 }
 ```
 
-![plot of chunk unnamed-chunk-8](fig/dfr_adwin/unnamed-chunk-8-1.png)
+![plot of chunk unnamed-chunk-8](fig/dfr_page_hinkley/unnamed-chunk-8-1.png)
