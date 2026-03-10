@@ -59,6 +59,7 @@ dfr_kldist <- function(target_feat=NULL, window_size=100, p_th=0.05, data=NULL) 
     return(obj)
 }
 
+#'@importFrom graphics hist
 #'@importFrom utils head tail
 #'@export
 update_state.dfr_kldist <- function(obj, value) {
