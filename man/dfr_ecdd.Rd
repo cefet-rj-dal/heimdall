@@ -19,9 +19,6 @@ dfr_ecdd(lambda = 0.2, min_run_instances = 30, average_run_length = 100)
 \description{
 ECDD applies an exponentially weighted moving average (EWMA) control chart to the online classification error stream. Since it monitors predictive errors directly, it is primarily designed to detect \strong{real concept drift}. The method follows Ross et al. (2012), who adapted EWMA charts for concept-drift detection in streaming classifiers \url{doi:10.1016/j.patrec.2011.08.019}.
 }
-\references{
-Ross, G. J., Adams, N. M., Tasoulis, D. K., and Hand, D. J. (2012). Exponentially weighted moving average charts for detecting concept drift. \emph{Pattern Recognition Letters}, 33(2), 191-198. \url{doi:10.1016/j.patrec.2011.08.019}
-}
 \examples{
 library(daltoolbox)
 library(heimdall)
@@ -49,4 +46,7 @@ for (i in 1:length(data$prediction)){
 }
 
 detection[detection$type == 'drift',]
+}
+\references{
+Ross, G. J., Adams, N. M., Tasoulis, D. K., and Hand, D. J. (2012). Exponentially weighted moving average charts for detecting concept drift. \emph{Pattern Recognition Letters}, 33(2), 191-198. \url{doi:10.1016/j.patrec.2011.08.019}
 }

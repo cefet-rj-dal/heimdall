@@ -19,9 +19,6 @@ dfr_mcdd(target_feat = NULL, alpha = 1e-08, window_size = 1500)
 \description{
 MCDD is a window-based detector that compares the location of reference and recent samples by means of hypothesis tests on their central tendency. Because it monitors the distribution of observed features rather than predictive errors, it is primarily intended for \strong{virtual concept drift}. In this package, the detector follows the statistical-testing perspective adopted by Giusti et al. (2021) for drift analysis.
 }
-\references{
-Giusti, L., Carvalho, L., Gomes, A. T., Coutinho, R., Soares, J., and Ogasawara, E. (2021). Analysing flight delay under concept drift. \emph{Evolving Systems}. \url{doi:10.1007/s12530-021-09415-z}
-}
 \examples{
 library(daltoolbox)
 library(heimdall)
@@ -48,4 +45,7 @@ for (i in 1:length(data$serie)){
 }
 
 detection[detection$type == 'drift',]
+}
+\references{
+Giusti, L., Carvalho, L., Gomes, A. T., Coutinho, R., Soares, J., and Ogasawara, E. (2021). Analysing flight delay under concept drift. \emph{Evolving Systems}. \url{doi:10.1007/s12530-021-09415-z}
 }

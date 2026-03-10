@@ -23,9 +23,6 @@ dfr_hddm(
 \description{
 HDDM_A is a sequential detector based on Hoeffding's inequality that tests whether the mean of the monitored error stream has increased beyond statistically expected fluctuations. Because this implementation is error-based, it is primarily targeted at \strong{real concept drift}. The theoretical basis follows Frias-Blanco et al. (2015) \url{doi:10.1109/TKDE.2014.2345382}.
 }
-\references{
-Frias-Blanco, I., del Campo-Avila, J., Ramos-Jimenez, G., Morales-Bueno, R., Ortiz-Diaz, A., and Caballero-Mota, Y. (2015). Online and nonparametric drift detection methods based on Hoeffding's bounds. \emph{IEEE Transactions on Knowledge and Data Engineering}, 27(3), 810-823. \url{doi:10.1109/TKDE.2014.2345382}
-}
 \examples{
 library(daltoolbox)
 library(heimdall)
@@ -54,4 +51,7 @@ for (i in 1:length(data$prediction)){
 }
 
 detection[detection$type == 'drift',]
+}
+\references{
+Frias-Blanco, I., del Campo-Avila, J., Ramos-Jimenez, G., Morales-Bueno, R., Ortiz-Diaz, A., and Caballero-Mota, Y. (2015). Online and nonparametric drift detection methods based on Hoeffding's bounds. \emph{IEEE Transactions on Knowledge and Data Engineering}, 27(3), 810-823. \url{doi:10.1109/TKDE.2014.2345382}
 }

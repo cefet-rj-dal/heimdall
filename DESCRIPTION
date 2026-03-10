@@ -1,6 +1,6 @@
 Package: heimdall
 Title: Drift Adaptable Models
-Version: 1.2.707
+Version: 1.2.727
 Authors@R: 
   c(
     person(given = "Lucas", family = "Tavares", role = c("aut"), email = "lucas.giusti@eic.cefet-rj.br"),
@@ -21,7 +21,7 @@ License: MIT + file LICENSE
 URL: https://cefet-rj-dal.github.io/heimdall/, https://github.com/cefet-rj-dal/heimdall
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports: 
   stats,
   caret,

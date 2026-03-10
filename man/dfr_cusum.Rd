@@ -15,9 +15,6 @@ dfr_cusum(lambda = 100)
 \description{
 CUSUM is a sequential analysis procedure that accumulates deviations in a monitored signal and raises an alarm when the cumulative evidence exceeds a threshold. In this package, the detector is implemented as an error-based monitor, so it is primarily intended for \strong{real concept drift} affecting predictive performance. The concept-drift adaptation follows the sequential change-detection literature discussed by Muthukrishnan, Berg, and Wu (2007) \url{doi:10.1109/ICDMW.2007.89}.
 }
-\references{
-Muthukrishnan, S., Berg, E., and Wu, Y. (2007). Sequential change detection on data streams. In \emph{Seventh IEEE International Conference on Data Mining Workshops (ICDMW 2007)}. \url{doi:10.1109/ICDMW.2007.89}
-}
 \examples{
 library(daltoolbox)
 library(heimdall)
@@ -46,4 +43,7 @@ for (i in 1:length(data$prediction)){
 }
 
 detection[detection$type == 'drift',]
+}
+\references{
+Muthukrishnan, S., Berg, E., and Wu, Y. (2007). Sequential change detection on data streams. In \emph{Seventh IEEE International Conference on Data Mining Workshops (ICDMW 2007)}. \url{doi:10.1109/ICDMW.2007.89}
 }

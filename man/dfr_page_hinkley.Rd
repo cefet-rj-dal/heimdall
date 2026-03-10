@@ -29,9 +29,6 @@ dfr_page_hinkley(
 \description{
 The Page-Hinkley test is a sequential change-point detector that monitors cumulative deviations from a running mean and signals a change when those deviations grow persistently. In this package, the implementation is primarily used for \strong{virtual concept drift} when it monitors a numeric feature stream, although the same statistic can also be applied to error streams to detect \strong{real concept drift}. The method is based on Page (1954) and the later streaming adaptation popularized in data-stream mining.
 }
-\references{
-Page, E. S. (1954). Continuous inspection schemes. \emph{Biometrika}, 41(1/2), 100-115. \url{doi:10.2307/2333009}
-}
 \examples{
 library(daltoolbox)
 library(heimdall)
@@ -61,4 +58,7 @@ for (i in 1:length(data$serie)){
 
 detection <- as.data.frame(detection)
 detection[detection$type == 'drift',]
+}
+\references{
+Page, E. S. (1954). Continuous inspection schemes. \emph{Biometrika}, 41(1/2), 100-115. \url{doi:10.2307/2333009}
 }

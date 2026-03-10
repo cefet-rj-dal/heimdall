@@ -19,9 +19,6 @@ dfr_lbdd(target_feat = NULL, alpha = 0.01, window_size = 1500)
 \description{
 LBDD is a window-based detector that compares the variability of reference and recent samples using Levene's test. Because it monitors changes in the distribution of an observed feature rather than model performance, it is primarily aimed at \strong{virtual concept drift}. In this package, the detector follows the statistical-testing approach discussed by Giusti et al. (2021) for drift analysis, using Levene's variance test as its core mechanism.
 }
-\references{
-Giusti, L., Carvalho, L., Gomes, A. T., Coutinho, R., Soares, J., and Ogasawara, E. (2021). Analysing flight delay under concept drift. \emph{Evolving Systems}. \url{doi:10.1007/s12530-021-09415-z}
-}
 \examples{
 library(daltoolbox)
 library(heimdall)
@@ -48,4 +45,7 @@ for (i in 1:length(data$serie)){
 }
 
 detection[detection$type == 'drift',]
+}
+\references{
+Giusti, L., Carvalho, L., Gomes, A. T., Coutinho, R., Soares, J., and Ogasawara, E. (2021). Analysing flight delay under concept drift. \emph{Evolving Systems}. \url{doi:10.1007/s12530-021-09415-z}
 }
