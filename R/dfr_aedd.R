@@ -1,5 +1,5 @@
 #'@title Autoencoder-Based Drift Detection method
-#'@description Autoencoder-Based method for concept drift detection <doi:0.1109/ICDMW58026.2022.00109>.
+#'@description AEDD is an unsupervised multivariate detector that compares reconstruction errors produced by an autoencoder on reference and recent windows. Because it monitors changes in the input distribution rather than classifier performance, this implementation is primarily aimed at **virtual concept drift**. The method follows Kaminskyi, Li, and Muller (2022) <doi:10.1109/ICDMW58026.2022.00109>.
 #'@param encoding_size Encoding Size
 #'@param ae_class Autoencoder Class
 #'@param batch_size Batch Size for batch learning
@@ -11,6 +11,7 @@
 #'@param alpha The significance threshold for the statistical test used in criteria
 #'@param reporting If TRUE, some data are returned as norm_x_oh, drift_input, hist_proj, and recent_proj.
 #AEDD detection: Daniil Kaminskyi, Bin Li and Emmanuel Müller. “Reconstruction-based unsupervised drift detection over multivariate streaming data.” 2022 IEEE International Conference on Data Mining Workshops (ICDMW).
+#'@references Kaminskyi, D., Li, B., and Muller, E. (2022). Reconstruction-based unsupervised drift detection over multivariate streaming data. In *2022 IEEE International Conference on Data Mining Workshops (ICDMW)*. <doi:10.1109/ICDMW58026.2022.00109>
 #'@return `dfr_aedd` object
 #'@examples
 #'#See an example of using `dfr_aedd` at this

@@ -1,8 +1,9 @@
 #'@title ADWIN method
-#'@description Adaptive Windowing method for concept drift detection <doi:10.1137/1.9781611972771.42>.
+#'@description ADWIN (Adaptive Windowing) is a sequential change detector that maintains a variable-length window and tests whether the means of two subwindows differ significantly. In this package, the implementation is primarily used for **virtual concept drift** when it monitors a numeric feature stream, although the same mechanism can also detect **real concept drift** if applied to an error or loss stream. The theoretical basis follows Bifet and Gavaldà (2007) <doi:10.1137/1.9781611972771.42>.
 #'@param target_feat Feature to be monitored.
 #'@param delta The significance parameter for the ADWIN algorithm.
 #ADWIN detection: Bifet, Albert, and Ricard Gavalda. “Learning from time-changing data with adaptive windowing.” In Proceedings of the 2007 SIAM international conference on data mining, pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
+#'@references Bifet, A., and Gavaldà, R. (2007). Learning from time-changing data with adaptive windowing. In *Proceedings of the 2007 SIAM International Conference on Data Mining*, 443-448. <doi:10.1137/1.9781611972771.42>
 #'@return `dfr_adwin` object
 #'@examples
 #'#Use the same example of dfr_cumsum changing the constructor to:

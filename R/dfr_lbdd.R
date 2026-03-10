@@ -1,9 +1,10 @@
 #'@title Levene Based Drift Detection Method method
-#'@description Variation comparison using Levene Test for concept drift detection.
+#'@description LBDD is a window-based detector that compares the variability of reference and recent samples using Levene's test. Because it monitors changes in the distribution of an observed feature rather than model performance, it is primarily aimed at **virtual concept drift**. In this package, the detector follows the statistical-testing approach discussed by Giusti et al. (2021) for drift analysis, using Levene's variance test as its core mechanism.
 #'@param target_feat Feature to be monitored
 #'@param alpha Probability theshold for the test statistic
 #'@param window_size Size of the sliding window
 #MCDD detection: Lucas Giusti, Leonardo Carvalho, Antonio Tadeu Gomes, Rafaelli Coutinho, Jorge Soares, Eduardo Ogasawara, Analysing flight delay under concept drift, Evolving Systems, 2021, DOI:/10.1007/s12530-021-09415-z.
+#'@references Giusti, L., Carvalho, L., Gomes, A. T., Coutinho, R., Soares, J., and Ogasawara, E. (2021). Analysing flight delay under concept drift. *Evolving Systems*. <doi:10.1007/s12530-021-09415-z>
 #'@return `dfr_lbdd` object
 #'@examples
 #'library(daltoolbox)

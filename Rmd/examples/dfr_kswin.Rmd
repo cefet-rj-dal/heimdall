@@ -6,34 +6,31 @@ install.packages("heimdall")
 ```{r}
 # Loading heimdall
 library(daltoolbox)
-library(heimdall) 
+library(heimdall)
 ```
 
 ```{r}
-# KSWIN Drifter Example
-# This example uses a distribuition-based drift detector with a synthetic variable.
-
+# KSWIN example
+# KSWIN is shown here as a virtual concept drift detector over a numeric stream.
 seed <- 1
 set.seed(seed)
 ```
 
 ```{r}
-# Load Data
+# Load data
 
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
-data$prediction <- st_drift_examples$univariate$serie > 4
+serie <- st_drift_examples$univariate
 ```
 
 ```{r}
-# Plot Serie
+# Plot series
 
-plot(x=1:length(data$serie), y=data$serie)
+plot(x=seq_len(nrow(serie)), y=serie$serie)
 ```
 
 ```{r}
-# Instantiate Model
+# Instantiate model
 
 model <- dfr_kswin(target_feat='serie', window_size=100, stat_size=50)
 ```
@@ -43,27 +40,29 @@ model <- dfr_kswin(target_feat='serie', window_size=100, stat_size=50)
 
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$prediction)){
- output <- update_state(output$obj, data$prediction[i])
- if (output$drift){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie$serie[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 ```
 
 ```{r}
-# Plot Drifts
+# Detected drifts
 
 detection[detection$type == 'drift',]
 ```
 
 ```{r}
-plot(x=1:length(data$serie), y=data$serie)
-for(drift_index in detection[detection$type == 'drift', 'idx']){
+# Plot drifts
+
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
 }
 ```

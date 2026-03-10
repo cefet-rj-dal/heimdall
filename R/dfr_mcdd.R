@@ -1,9 +1,10 @@
 #'@title Mean Comparison Distance method
-#'@description Mean Comparison statistical method for concept drift detection.
+#'@description MCDD is a window-based detector that compares the location of reference and recent samples by means of hypothesis tests on their central tendency. Because it monitors the distribution of observed features rather than predictive errors, it is primarily intended for **virtual concept drift**. In this package, the detector follows the statistical-testing perspective adopted by Giusti et al. (2021) for drift analysis.
 #'@param target_feat Feature to be monitored
 #'@param alpha Probability theshold for all test statistics
 #'@param window_size Size of the sliding window
 #MCDD detection: Lucas Giusti, Leonardo Carvalho, Antonio Tadeu Gomes, Rafaelli Coutinho, Jorge Soares, Eduardo Ogasawara, Analysing flight delay under concept drift, Evolving Systems, 2021, DOI:/10.1007/s12530-021-09415-z.
+#'@references Giusti, L., Carvalho, L., Gomes, A. T., Coutinho, R., Soares, J., and Ogasawara, E. (2021). Analysing flight delay under concept drift. *Evolving Systems*. <doi:10.1007/s12530-021-09415-z>
 #'@return `dfr_mcdd` object
 #'@examples
 #'library(daltoolbox)

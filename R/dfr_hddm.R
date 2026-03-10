@@ -1,10 +1,11 @@
 #'@title Adapted Hoeffding Drift Detection Method (HDDM) method
-#'@description  is a drift detection method based on the Hoeffding’s inequality. HDDM_A uses the average as estimator.  <doi:10.1109/TKDE.2014.2345382>.
+#'@description HDDM_A is a sequential detector based on Hoeffding's inequality that tests whether the mean of the monitored error stream has increased beyond statistically expected fluctuations. Because this implementation is error-based, it is primarily targeted at **real concept drift**. The theoretical basis follows Frias-Blanco et al. (2015) <doi:10.1109/TKDE.2014.2345382>.
 #'@param drift_confidence Confidence to the drift
 #'@param warning_confidence Confidence to the warning
 #'@param two_side_option Option to monitor error increments and decrements (two-sided) or only increments (one-sided)
 #HDDM: Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al. Online and non-parametric drift detection methods based on Hoeffding’s bounds. IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
 #HDDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/hddm_a.py#L6
+#'@references Frias-Blanco, I., del Campo-Avila, J., Ramos-Jimenez, G., Morales-Bueno, R., Ortiz-Diaz, A., and Caballero-Mota, Y. (2015). Online and nonparametric drift detection methods based on Hoeffding's bounds. *IEEE Transactions on Knowledge and Data Engineering*, 27(3), 810-823. <doi:10.1109/TKDE.2014.2345382>
 #'@return `dfr_hddm` object
 #'@examples
 #'library(daltoolbox)

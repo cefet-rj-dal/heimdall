@@ -1,10 +1,11 @@
 #'@title Adapted Drift Detection Method (DDM) method
-#'@description DDM is a concept change detection method based on the PAC learning model premise, that the learner’s error rate will decrease as the number of analysed samples increase, as long as the data distribution is stationary. <doi:10.1007/978-3-540-28645-5_29>.
+#'@description DDM monitors the online error rate of a predictive model under the PAC-learning assumption that, in a stationary environment, the error should decrease or remain stable as more samples are observed. Because it operates on the classifier error stream, it is primarily a detector of **real concept drift**. The method follows Gama et al. (2004) <doi:10.1007/978-3-540-28645-5_29>.
 #'@param min_instances The minimum number of instances before detecting change
 #'@param warning_level Necessary level for warning zone (2 standard deviation)
 #'@param out_control_level Necessary level for a positive drift detection
 #DDM: João Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning with Drift Detection. SBIA 2004: 286-295.
 #DDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/ddm.py
+#'@references Gama, J., Medas, P., Castillo, G., and Rodrigues, P. P. (2004). Learning with drift detection. In *Advances in Artificial Intelligence - SBIA 2004*, 286-295. <doi:10.1007/978-3-540-28645-5_29>
 #'@return `dfr_ddm` object
 #'@examples
 #'library(daltoolbox)

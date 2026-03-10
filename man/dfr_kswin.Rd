@@ -27,7 +27,10 @@ dfr_kswin(
 \code{dfr_kswin} object
 }
 \description{
-Kolmogorov-Smirnov Windowing method for concept drift detection \url{doi:10.1016/j.neucom.2019.11.111}.
+KSWIN applies a Kolmogorov-Smirnov test between a recent window and a reference sample drawn from older observations. In this package, the method is primarily used for \strong{virtual concept drift}, because it monitors distributional changes in a numeric feature stream. The method follows Raab et al. (2020) \url{doi:10.1016/j.neucom.2019.11.111}.
+}
+\references{
+Raab, C., Heusinger, M., and Schleif, F.-M. (2020). Reactive soft prototype computing for concept drift streams. \emph{Neurocomputing}, 416, 340-351. \url{doi:10.1016/j.neucom.2019.11.111}
 }
 \examples{
 library(daltoolbox)

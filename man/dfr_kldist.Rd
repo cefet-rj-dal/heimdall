@@ -19,7 +19,10 @@ dfr_kldist(target_feat = NULL, window_size = 100, p_th = 0.05, data = NULL)
 \code{dfr_kldist} object
 }
 \description{
-Kullback Leibler Windowing method for concept drift detection.
+This detector compares consecutive reference and recent windows through the Kullback-Leibler divergence estimated from their empirical distributions. In this package, it is primarily used for \strong{virtual concept drift}, since it monitors changes in the distribution of a numeric feature stream rather than predictive error. The statistical foundation is the Kullback-Leibler divergence introduced by Kullback and Leibler (1951).
+}
+\references{
+Kullback, S., and Leibler, R. A. (1951). On information and sufficiency. \emph{The Annals of Mathematical Statistics}, 22(1), 79-86. \url{doi:10.1214/aoms/1177729694}
 }
 \examples{
 library(daltoolbox)

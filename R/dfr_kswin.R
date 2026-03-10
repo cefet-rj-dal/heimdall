@@ -1,5 +1,5 @@
 #'@title KSWIN method
-#'@description Kolmogorov-Smirnov Windowing method for concept drift detection <doi:10.1016/j.neucom.2019.11.111>.
+#'@description KSWIN applies a Kolmogorov-Smirnov test between a recent window and a reference sample drawn from older observations. In this package, the method is primarily used for **virtual concept drift**, because it monitors distributional changes in a numeric feature stream. The method follows Raab et al. (2020) <doi:10.1016/j.neucom.2019.11.111>.
 #'@param target_feat Feature to be monitored.
 #'@param alpha Probability for the test statistic of the Kolmogorov-Smirnov-Test The alpha parameter is very sensitive, therefore should be set below 0.01.
 #'@param window_size Size of the sliding window (must be > 2*stat_size)
@@ -7,6 +7,7 @@
 #'@param data Already collected data to avoid cold start.
 #KSWIN detection: Christoph Raab, Moritz Heusinger, Frank-Michael Schleif, Reactive Soft Prototype Computing for Concept Drift Streams, Neurocomputing, 2020.
 #KSWIN detection implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/kswin.py#L5
+#'@references Raab, C., Heusinger, M., and Schleif, F.-M. (2020). Reactive soft prototype computing for concept drift streams. *Neurocomputing*, 416, 340-351. <doi:10.1016/j.neucom.2019.11.111>
 #'@return `dfr_kswin` object
 #'@examples
 #'library(daltoolbox)

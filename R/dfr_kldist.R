@@ -1,10 +1,11 @@
 #'@title KL Distance method
-#'@description Kullback Leibler Windowing method for concept drift detection.
+#'@description This detector compares consecutive reference and recent windows through the Kullback-Leibler divergence estimated from their empirical distributions. In this package, it is primarily used for **virtual concept drift**, since it monitors changes in the distribution of a numeric feature stream rather than predictive error. The statistical foundation is the Kullback-Leibler divergence introduced by Kullback and Leibler (1951).
 #'@param target_feat Feature to be monitored.
 #'@param p_th Drift threshold applied to the KL divergence
 #'@param window_size Size of the sliding window
 #'@param data Already collected data to avoid cold start.
 #KL divergence: Solomon Kullback and Richard A. Leibler. On information and sufficiency. Annals of Mathematical Statistics, 1951.
+#'@references Kullback, S., and Leibler, R. A. (1951). On information and sufficiency. *The Annals of Mathematical Statistics*, 22(1), 79-86. <doi:10.1214/aoms/1177729694>
 #'@return `dfr_kldist` object
 #'@examples
 #'library(daltoolbox)
