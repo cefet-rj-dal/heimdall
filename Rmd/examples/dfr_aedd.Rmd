@@ -1,12 +1,5 @@
 ```{r}
-# Installing heimdall
-install.packages("heimdall")
-```
-
-```{r}
 # Loading heimdall
-library(daltoolbox)
-library(daltoolboxdp)
 library(heimdall)
 ```
 
@@ -36,7 +29,6 @@ plot(x=serie$i, y=serie$serie2)
 
 model <- dfr_aedd(
   encoding_size=1,
-  ae_class=autoenc_ed,
   batch_size=64,
   monitoring_step=10,
   window_size=256

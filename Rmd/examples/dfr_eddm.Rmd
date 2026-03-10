@@ -1,11 +1,5 @@
 ```{r}
-# Installing heimdall
-install.packages("heimdall")
-```
-
-```{r}
 # Loading heimdall
-library(daltoolbox)
 library(heimdall)
 ```
 
