@@ -27,6 +27,7 @@ Imports:
   caret,
   daltoolbox,
   ggplot2,
+  Metrics,
   reticulate,
   pROC,
   car

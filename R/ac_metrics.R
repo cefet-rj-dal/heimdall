@@ -4,7 +4,7 @@
 #'@examples
 #'# See ?metric for an example of DDM drift detector
 #'@import daltoolbox
-#'@import 'Metrics'
+#'@importFrom Metrics precision recall
 #'@export
 metric <- function(){
   obj <- dal_base()
