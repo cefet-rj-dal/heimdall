@@ -1,24 +1,20 @@
-# Loading heimdall
+# Load the autoencoder backend and Heimdall.
 library(daltoolboxdp)
 library(heimdall)
 
-# AEDD example
-# AEDD is an unsupervised detector for virtual concept drift in multivariate data.
+# Fix the seed so the example can be reproduced consistently.
 seed <- 1
 set.seed(seed)
 
-# Load data
-
+# Load the multivariate synthetic stream.
 data(st_drift_examples)
 serie <- st_drift_examples$dataset2
 
-# Plot monitored variables
-
+# Plot the monitored variables before running the detector.
 plot(x=serie$i, y=serie$serie1)
 plot(x=serie$i, y=serie$serie2)
 
-# Instantiate model
-
+# Instantiate AEDD with a compact latent representation.
 model <- dfr_aedd(
   encoding_size=1,
   ae_class=autoenc_ed,
@@ -28,8 +24,7 @@ model <- dfr_aedd(
 )
 monitored_features <- c('serie1', 'serie2')
 
-# Detection
-
+# Update AEDD row by row using only the selected monitored features.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in seq_len(nrow(serie))){
@@ -43,12 +38,10 @@ for (i in seq_len(nrow(serie))){
   detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 
-# Detected drifts
-
+# Print the detected drift points.
 detection[detection$type == 'drift',]
 
-# Plot drifts
-
+# Display the alarms on top of one monitored variable.
 plot(x=serie$i, y=serie$serie2)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)

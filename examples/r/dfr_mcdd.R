@@ -1,26 +1,21 @@
-# Loading heimdall
+# Load Heimdall and the synthetic stream.
 library(heimdall)
 
-# MCDD example
-# MCDD is shown here as a virtual concept drift detector over a numeric stream.
+# Fix the seed to keep the walkthrough reproducible.
 seed <- 1
 set.seed(seed)
 
-# Load data
-
+# Load the univariate series monitored in this example.
 data(st_drift_examples)
 serie <- st_drift_examples$univariate
 
-# Plot series
-
+# Plot the monitored signal before running the detector.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 
-# Instantiate model
-
+# Instantiate the mean-comparison detector.
 model <- dfr_mcdd(target_feat='serie', window_size=100)
 
-# Detection
-
+# Update the detector sequentially and collect the alarm positions.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in seq_len(nrow(serie))){
@@ -34,12 +29,10 @@ for (i in seq_len(nrow(serie))){
   detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 
-# Detected drifts
-
+# Print the detected drift points.
 detection[detection$type == 'drift',]
 
-# Plot drifts
-
+# Overlay the detected drifts on the original series.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)

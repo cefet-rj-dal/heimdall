@@ -1,21 +1,29 @@
+# CUSUM Example
+
+CUSUM is a sequential detector that accumulates evidence of persistent deviation. In model monitoring, it is naturally applied to a binary error stream, making it a practical detector for **real concept drift**.
+
+Reference: Muthukrishnan, S., Berg, E., and Wu, Y. (2007). *Sequential change detection on data streams*. IEEE ICDMW. <doi:10.1109/ICDMW.2007.89>
+
+## Learning goal
+
+This example shows how to turn a simple prediction rule into a binary monitored signal and feed that signal into a detector that focuses on performance changes.
+
 
 ``` r
-# Loading heimdall
+# Load Heimdall and the synthetic benchmark stream.
 library(heimdall)
 ```
 
 
 ``` r
-# CUSUM example
-# CUSUM is shown here as a real concept drift detector over a binary error stream.
+# Fix the seed for reproducibility.
 seed <- 1
 set.seed(seed)
 ```
 
 
 ``` r
-# Load data
-
+# Load the stream and derive a simple binary error-like signal.
 data(st_drift_examples)
 data <- st_drift_examples$univariate
 data$prediction <- st_drift_examples$univariate$serie > 4
@@ -23,8 +31,7 @@ data$prediction <- st_drift_examples$univariate$serie > 4
 
 
 ``` r
-# Plot binary error stream
-
+# Plot the binary monitored stream used by CUSUM.
 plot(x=seq_len(nrow(data)), y=data$prediction)
 ```
 
@@ -32,15 +39,13 @@ plot(x=seq_len(nrow(data)), y=data$prediction)
 
 
 ``` r
-# Instantiate model
-
+# Instantiate the CUSUM detector.
 model <- dfr_cusum()
 ```
 
 
 ``` r
-# Detection
-
+# Update the detector sequentially over the binary stream.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in seq_len(nrow(data))){
@@ -57,8 +62,7 @@ for (i in seq_len(nrow(data))){
 
 
 ``` r
-# Detected drifts
-
+# Print the drift alarms produced by the detector.
 detection[detection$type == 'drift',]
 ```
 
@@ -69,8 +73,7 @@ detection[detection$type == 'drift',]
 
 
 ``` r
-# Plot drifts over the original signal
-
+# Map the drift alarms back onto the original numeric series.
 plot(x=seq_len(nrow(data)), y=data$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
