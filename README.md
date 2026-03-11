@@ -53,8 +53,6 @@ Browse the materials here:
 
 - [Examples
   directory](https://github.com/cefet-rj-dal/heimdall/tree/main/examples)
-- [Examples
-  guide](https://github.com/cefet-rj-dal/heimdall/blob/main/examples/Readme.Rmd)
 
 ------------------------------------------------------------------------
 
