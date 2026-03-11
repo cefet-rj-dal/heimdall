@@ -1,43 +1,24 @@
-
-``` r
 # Loading heimdall
 library(heimdall)
-```
 
-
-``` r
-# KSWIN example
-# KSWIN is shown here as a virtual concept drift detector over a numeric stream.
+# KLDIST example
+# KLDIST is shown here as a virtual concept drift detector over a numeric stream.
 seed <- 1
 set.seed(seed)
-```
 
-
-``` r
 # Load data
 
 data(st_drift_examples)
 serie <- st_drift_examples$univariate
-```
 
-
-``` r
 # Plot series
 
 plot(x=seq_len(nrow(serie)), y=serie$serie)
-```
 
-![plot of chunk unnamed-chunk-4](fig/dfr_kswin/unnamed-chunk-4-1.png)
-
-
-``` r
 # Instantiate model
 
-model <- dfr_kswin(target_feat='serie', window_size=100, stat_size=50)
-```
+model <- dfr_kldist(target_feat='serie', window_size=100)
 
-
-``` r
 # Detection
 
 detection <- NULL
@@ -52,31 +33,14 @@ for (i in seq_len(nrow(serie))){
   }
   detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
-```
 
-
-``` r
 # Detected drifts
 
 detection[detection$type == 'drift',]
-```
 
-```
-##     idx event  type
-## 228 228  TRUE drift
-## 338 338  TRUE drift
-## 389 389  TRUE drift
-## 440 440  TRUE drift
-```
-
-
-``` r
 # Plot drifts
 
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
 }
-```
-
-![plot of chunk unnamed-chunk-8](fig/dfr_kswin/unnamed-chunk-8-1.png)

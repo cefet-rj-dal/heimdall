@@ -36,25 +36,12 @@ plot(x=seq_len(nrow(serie)), y=serie$serie)
 model <- dfr_lbdd(target_feat='serie', window_size=100)
 ```
 
-```
-## Error in `dfr_lbdd()`:
-## ! could not find function "dfr_lbdd"
-```
-
 
 ``` r
 # Detection
 
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-```
-
-```
-## Error:
-## ! object 'model' not found
-```
-
-``` r
 for (i in seq_len(nrow(serie))){
   output <- update_state(output$obj, serie$serie[i])
   if (output$drift){
@@ -67,11 +54,6 @@ for (i in seq_len(nrow(serie))){
 }
 ```
 
-```
-## Error:
-## ! object 'output' not found
-```
-
 
 ``` r
 # Detected drifts
@@ -80,7 +62,11 @@ detection[detection$type == 'drift',]
 ```
 
 ```
-## NULL
+##     idx event  type
+## 119 119  TRUE drift
+## 219 219  TRUE drift
+## 328 328  TRUE drift
+## 428 428  TRUE drift
 ```
 
 
@@ -88,12 +74,9 @@ detection[detection$type == 'drift',]
 # Plot drifts
 
 plot(x=seq_len(nrow(serie)), y=serie$serie)
-```
-
-![plot of chunk unnamed-chunk-8](fig/dfr_lbdd/unnamed-chunk-8-1.png)
-
-``` r
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
 }
 ```
+
+![plot of chunk unnamed-chunk-8](fig/dfr_lbdd/unnamed-chunk-8-1.png)

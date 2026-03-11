@@ -1,44 +1,25 @@
-
-``` r
 # Loading heimdall
 library(heimdall)
-```
 
-
-``` r
-# ECDD example
-# ECDD is shown here as a real concept drift detector over a binary error stream.
+# EDDM example
+# EDDM is shown here as a real concept drift detector over a binary error stream.
 seed <- 1
 set.seed(seed)
-```
 
-
-``` r
 # Load data
 
 data(st_drift_examples)
 data <- st_drift_examples$univariate
 data$prediction <- st_drift_examples$univariate$serie > 4
-```
 
-
-``` r
 # Plot binary error stream
 
 plot(x=seq_len(nrow(data)), y=data$prediction)
-```
 
-![plot of chunk unnamed-chunk-4](fig/dfr_ecdd/unnamed-chunk-4-1.png)
-
-
-``` r
 # Instantiate model
 
-model <- dfr_ecdd()
-```
+model <- dfr_eddm()
 
-
-``` r
 # Detection
 
 detection <- NULL
@@ -53,28 +34,14 @@ for (i in seq_len(nrow(data))){
   }
   detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
-```
 
-
-``` r
 # Detected drifts
 
 detection[detection$type == 'drift',]
-```
 
-```
-##     idx event  type
-## 201 201  TRUE drift
-```
-
-
-``` r
 # Plot drifts over the original signal
 
 plot(x=seq_len(nrow(data)), y=data$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
 }
-```
-
-![plot of chunk unnamed-chunk-8](fig/dfr_ecdd/unnamed-chunk-8-1.png)

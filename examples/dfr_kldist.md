@@ -54,20 +54,6 @@ for (i in seq_len(nrow(serie))){
 }
 ```
 
-```
-## Warning in update_state.dfr_kldist(output$obj, serie$serie[i]): NaNs produced
-## Warning in update_state.dfr_kldist(output$obj, serie$serie[i]): NaNs produced
-## Warning in update_state.dfr_kldist(output$obj, serie$serie[i]): NaNs produced
-## Warning in update_state.dfr_kldist(output$obj, serie$serie[i]): NaNs produced
-## Warning in update_state.dfr_kldist(output$obj, serie$serie[i]): NaNs produced
-## Warning in update_state.dfr_kldist(output$obj, serie$serie[i]): NaNs produced
-## Warning in update_state.dfr_kldist(output$obj, serie$serie[i]): NaNs produced
-## Warning in update_state.dfr_kldist(output$obj, serie$serie[i]): NaNs produced
-## Warning in update_state.dfr_kldist(output$obj, serie$serie[i]): NaNs produced
-## Warning in update_state.dfr_kldist(output$obj, serie$serie[i]): NaNs produced
-## Warning in update_state.dfr_kldist(output$obj, serie$serie[i]): NaNs produced
-```
-
 
 ``` r
 # Detected drifts
@@ -77,10 +63,14 @@ detection[detection$type == 'drift',]
 
 ```
 ##     idx event  type
-## 105 105  TRUE drift
-## 208 208  TRUE drift
-## 384 384  TRUE drift
-## 484 484  TRUE drift
+## 101 101  TRUE drift
+## 152 152  TRUE drift
+## 203 203  TRUE drift
+## 254 254  TRUE drift
+## 305 305  TRUE drift
+## 356 356  TRUE drift
+## 407 407  TRUE drift
+## 458 458  TRUE drift
 ```
 
 
