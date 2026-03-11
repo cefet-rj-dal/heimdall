@@ -1,38 +1,43 @@
+# DDM Example
+
+DDM monitors the online error rate of a predictive process under the assumption that a stable model should keep its error under control over time. Because it operates on model errors, it is a detector of **real concept drift**.
+
+Reference: Gama, J., Medas, P., Castillo, G., and Rodrigues, P. P. (2004). *Learning with drift detection*. SBIA. <doi:10.1007/978-3-540-28645-5_29>
+
+## Learning goal
+
+This example is a compact template for error-based drift monitoring with Heimdall.
+
 ```{r}
-# Loading heimdall
+# Load Heimdall and the built-in synthetic data stream.
 library(heimdall)
 ```
 
 ```{r}
-# DDM example
-# DDM is shown here as a real concept drift detector over a binary error stream.
+# Fix the seed to make the example reproducible.
 seed <- 1
 set.seed(seed)
 ```
 
 ```{r}
-# Load data
-
+# Load the univariate stream and derive the binary monitored signal.
 data(st_drift_examples)
 data <- st_drift_examples$univariate
 data$prediction <- st_drift_examples$univariate$serie > 4
 ```
 
 ```{r}
-# Plot binary error stream
-
+# Plot the binary stream monitored by DDM.
 plot(x=seq_len(nrow(data)), y=data$prediction)
 ```
 
 ```{r}
-# Instantiate model
-
+# Instantiate the DDM detector.
 model <- dfr_ddm()
 ```
 
 ```{r}
-# Detection
-
+# Process the stream sequentially and store the drift alarms.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in seq_len(nrow(data))){
@@ -48,14 +53,12 @@ for (i in seq_len(nrow(data))){
 ```
 
 ```{r}
-# Detected drifts
-
+# Print the positions where DDM detected drift.
 detection[detection$type == 'drift',]
 ```
 
 ```{r}
-# Plot drifts over the original signal
-
+# Show the detected drifts over the original numeric signal.
 plot(x=seq_len(nrow(data)), y=data$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)

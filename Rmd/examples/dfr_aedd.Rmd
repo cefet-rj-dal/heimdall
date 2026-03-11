@@ -1,33 +1,46 @@
+# AEDD Example
+
+AEDD is an unsupervised multivariate detector based on autoencoder reconstruction error. The intuition is that if recent data become harder to reconstruct than historical data, the feature distribution may have changed.
+
+In this example, AEDD is used on a multivariate stream, so the interpretation is **virtual concept drift**.
+
+Reference: Kaminskyi, D., Li, B., and Muller, E. (2022). *Reconstruction-based unsupervised drift detection over multivariate streaming data*. IEEE ICDMW. <doi:10.1109/ICDMW58026.2022.00109>
+
+## Learning goal
+
+This example introduces the multivariate and autoencoder-based workflow in Heimdall:
+
+1. choose the monitored features;
+2. instantiate AEDD with an autoencoder backend;
+3. update the detector row by row;
+4. inspect the detected drifts visually.
+
 ```{r}
-# Loading heimdall
+# Load the autoencoder backend and Heimdall.
 library(daltoolboxdp)
 library(heimdall)
 ```
 
 ```{r}
-# AEDD example
-# AEDD is an unsupervised detector for virtual concept drift in multivariate data.
+# Fix the seed so the example can be reproduced consistently.
 seed <- 1
 set.seed(seed)
 ```
 
 ```{r}
-# Load data
-
+# Load the multivariate synthetic stream.
 data(st_drift_examples)
 serie <- st_drift_examples$dataset2
 ```
 
 ```{r}
-# Plot monitored variables
-
+# Plot the monitored variables before running the detector.
 plot(x=serie$i, y=serie$serie1)
 plot(x=serie$i, y=serie$serie2)
 ```
 
 ```{r}
-# Instantiate model
-
+# Instantiate AEDD with a compact latent representation.
 model <- dfr_aedd(
   encoding_size=1,
   ae_class=autoenc_ed,
@@ -39,8 +52,7 @@ monitored_features <- c('serie1', 'serie2')
 ```
 
 ```{r}
-# Detection
-
+# Update AEDD row by row using only the selected monitored features.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in seq_len(nrow(serie))){
@@ -56,14 +68,12 @@ for (i in seq_len(nrow(serie))){
 ```
 
 ```{r}
-# Detected drifts
-
+# Print the detected drift points.
 detection[detection$type == 'drift',]
 ```
 
 ```{r}
-# Plot drifts
-
+# Display the alarms on top of one monitored variable.
 plot(x=serie$i, y=serie$serie2)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)

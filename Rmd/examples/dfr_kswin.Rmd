@@ -1,37 +1,44 @@
+# KSWIN Example
+
+KSWIN applies a Kolmogorov-Smirnov test between a recent window and a reference sample from older observations. It is a practical detector when you want to identify changes in the distribution of a numeric stream.
+
+In this example, KSWIN is used for **virtual concept drift** detection.
+
+Reference: Raab, C., Heusinger, M., and Schleif, F.-M. (2020). *Reactive soft prototype computing for concept drift streams*. Neurocomputing, 416, 340-351. <doi:10.1016/j.neucom.2019.11.111>
+
+## Learning goal
+
+This example demonstrates how to use a classical window-based statistical test inside the Heimdall update loop.
+
 ```{r}
-# Loading heimdall
+# Load Heimdall and the synthetic univariate stream.
 library(heimdall)
 ```
 
 ```{r}
-# KSWIN example
-# KSWIN is shown here as a virtual concept drift detector over a numeric stream.
+# Fix the seed for reproducibility.
 seed <- 1
 set.seed(seed)
 ```
 
 ```{r}
-# Load data
-
+# Load the numeric stream used by the detector.
 data(st_drift_examples)
 serie <- st_drift_examples$univariate
 ```
 
 ```{r}
-# Plot series
-
+# Plot the monitored variable before detection.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 ```
 
 ```{r}
-# Instantiate model
-
+# Instantiate KSWIN with explicit window parameters.
 model <- dfr_kswin(target_feat='serie', window_size=100, stat_size=50)
 ```
 
 ```{r}
-# Detection
-
+# Update the detector sequentially and store the alarm positions.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in seq_len(nrow(serie))){
@@ -47,14 +54,12 @@ for (i in seq_len(nrow(serie))){
 ```
 
 ```{r}
-# Detected drifts
-
+# Print the points where KSWIN raised drift alarms.
 detection[detection$type == 'drift',]
 ```
 
 ```{r}
-# Plot drifts
-
+# Overlay the detected drifts on the original stream.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)

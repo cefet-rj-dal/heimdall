@@ -1,38 +1,43 @@
+# EDDM Example
+
+EDDM extends DDM by monitoring the distance between classification errors instead of only the error rate. This makes it especially useful when **real concept drift** is gradual rather than abrupt.
+
+Reference: Baena-Garcia, M., del Campo-Avila, J., Fidalgo, R., Bifet, A., Gavaldà, R., and Morales-Bueno, R. (2006). *Early drift detection method*. Fourth International Workshop on Knowledge Discovery from Data Streams.
+
+## Learning goal
+
+This example is a practical template for users who want to monitor gradual degradation in predictive behavior.
+
 ```{r}
-# Loading heimdall
+# Load Heimdall and the built-in synthetic stream.
 library(heimdall)
 ```
 
 ```{r}
-# EDDM example
-# EDDM is shown here as a real concept drift detector over a binary error stream.
+# Fix the seed so the results are reproducible.
 seed <- 1
 set.seed(seed)
 ```
 
 ```{r}
-# Load data
-
+# Load the stream and derive the binary monitored signal.
 data(st_drift_examples)
 data <- st_drift_examples$univariate
 data$prediction <- st_drift_examples$univariate$serie > 4
 ```
 
 ```{r}
-# Plot binary error stream
-
+# Visualize the binary stream that EDDM will monitor.
 plot(x=seq_len(nrow(data)), y=data$prediction)
 ```
 
 ```{r}
-# Instantiate model
-
+# Instantiate the EDDM detector.
 model <- dfr_eddm()
 ```
 
 ```{r}
-# Detection
-
+# Process the stream sequentially and store each detected alarm.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in seq_len(nrow(data))){
@@ -48,14 +53,12 @@ for (i in seq_len(nrow(data))){
 ```
 
 ```{r}
-# Detected drifts
-
+# Print the drift alarms returned by EDDM.
 detection[detection$type == 'drift',]
 ```
 
 ```{r}
-# Plot drifts over the original signal
-
+# Show those alarms on top of the original numeric series.
 plot(x=seq_len(nrow(data)), y=data$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)

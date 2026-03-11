@@ -22,13 +22,39 @@ contexts. The package offers several state-of-the-art methods to
 identify and handle concept drift, as well as techniques for efficient
 model adaptation.
 
+Heimdall is particularly useful when you need to move quickly from the
+theory of concept drift to a working streaming implementation. The
+package includes detectors for both **real concept drift** and
+**virtual concept drift**, and the repository examples are designed to
+help users understand that distinction through small, reproducible
+workflows.
+
 ------------------------------------------------------------------------
 
 ## Examples
 
-Heimdall usage examples are organized according to drift detection:
+Heimdall usage examples are organized to help users learn the package
+progressively, not only to list detector names.
 
-- [Examples](https://github.com/cefet-rj-dal/heimdall/tree/main/examples)
+The examples directory contains:
+
+- rendered walkthroughs for each detector;
+- extracted R scripts for quick reuse;
+- figure outputs and document exports;
+- a dedicated guide describing the purpose of each example.
+
+Recommended starting points:
+
+- `dfr_adwin` for a simple univariate distribution-monitoring example;
+- `dfr_ddm` for an error-based supervised example;
+- `dfr_aedd` for a multivariate unsupervised example.
+
+Browse the materials here:
+
+- [Examples
+  directory](https://github.com/cefet-rj-dal/heimdall/tree/main/examples)
+- [Examples
+  guide](https://github.com/cefet-rj-dal/heimdall/blob/main/examples/Readme.Rmd)
 
 ------------------------------------------------------------------------
 
