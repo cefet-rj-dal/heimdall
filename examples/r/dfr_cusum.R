@@ -1,27 +1,22 @@
-# Loading heimdall
+# Load Heimdall and the synthetic benchmark stream.
 library(heimdall)
 
-# CUSUM example
-# CUSUM is shown here as a real concept drift detector over a binary error stream.
+# Fix the seed for reproducibility.
 seed <- 1
 set.seed(seed)
 
-# Load data
-
+# Load the stream and derive a simple binary error-like signal.
 data(st_drift_examples)
 data <- st_drift_examples$univariate
 data$prediction <- st_drift_examples$univariate$serie > 4
 
-# Plot binary error stream
-
+# Plot the binary monitored stream used by CUSUM.
 plot(x=seq_len(nrow(data)), y=data$prediction)
 
-# Instantiate model
-
+# Instantiate the CUSUM detector.
 model <- dfr_cusum()
 
-# Detection
-
+# Update the detector sequentially over the binary stream.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in seq_len(nrow(data))){
@@ -35,12 +30,10 @@ for (i in seq_len(nrow(data))){
   detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 
-# Detected drifts
-
+# Print the drift alarms produced by the detector.
 detection[detection$type == 'drift',]
 
-# Plot drifts over the original signal
-
+# Map the drift alarms back onto the original numeric series.
 plot(x=seq_len(nrow(data)), y=data$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)

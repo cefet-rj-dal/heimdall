@@ -1,26 +1,21 @@
-# Loading heimdall
+# Load Heimdall and the synthetic univariate stream.
 library(heimdall)
 
-# KSWIN example
-# KSWIN is shown here as a virtual concept drift detector over a numeric stream.
+# Fix the seed for reproducibility.
 seed <- 1
 set.seed(seed)
 
-# Load data
-
+# Load the numeric stream used by the detector.
 data(st_drift_examples)
 serie <- st_drift_examples$univariate
 
-# Plot series
-
+# Plot the monitored variable before detection.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 
-# Instantiate model
-
+# Instantiate KSWIN with explicit window parameters.
 model <- dfr_kswin(target_feat='serie', window_size=100, stat_size=50)
 
-# Detection
-
+# Update the detector sequentially and store the alarm positions.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in seq_len(nrow(serie))){
@@ -34,12 +29,10 @@ for (i in seq_len(nrow(serie))){
   detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 
-# Detected drifts
-
+# Print the points where KSWIN raised drift alarms.
 detection[detection$type == 'drift',]
 
-# Plot drifts
-
+# Overlay the detected drifts on the original stream.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)

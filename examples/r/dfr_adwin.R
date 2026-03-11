@@ -1,26 +1,21 @@
-# Loading heimdall
+# Load Heimdall so the detector and built-in datasets are available.
 library(heimdall)
 
-# ADWIN example
-# ADWIN is shown here as a virtual concept drift detector over a numeric stream.
+# Fix the seed to keep the example reproducible.
 seed <- 1
 set.seed(seed)
 
-# Load data
-
+# Load the synthetic univariate stream used in the walkthrough.
 data(st_drift_examples)
 serie <- st_drift_examples$univariate
 
-# Plot series
-
+# Plot the monitored variable before starting the sequential updates.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 
-# Instantiate model
-
+# Instantiate ADWIN to monitor the numeric stream directly.
 model <- dfr_adwin(target_feat='serie')
 
-# Detection
-
+# Run the sequential detection loop and record every drift alarm.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in seq_len(nrow(serie))){
@@ -34,12 +29,10 @@ for (i in seq_len(nrow(serie))){
   detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 
-# Detected drifts
-
+# Print the drift positions detected by ADWIN.
 detection[detection$type == 'drift',]
 
-# Plot drifts
-
+# Overlay the detected drifts on the original numeric stream.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)

@@ -1,27 +1,22 @@
-# Loading heimdall
+# Load Heimdall and the built-in synthetic stream.
 library(heimdall)
 
-# EDDM example
-# EDDM is shown here as a real concept drift detector over a binary error stream.
+# Fix the seed so the results are reproducible.
 seed <- 1
 set.seed(seed)
 
-# Load data
-
+# Load the stream and derive the binary monitored signal.
 data(st_drift_examples)
 data <- st_drift_examples$univariate
 data$prediction <- st_drift_examples$univariate$serie > 4
 
-# Plot binary error stream
-
+# Visualize the binary stream that EDDM will monitor.
 plot(x=seq_len(nrow(data)), y=data$prediction)
 
-# Instantiate model
-
+# Instantiate the EDDM detector.
 model <- dfr_eddm()
 
-# Detection
-
+# Process the stream sequentially and store each detected alarm.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in seq_len(nrow(data))){
@@ -35,12 +30,10 @@ for (i in seq_len(nrow(data))){
   detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 
-# Detected drifts
-
+# Print the drift alarms returned by EDDM.
 detection[detection$type == 'drift',]
 
-# Plot drifts over the original signal
-
+# Show those alarms on top of the original numeric series.
 plot(x=seq_len(nrow(data)), y=data$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)

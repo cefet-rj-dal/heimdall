@@ -1,29 +1,38 @@
+# MCDD Example
+
+MCDD compares historical and recent windows through statistical tests on their central tendency. It is useful when you want to detect shifts in the average behavior of the monitored signal.
+
+In this example, MCDD is used for **virtual concept drift** detection.
+
+Reference: Giusti, L., Carvalho, L., Gomes, A. T., Coutinho, R., Soares, J., and Ogasawara, E. (2021). *Analysing flight delay under concept drift*. Evolving Systems. <doi:10.1007/s12530-021-09415-z>
+
+## Learning goal
+
+This example demonstrates a mean-comparison workflow that fits the same streaming pattern used by the other Heimdall detectors.
+
 
 ``` r
-# Loading heimdall
+# Load Heimdall and the synthetic stream.
 library(heimdall)
 ```
 
 
 ``` r
-# MCDD example
-# MCDD is shown here as a virtual concept drift detector over a numeric stream.
+# Fix the seed to keep the walkthrough reproducible.
 seed <- 1
 set.seed(seed)
 ```
 
 
 ``` r
-# Load data
-
+# Load the univariate series monitored in this example.
 data(st_drift_examples)
 serie <- st_drift_examples$univariate
 ```
 
 
 ``` r
-# Plot series
-
+# Plot the monitored signal before running the detector.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 ```
 
@@ -31,15 +40,13 @@ plot(x=seq_len(nrow(serie)), y=serie$serie)
 
 
 ``` r
-# Instantiate model
-
+# Instantiate the mean-comparison detector.
 model <- dfr_mcdd(target_feat='serie', window_size=100)
 ```
 
 
 ``` r
-# Detection
-
+# Update the detector sequentially and collect the alarm positions.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in seq_len(nrow(serie))){
@@ -56,8 +63,7 @@ for (i in seq_len(nrow(serie))){
 
 
 ``` r
-# Detected drifts
-
+# Print the detected drift points.
 detection[detection$type == 'drift',]
 ```
 
@@ -70,8 +76,7 @@ detection[detection$type == 'drift',]
 
 
 ``` r
-# Plot drifts
-
+# Overlay the detected drifts on the original series.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
