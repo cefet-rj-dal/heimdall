@@ -24,7 +24,7 @@ dfr_eddm(
 \code{dfr_eddm} object
 }
 \description{
-EDDM (Early Drift Detection Method) aims to improve the detection rate of gradual concept drift in DDM, while keeping a good performance against abrupt concept drift. \url{doi:2747577a61c70bc3874380130615e15aff76339e}
+EDDM extends DDM by monitoring the distance between classification errors instead of only the error rate, which makes it more sensitive to gradual degradation. Because it operates on the model error stream, it is primarily intended for \strong{real concept drift}. The method follows Baena-Garcia et al. (2006), who proposed EDDM for improved detection of gradual drift.
 }
 \examples{
 library(daltoolbox)
@@ -54,4 +54,7 @@ for (i in 1:length(data$prediction)){
 }
 
 detection[detection$type == 'drift',]
+}
+\references{
+Baena-Garcia, M., del Campo-Avila, J., Fidalgo, R., Bifet, A., Gavaldà, R., and Morales-Bueno, R. (2006). Early drift detection method. In \emph{Fourth International Workshop on Knowledge Discovery from Data Streams}.
 }

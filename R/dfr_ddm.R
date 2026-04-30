@@ -1,10 +1,11 @@
 #'@title Adapted Drift Detection Method (DDM) method
-#'@description DDM is a concept change detection method based on the PAC learning model premise, that the learner’s error rate will decrease as the number of analysed samples increase, as long as the data distribution is stationary. <doi:10.1007/978-3-540-28645-5_29>.
+#'@description DDM monitors the online error rate of a predictive model under the PAC-learning assumption that, in a stationary environment, the error should decrease or remain stable as more samples are observed. Because it operates on the classifier error stream, it is primarily a detector of **real concept drift**. The method follows Gama et al. (2004) <doi:10.1007/978-3-540-28645-5_29>.
 #'@param min_instances The minimum number of instances before detecting change
 #'@param warning_level Necessary level for warning zone (2 standard deviation)
 #'@param out_control_level Necessary level for a positive drift detection
 #DDM: João Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning with Drift Detection. SBIA 2004: 286-295.
 #DDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/ddm.py
+#'@references Gama, J., Medas, P., Castillo, G., and Rodrigues, P. P. (2004). Learning with drift detection. In *Advances in Artificial Intelligence - SBIA 2004*, 286-295. <doi:10.1007/978-3-540-28645-5_29>
 #'@return `dfr_ddm` object
 #'@examples
 #'library(daltoolbox)
@@ -67,7 +68,7 @@ update_state.dfr_ddm <- function(obj, value){
   }
   state <- obj$state
   state$miss_prob <- state$miss_prob + (value - state$miss_prob) / state$sample_count
-  state$miss_std <- sqrt(abs(state$miss_prob * (1 - state$miss_prob))) / state$sample_count
+  state$miss_std <- sqrt(max(0, state$miss_prob * (1 - state$miss_prob) / state$sample_count))
   state$sample_count <- state$sample_count + 1
   
   state$estimation <- state$miss_prob
@@ -84,8 +85,6 @@ update_state.dfr_ddm <- function(obj, value){
     state$miss_prob_min <- state$miss_prob
     state$miss_sd_min <- state$miss_std
     state$miss_prob_sd_min <- state$miss_prob + state$miss_std
-    state$sum <- 0
-    state$sample_count <- 1
   }
   
   if((state$miss_prob + state$miss_std) > (state$miss_prob_min + state$out_control_level * state$miss_sd_min)){

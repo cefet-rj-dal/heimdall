@@ -1,5 +1,5 @@
 #'@title Autoencoder-Based Drift Detection method
-#'@description Autoencoder-Based method for concept drift detection <doi:0.1109/ICDMW58026.2022.00109>.
+#'@description AEDD is an unsupervised multivariate detector that compares reconstruction errors produced by an autoencoder on reference and recent windows. Because it monitors changes in the input distribution rather than classifier performance, this implementation is primarily aimed at **virtual concept drift**. The method follows Kaminskyi, Li, and Muller (2022) <doi:10.1109/ICDMW58026.2022.00109>.
 #'@param encoding_size Encoding Size
 #'@param ae_class Autoencoder Class
 #'@param batch_size Batch Size for batch learning
@@ -7,9 +7,10 @@
 #'@param learning_rate Learning Rate
 #'@param window_size Size of the most recent data to be used
 #'@param monitoring_step The number of rows that the drifter waits to be is updated
-#'@param criteria The method to be used to check if there is a drift. May be mann_whitney (default), kolmogorov_smirnov, levene
+#'@param criteria The method to be used to check if there is a drift. May be mann_whitney (default), kolmogorov_smirnov, levene, parametric_threshold, nonparametric_threshold
 #'@param alpha The significance threshold for the statistical test used in criteria
 #AEDD detection: Daniil Kaminskyi, Bin Li and Emmanuel Müller. “Reconstruction-based unsupervised drift detection over multivariate streaming data.” 2022 IEEE International Conference on Data Mining Workshops (ICDMW).
+#'@references Kaminskyi, D., Li, B., and Muller, E. (2022). Reconstruction-based unsupervised drift detection over multivariate streaming data. In *2022 IEEE International Conference on Data Mining Workshops (ICDMW)*. <doi:10.1109/ICDMW58026.2022.00109>
 #'@return `dfr_aedd` object
 #'@examples
 #'#See an example of using `dfr_aedd` at this
@@ -31,7 +32,8 @@ dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size =
   state$window_size <- window_size
   state$monitoring_step <- monitoring_step
   state$criteria <- criteria
-  state$data <- c()
+  state$data <- NULL
+  state$n <- 0
   
   state$autoencoder <- obj$ae_class(input_size=1, encoding_size=state$encoding_size, batch_size=state$batch_size, num_epochs=state$num_epochs, learning_rate=state$learning_rate)
   state$is_fitted <- FALSE
@@ -65,7 +67,14 @@ update_state.dfr_aedd <- function(obj, value){
       warning('dfr_aedd::update_state: Some categories present in most recent data are not on the history dataset. Creating zero columns.')
       for (feat in names(value)){
         if (!(feat %in% names(state$data))){
-          value[feat] <- NULL
+          state$data[feat] <- 0
+        }
+      }
+    }
+    if(!all(names(state$data) %in% names(value))){
+      for (feat in names(state$data)){
+        if (!(feat %in% names(value))){
+          value[feat] <- 0
         }
       }
     }
@@ -244,7 +253,7 @@ reset_state.dfr_aedd <- function(obj) {
     window_size=obj$state$window_size,
     monitoring_step=obj$state$monitoring_step,
     criteria=obj$state$criteria,
-    alpha=obj$state$alpha
+    alpha=obj$alpha
   )$state
   return(obj) 
 }

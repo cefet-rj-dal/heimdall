@@ -1,28 +1,30 @@
 #'@title Adapted EWMA for Concept Drift Detection (ECDD) method
-#'@description ECDD is a concept change detection method that uses an exponentially weighted moving average (EWMA) chart to monitor the misclassification rate of an streaming classifier.
-#'@param lambda The minimum number of instances before detecting change
-#'@param min_run_instances Necessary level for warning zone (2 standard deviation)
-#'@param average_run_length Necessary level for a positive drift detection
+#'@description ECDD applies an exponentially weighted moving average (EWMA) control chart to the online classification error stream. Since it monitors predictive errors directly, it is primarily designed to detect **real concept drift**. The method follows Ross et al. (2012), who adapted EWMA charts for concept-drift detection in streaming classifiers <doi:10.1016/j.patrec.2011.08.019>.
+#'@param lambda EWMA smoothing parameter
+#'@param min_run_instances The minimum number of instances before detecting change
+#'@param average_run_length Desired Average Run Length (ARL)
 #ECDD: Gordon Ross, Niall Adams, Dimitris Tasoulis, David Hand: Exponentially weighted moving average charts for detecting concept drift. Pattern Recognition Letters 2012, Volume 33, Issue 2: 191-198, DOI:10.1016/j.patrec.2011.08.019
 #ECDD Implementation: Jaime Sisniega, Álvaro García: Frouros: An open-source Python library for drift detection in machine learning systems. Neurocomputing, Volume 26, 2024, DOI: 10.1016/j.softx.2024.101733
 #ECDD implementation: Frouros, https://github.com/IFCA-Advanced-Computing/frouros/blob/acde82386da735ca8e15f85112f48d5cfb10cc9a/frouros/detectors/concept_drift/streaming/statistical_process_control/ecdd.py
+#'@references Ross, G. J., Adams, N. M., Tasoulis, D. K., and Hand, D. J. (2012). Exponentially weighted moving average charts for detecting concept drift. *Pattern Recognition Letters*, 33(2), 191-198. <doi:10.1016/j.patrec.2011.08.019>
 #'@return `dfr_ecdd` object
 #'@examples
 #'library(daltoolbox)
 #'library(heimdall)
 #'
-#'# This example uses a dist-based drift detector with a synthetic dataset.
+#'# This example uses an error-based drift detector where 1 is an error and 0 is a correct prediction.
 #'
 #'data(st_drift_examples)
 #'data <- st_drift_examples$univariate
 #'data$event <- NULL
+#'data$prediction <- st_drift_examples$univariate$serie > 4
 #'
 #'model <- dfr_ecdd()
 #'
 #'detection <- NULL
 #'output <- list(obj=model, drift=FALSE)
-#'for (i in 1:length(data$serie)){
-#'  output <- update_state(output$obj, data$serie[i])
+#'for (i in 1:length(data$prediction)){
+#'  output <- update_state(output$obj, data$prediction[i])
 #'  if (output$drift){
 #'    type <- 'drift'
 #'    output$obj <- reset_state(output$obj)
@@ -69,7 +71,7 @@ update_state.dfr_ecdd <- function(obj, value){
   state$size <- state$size + 1
   
   state$last_p <- state$p
-  state$p <- (value - state$last_p) / state$size
+  state$p <- state$last_p + ((value - state$last_p) / state$size)
   
   state$last_Z <- state$Z
   state$Z <- ((1 - state$lambda)*state$last_Z) + (state$lambda * value)

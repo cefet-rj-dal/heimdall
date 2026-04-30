@@ -1,92 +1,86 @@
+# MCDD Example
 
-``` r
-# Installing heimdall
-install.packages("heimdall")
-```
+MCDD compares historical and recent windows through statistical tests on their central tendency. It is useful when you want to detect shifts in the average behavior of the monitored signal.
 
-```
+In this example, MCDD is used for **virtual concept drift** detection.
 
-```
+Reference: Giusti, L., Carvalho, L., Gomes, A. T., Coutinho, R., Soares, J., and Ogasawara, E. (2021). *Analysing flight delay under concept drift*. Evolving Systems. <doi:10.1007/s12530-021-09415-z>
 
+## Learning goal
 
-``` r
-# Loading heimdall
-library(daltoolbox)
-library(heimdall) 
-```
+This example demonstrates a mean-comparison workflow that fits the same streaming pattern used by the other Heimdall detectors.
 
 
 ``` r
-# MCDD Drifter Example
-# This example uses a distribuition-based drift detector with a synthetic variable.
+# Load Heimdall and the synthetic stream.
+library(heimdall)
+```
+
+
+``` r
+# Fix the seed to keep the walkthrough reproducible.
 seed <- 1
 set.seed(seed)
 ```
 
 
-
 ``` r
-# Load Data
-
+# Load the univariate series monitored in this example.
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
-data$prediction <- st_drift_examples$univariate$serie > 4
+serie <- st_drift_examples$univariate
 ```
 
 
 ``` r
-# Plot Serie
-
-plot(x=1:length(data$serie), y=data$serie)
+# Plot the monitored signal before running the detector.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
 ```
 
-![plot of chunk unnamed-chunk-5](fig/dfr_mcdd/unnamed-chunk-5-1.png)
+![plot of chunk unnamed-chunk-4](fig/dfr_mcdd/unnamed-chunk-4-1.png)
 
 
 ``` r
-# Instantiate Model
-
+# Instantiate the mean-comparison detector.
 model <- dfr_mcdd(target_feat='serie', window_size=100)
 ```
 
 
 ``` r
-# Detection
-
+# Update the detector sequentially and collect the alarm positions.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$prediction)){
- output <- update_state(output$obj, data$prediction[i])
- if (output$drift){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie$serie[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 ```
 
 
 ``` r
-# Plot Drifts
-
+# Print the detected drift points.
 detection[detection$type == 'drift',]
 ```
 
 ```
 ##     idx event  type
-## 226 226  TRUE drift
-## 388 388  TRUE drift
+## 219 219  TRUE drift
+## 328 328  TRUE drift
+## 428 428  TRUE drift
 ```
 
 
 ``` r
-plot(x=1:length(data$serie), y=data$serie)
-for(drift_index in detection[detection$type == 'drift', 'idx']){
+# Overlay the detected drifts on the original series.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
 }
 ```
 
-![plot of chunk unnamed-chunk-9](fig/dfr_mcdd/unnamed-chunk-9-1.png)
+![plot of chunk unnamed-chunk-8](fig/dfr_mcdd/unnamed-chunk-8-1.png)

@@ -1,92 +1,84 @@
+# Page-Hinkley Example
 
-``` r
-# Installing heimdall
-install.packages("heimdall")
-```
+The Page-Hinkley test monitors cumulative deviations from a running mean and raises an alarm when those deviations become persistently large. It is a classical sequential change-point detector and a good tool for learning the idea of stream monitoring.
 
-```
+In this example, Page-Hinkley is used on a numeric stream, so the interpretation is **virtual concept drift**.
 
-```
+Reference: Page, E. S. (1954). *Continuous inspection schemes*. Biometrika, 41(1/2), 100-115. <doi:10.2307/2333009>
 
+## Learning goal
 
-``` r
-# Loading heimdall
-library(daltoolbox)
-library(heimdall) 
-```
+This example gives a compact introduction to a classic sequential detector and shows how easily it fits into the Heimdall update loop.
 
 
 ``` r
-# Page Hinkley Drifter Example
-# This example uses a distribuition-based drift detector with a synthetic variable.
+# Load Heimdall and the synthetic stream example.
+library(heimdall)
+```
 
+
+``` r
+# Fix the seed for reproducibility.
 seed <- 1
 set.seed(seed)
 ```
 
 
-
 ``` r
-# Load Data
-
+# Load the univariate numeric stream monitored in this example.
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
-data$prediction <- st_drift_examples$univariate$serie > 4
+serie <- st_drift_examples$univariate
 ```
 
 
 ``` r
-# Plot Serie
-
-plot(x=1:length(data$serie), y=data$serie)
+# Plot the monitored signal before detection.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
 ```
 
-![plot of chunk unnamed-chunk-5](fig/dfr_page_hinkley/unnamed-chunk-5-1.png)
+![plot of chunk unnamed-chunk-4](fig/dfr_page_hinkley/unnamed-chunk-4-1.png)
 
 
 ``` r
-# Instantiate Model
-
+# Instantiate the Page-Hinkley detector.
 model <- dfr_page_hinkley(target_feat='serie')
 ```
 
 
 ``` r
-# Detection
-
+# Update the detector sequentially and record every drift alarm.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$prediction)){
- output <- update_state(output$obj, data$prediction[i])
- if (output$drift){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie$serie[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 ```
 
 
 ``` r
-# Plot Drifts
-
+# Print the detected drift points.
 detection[detection$type == 'drift',]
 ```
 
 ```
 ##     idx event  type
-## 258 258  TRUE drift
+## 205 205  TRUE drift
 ```
 
 
 ``` r
-plot(x=1:length(data$serie), y=data$serie)
-for(drift_index in detection[detection$type == 'drift', 'idx']){
+# Overlay those alarms on the original numeric stream.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
 }
 ```
 
-![plot of chunk unnamed-chunk-9](fig/dfr_page_hinkley/unnamed-chunk-9-1.png)
+![plot of chunk unnamed-chunk-8](fig/dfr_page_hinkley/unnamed-chunk-8-1.png)

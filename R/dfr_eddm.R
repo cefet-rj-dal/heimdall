@@ -1,11 +1,12 @@
 #'@title Adapted Early Drift Detection Method (EDDM) method
-#'@description EDDM (Early Drift Detection Method) aims to improve the detection rate of gradual concept drift in DDM, while keeping a good performance against abrupt concept drift. <doi:2747577a61c70bc3874380130615e15aff76339e>
+#'@description EDDM extends DDM by monitoring the distance between classification errors instead of only the error rate, which makes it more sensitive to gradual degradation. Because it operates on the model error stream, it is primarily intended for **real concept drift**. The method follows Baena-Garcia et al. (2006), who proposed EDDM for improved detection of gradual drift.
 #'@param min_instances The minimum number of instances before detecting change
 #'@param min_num_errors The minimum number of errors before detecting change
 #'@param warning_level Necessary level for warning zone
 #'@param out_control_level Necessary level for a positive drift detection
 #EDDM: Early Drift Detection Method. Manuel Baena-Garcia, Jose Del Campo-Avila, Raúl Fidalgo, Albert Bifet, Ricard Gavalda, Rafael Morales-Bueno. In Fourth International Workshop on Knowledge Discovery from Data Streams, 2006.
 #EDDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/eddm.py
+#'@references Baena-Garcia, M., del Campo-Avila, J., Fidalgo, R., Bifet, A., Gavaldà, R., and Morales-Bueno, R. (2006). Early drift detection method. In *Fourth International Workshop on Knowledge Discovery from Data Streams*.
 #'@return `dfr_eddm` object
 #'@examples
 #'library(daltoolbox)

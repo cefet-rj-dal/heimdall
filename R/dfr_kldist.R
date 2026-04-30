@@ -1,11 +1,11 @@
 #'@title KL Distance method
-#'@description Kullback Leibler Windowing method for concept drift detection.
+#'@description This detector compares consecutive reference and recent windows through the Kullback-Leibler divergence estimated from their empirical distributions. In this package, it is primarily used for **virtual concept drift**, since it monitors changes in the distribution of a numeric feature stream rather than predictive error. The statistical foundation is the Kullback-Leibler divergence introduced by Kullback and Leibler (1951).
 #'@param target_feat Feature to be monitored.
-#'@param p_th Probability theshold for the test statistic of the Kullback Leibler distance.
-#'@param window_size Size of the sliding window (must be > 2*stat_size)
+#'@param p_th Drift threshold applied to the KL divergence
+#'@param window_size Size of the sliding window
 #'@param data Already collected data to avoid cold start.
-#KSWIN detection: Christoph Raab, Moritz Heusinger, Frank-Michael Schleif, Reactive Soft Prototype Computing for Concept Drift Streams, Neurocomputing, 2020.
-#KSWIN detection implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/kswin.py#L5
+#KL divergence: Solomon Kullback and Richard A. Leibler. On information and sufficiency. Annals of Mathematical Statistics, 1951.
+#'@references Kullback, S., and Leibler, R. A. (1951). On information and sufficiency. *The Annals of Mathematical Statistics*, 22(1), 79-86. <doi:10.1214/aoms/1177729694>
 #'@return `dfr_kldist` object
 #'@examples
 #'library(daltoolbox)
@@ -43,14 +43,14 @@ dfr_kldist <- function(target_feat=NULL, window_size=100, p_th=0.05, data=NULL) 
     state$p_value <- 0
     state$n <- 0
 
-    if ((state$p_th < 0) | (state$p_th > 1)) stop("Alpha must be between 0 and 1", call = FALSE)
+    if (state$p_th < 0) stop("p_th must be non-negative", call = FALSE)
     if (state$window_size < 0) stop("window_size must be greater than 0", call = FALSE)
 
     if (missing(data)){
-      state$window <- c()
+      state$window <- numeric(0)
     }
     else{
-      state$window <- data
+      state$window <- as.numeric(data)
     }
     
     obj$state <- state
@@ -62,6 +62,7 @@ dfr_kldist <- function(target_feat=NULL, window_size=100, p_th=0.05, data=NULL) 
     return(obj)
 }
 
+#'@importFrom graphics hist
 #'@importFrom utils head tail
 #'@export
 update_state.dfr_kldist <- function(obj, value) {
@@ -70,13 +71,14 @@ update_state.dfr_kldist <- function(obj, value) {
   state <- obj$state
 
   state$n <- state$n + 1
-  currentLength <- nrow(state$window)
-  if (is.null(currentLength)){
-    currentLength <- 0
+  value <- as.numeric(value[1])
+  if (is.na(value)) {
+    obj$state <- state
+    return(list(obj=obj, drift=FALSE))
   }
+  currentLength <- length(state$window)
   
   if (currentLength >= state$window_size){
-    state$window <- state$window #tail(state$window, -1)
     p_window <- tail(state$window, state$window_size/2)
     q_window <- head(state$window, state$window_size/2)
     
@@ -85,14 +87,12 @@ update_state.dfr_kldist <- function(obj, value) {
     
     p <- p[q!=0]
     q <- q[q!=0]
-    
-    
+
     state$kl <- sum(p * log(p/q, base=2), na.rm=TRUE)
     obj$last_drifter_output <- state$kl
     
     if((state$kl >= state$p_th)){
       state$window <- tail(state$window, state$window_size/2)
-      state$window <- rbind(state$window, value)
       
       obj$drifted <- TRUE
       
@@ -100,13 +100,11 @@ update_state.dfr_kldist <- function(obj, value) {
       return(list(obj=obj, drift=TRUE))
     }
     else{
-      state$window <- rbind(state$window, value)
-      
       obj$state <- state
       return(list(obj=obj, drift=FALSE))
     }
   }else{
-    state$window <- rbind(state$window, value)
+    state$window <- c(state$window, value)
   
     obj$state <- state
     return(list(obj=obj, drift=FALSE))
@@ -139,7 +137,9 @@ reset_state.dfr_kldist <- function(obj) {
   obj$drifted <- FALSE
   obj$state <- dfr_kldist(
     target_feat = obj$target_feat,
-    p_th = obj$state$p_th
+    p_th = obj$state$p_th,
+    window_size = obj$state$window_size,
+    data = obj$state$window
   )$state
   return(obj)  
 }

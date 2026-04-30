@@ -31,7 +31,7 @@ dfr_aedd(
 
 \item{monitoring_step}{The number of rows that the drifter waits to be is updated}
 
-\item{criteria}{The method to be used to check if there is a drift. May be mann_whitney (default), kolmogorov_smirnov, levene}
+\item{criteria}{The method to be used to check if there is a drift. May be mann_whitney (default), kolmogorov_smirnov, levene, parametric_threshold, nonparametric_threshold}
 
 \item{alpha}{The significance threshold for the statistical test used in criteria}
 }
@@ -39,9 +39,12 @@ dfr_aedd(
 \code{dfr_aedd} object
 }
 \description{
-Autoencoder-Based method for concept drift detection \url{doi:0.1109/ICDMW58026.2022.00109}.
+AEDD is an unsupervised multivariate detector that compares reconstruction errors produced by an autoencoder on reference and recent windows. Because it monitors changes in the input distribution rather than classifier performance, this implementation is primarily aimed at \strong{virtual concept drift}. The method follows Kaminskyi, Li, and Muller (2022) \url{doi:10.1109/ICDMW58026.2022.00109}.
 }
 \examples{
 #See an example of using `dfr_aedd` at this
 #https://github.com/cefet-rj-dal/heimdall/blob/main/multivariate/dfr_aedd.md
+}
+\references{
+Kaminskyi, D., Li, B., and Muller, E. (2022). Reconstruction-based unsupervised drift detection over multivariate streaming data. In \emph{2022 IEEE International Conference on Data Mining Workshops (ICDMW)}. \url{doi:10.1109/ICDMW58026.2022.00109}
 }

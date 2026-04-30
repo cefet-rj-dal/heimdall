@@ -1,7 +1,8 @@
-#'@title Cumulative Sum for Concept Drift Detection (CUMSUM) method
-#'@description The cumulative sum (CUSUM) is a sequential analysis technique used for change detection.
+#'@title Cumulative Sum for Concept Drift Detection (CUSUM) method
+#'@description CUSUM is a sequential analysis procedure that accumulates deviations in a monitored signal and raises an alarm when the cumulative evidence exceeds a threshold. In this package, the detector is implemented as an error-based monitor, so it is primarily intended for **real concept drift** affecting predictive performance. The concept-drift adaptation follows the sequential change-detection literature discussed by Muthukrishnan, Berg, and Wu (2007) <doi:10.1109/ICDMW.2007.89>.
 #'@param lambda Necessary level for warning zone (2 standard deviation)
 #CUMSUM: S. Muthukrishnan, Eric Berg, Yihua Wu: Sequential Change Detection on Data Streams. Seventh IEEE International Conference on Data Mining Workshops (ICDMW 2007), DOI:10.1109/ICDMW.2007.89
+#'@references Muthukrishnan, S., Berg, E., and Wu, Y. (2007). Sequential change detection on data streams. In *Seventh IEEE International Conference on Data Mining Workshops (ICDMW 2007)*. <doi:10.1109/ICDMW.2007.89>
 #'@return `dfr_cusum` object
 #'@import ggplot2
 #'@importFrom daltoolbox cla_nb

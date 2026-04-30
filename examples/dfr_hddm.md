@@ -1,0 +1,83 @@
+# HDDM Example
+
+HDDM_A uses Hoeffding bounds to test whether the mean of the monitored error stream has increased more than expected under stationarity. In practice, this makes it a detector for **real concept drift**.
+
+Reference: Frias-Blanco, I., del Campo-Avila, J., Ramos-Jimenez, G., Morales-Bueno, R., Ortiz-Diaz, A., and Caballero-Mota, Y. (2015). *Online and nonparametric drift detection methods based on Hoeffding's bounds*. IEEE Transactions on Knowledge and Data Engineering, 27(3), 810-823. <doi:10.1109/TKDE.2014.2345382>
+
+## Learning goal
+
+This example demonstrates how to use a statistically grounded error-based detector within the standard Heimdall workflow.
+
+
+``` r
+# Load Heimdall and the synthetic stream example.
+library(heimdall)
+```
+
+
+``` r
+# Fix the seed for reproducibility.
+seed <- 1
+set.seed(seed)
+```
+
+
+``` r
+# Load the stream and derive the binary monitored signal.
+data(st_drift_examples)
+data <- st_drift_examples$univariate
+data$prediction <- st_drift_examples$univariate$serie > 4
+```
+
+
+``` r
+# Plot the binary stream that HDDM_A will monitor.
+plot(x=seq_len(nrow(data)), y=data$prediction)
+```
+
+![plot of chunk unnamed-chunk-4](fig/dfr_hddm/unnamed-chunk-4-1.png)
+
+
+``` r
+# Instantiate the HDDM_A detector.
+model <- dfr_hddm()
+```
+
+
+``` r
+# Process the stream sequentially and record the detector alarms.
+detection <- NULL
+output <- list(obj=model, drift=FALSE)
+for (i in seq_len(nrow(data))){
+  output <- update_state(output$obj, data$prediction[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+}
+```
+
+
+``` r
+# Print the detected drift points.
+detection[detection$type == 'drift',]
+```
+
+```
+##     idx event  type
+## 204 204  TRUE drift
+```
+
+
+``` r
+# Overlay the alarms on the original numeric stream.
+plot(x=seq_len(nrow(data)), y=data$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
+```
+
+![plot of chunk unnamed-chunk-8](fig/dfr_hddm/unnamed-chunk-8-1.png)

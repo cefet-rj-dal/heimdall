@@ -1,69 +1,67 @@
+# KSWIN Example
+
+KSWIN applies a Kolmogorov-Smirnov test between a recent window and a reference sample from older observations. It is a practical detector when you want to identify changes in the distribution of a numeric stream.
+
+In this example, KSWIN is used for **virtual concept drift** detection.
+
+Reference: Raab, C., Heusinger, M., and Schleif, F.-M. (2020). *Reactive soft prototype computing for concept drift streams*. Neurocomputing, 416, 340-351. <doi:10.1016/j.neucom.2019.11.111>
+
+## Learning goal
+
+This example demonstrates how to use a classical window-based statistical test inside the Heimdall update loop.
+
 ```{r}
-# Installing heimdall
-install.packages("heimdall")
+# Load Heimdall and the synthetic univariate stream.
+library(heimdall)
 ```
 
 ```{r}
-# Loading heimdall
-library(daltoolbox)
-library(heimdall) 
-```
-
-```{r}
-# KSWIN Drifter Example
-# This example uses a distribuition-based drift detector with a synthetic variable.
-
+# Fix the seed for reproducibility.
 seed <- 1
 set.seed(seed)
 ```
 
 ```{r}
-# Load Data
-
+# Load the numeric stream used by the detector.
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
-data$prediction <- st_drift_examples$univariate$serie > 4
+serie <- st_drift_examples$univariate
 ```
 
 ```{r}
-# Plot Serie
-
-plot(x=1:length(data$serie), y=data$serie)
+# Plot the monitored variable before detection.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
 ```
 
 ```{r}
-# Instantiate Model
-
+# Instantiate KSWIN with explicit window parameters.
 model <- dfr_kswin(target_feat='serie', window_size=100, stat_size=50)
 ```
 
 ```{r}
-# Detection
-
+# Update the detector sequentially and store the alarm positions.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$prediction)){
- output <- update_state(output$obj, data$prediction[i])
- if (output$drift){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie$serie[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 ```
 
 ```{r}
-# Plot Drifts
-
+# Print the points where KSWIN raised drift alarms.
 detection[detection$type == 'drift',]
 ```
 
 ```{r}
-plot(x=1:length(data$serie), y=data$serie)
-for(drift_index in detection[detection$type == 'drift', 'idx']){
+# Overlay the detected drifts on the original stream.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
 }
 ```

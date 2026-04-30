@@ -1,6 +1,6 @@
 Package: heimdall
 Title: Drift Adaptable Models
-Version: 1.2.707
+Version: 1.2.727
 Authors@R: 
   c(
     person(given = "Lucas", family = "Tavares", role = c("aut"), email = "lucas.giusti@eic.cefet-rj.br"),
@@ -27,6 +27,7 @@ Imports:
   caret,
   daltoolbox,
   ggplot2,
+  Metrics,
   reticulate,
   pROC,
   car
