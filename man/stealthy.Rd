@@ -7,22 +7,18 @@
 stealthy(
   model,
   drift_method,
-  monitored_features = NULL,
   norm_class = daltoolbox::zscore(),
   warmup_size = 100,
   th = 0.5,
   target_uni_drifter = FALSE,
   incremental_memory = TRUE,
-  verbose = FALSE,
-  reporting = FALSE
+  verbose = FALSE
 )
 }
 \arguments{
 \item{model}{The algorithm object to be used for predictions}
 
 \item{drift_method}{The algorithm object to detect drifts}
-
-\item{monitored_features}{List of features that will be monitored by the drifter}
 
 \item{norm_class}{Class used to perform normalization}
 
@@ -35,8 +31,6 @@ stealthy(
 \item{incremental_memory}{If true, the model will retrain with all available data whenever the fit is called. If false, it only retrains when a drift is detected.}
 
 \item{verbose}{if TRUE shows drift messages}
-
-\item{reporting}{If TRUE, some data are returned as norm_x_oh, drift_input, hist_proj, and recent_proj.}
 }
 \value{
 Stealthy object

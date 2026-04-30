@@ -52,6 +52,8 @@ dfr_page_hinkley <- function(target_feat=NULL, min_instances=30, delta=0.005, th
   
   obj$state <- state
   
+  obj$last_drifter_output <- NULL
+  obj$drifter_output <- NULL
   obj$drifted <- FALSE
   
   class(obj) <- append("dfr_page_hinkley", class(obj))
@@ -62,11 +64,13 @@ dfr_page_hinkley <- function(target_feat=NULL, min_instances=30, delta=0.005, th
 update_state.dfr_page_hinkley <- function(obj, value){
   state <- obj$state
   
-  value <- value[,1]
+  # value <- value[,1]
   
   state$x_mean <- state$x_mean + (value - state$x_mean)/state$sample_count
   state$sum <- max(0, abs(state$alpha * state$sum + (value - state$x_mean - state$delta)))
   state$sample_count <- state$sample_count + 1
+  
+  obj$last_drifter_output <- state$sum
   
   tryCatch(
     {
@@ -104,12 +108,20 @@ update_state.dfr_page_hinkley <- function(obj, value){
 
 #'@export
 fit.dfr_page_hinkley <- function(obj, data, ...){
+  
+  obj$drifter_output <- NULL
+  obj$last_drifter_output <- NULL
   output <- update_state(obj, data[1])
+  output$obj$drifter_output <- rbind(output$obj$drifter_output, output$obj$last_drifter_output)
   if (length(data) > 1){
     for (i in 2:length(data)){
       output <- update_state(output$obj, data[i])
+      output$obj$drifter_output <- rbind(output$obj$drifter_output, output$obj$last_drifter_output)
     }
   }
+  
+  output$obj$drifter_output <- as.data.frame(output$obj$drifter_output)
+  
   return(output$obj)
 }
 

@@ -13,8 +13,7 @@ dfr_aedd(
   window_size = 100,
   monitoring_step = 1700,
   criteria = "mann_whitney",
-  alpha = 0.01,
-  reporting = FALSE
+  alpha = 0.01
 )
 }
 \arguments{
@@ -35,8 +34,6 @@ dfr_aedd(
 \item{criteria}{The method to be used to check if there is a drift. May be mann_whitney (default), kolmogorov_smirnov, levene}
 
 \item{alpha}{The significance threshold for the statistical test used in criteria}
-
-\item{reporting}{If TRUE, some data are returned as norm_x_oh, drift_input, hist_proj, and recent_proj.}
 }
 \value{
 \code{dfr_aedd} object

@@ -5,9 +5,10 @@
 #'# See ?dd_ddm for an example of DDM drift detector
 #'@import daltoolbox
 #'@export
-drifter <- function() {
+drifter <- function(detec_cooldown=0) {
   obj <- dal_base()
   obj$drifted <- FALSE
+  obj$detec_cooldown <- detec_cooldown
   obj$state <- list()
   class(obj) <- append("drifter", class(obj))
   return(obj)
@@ -75,7 +76,7 @@ fit.drifter <- function(obj, data, prediction, ...) {
 #'# See ?hcd_ddm for an example of DDM drift detector
 #'@export
 dfr_inactive <- function(){
-  obj <- drifter()
+  obj <- dummy()
   obj$state <- NULL
   
   obj$drifted <- FALSE
@@ -95,16 +96,48 @@ reset_state.dfr_inactive <- function(obj){
 #'# See ?hcd_ddm for an example of DDM drift detector
 #'@export
 dfr_passive <- function(){
-  obj <- drifter()
+  obj <- dummy()
   obj$state <- NULL
   
-  obj$drifted <- TRUE
+  obj$drifted <- FALSE
   class(obj) <- append('dfr_passive', class(obj))
   return(obj)
 }
 
 #'@export
+update_state.dfr_passive <- function(obj, value){
+  obj$drifted <- TRUE
+  return(list(obj=obj, drift=TRUE))
+}
+
+#'@export
+fit.dfr_passive <- function(obj, data, ...){
+  
+  output <- update_state(obj, data[1])
+  if (length(data) > 1){
+    for (i in 2:length(data)){
+      output <- update_state(output$obj, data[i])
+    }
+  }
+  
+  return(output$obj)
+}
+
+#'@export
 reset_state.dfr_passive <- function(obj){
+  obj$drifted <- FALSE
+  return(obj)
+}
+
+#'@title Dummy Drifter sub-class
+#'@description Implements Error Based drift detectors
+#'@return Drifter object
+#'@examples
+#'# See ?hcd_ddm for an example of DDM drift detector
+#'@export
+dummy <- function(){
+  obj <- drifter()
+  class(obj) <- append('dummy', class(obj))
   return(obj)
 }
 

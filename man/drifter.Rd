@@ -4,7 +4,7 @@
 \alias{drifter}
 \title{Drifter}
 \usage{
-drifter()
+drifter(detec_cooldown = 0)
 }
 \value{
 Drifter object

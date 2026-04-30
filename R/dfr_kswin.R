@@ -57,6 +57,8 @@ dfr_kswin <- function(target_feat=NULL, window_size=1500, stat_size=500, alpha=0
     }
     
     obj$state <- state
+    
+    obj$last_drifter_output <- NULL
 
     class(obj) <- append("dfr_kswin", class(obj))
     return(obj)
@@ -65,6 +67,8 @@ dfr_kswin <- function(target_feat=NULL, window_size=1500, stat_size=500, alpha=0
 #'@importFrom stats ks.test
 #'@export
 update_state.dfr_kswin <- function(obj, value) {
+  obj$last_drifter_output <- NULL
+  
   state <- obj$state
 
   state$n <- state$n + 1
@@ -75,11 +79,13 @@ update_state.dfr_kswin <- function(obj, value) {
   
   if (currentLength >= state$window_size){
     state$window <- tail(state$window, -1)
-    rnd_window <- state$window[1:(nrow(state$window)-state$stat_size),]
+    rnd_window <- head(state$window, nrow(state$window)-state$stat_size)
+    stat_window <- tail(state$window, state$stat_size)
     
-    ks_res <- stats::ks.test(rnd_window, state$window[(nrow(state$window)-state$stat_size):nrow(state$window),], exact=TRUE)
+    ks_res <- stats::ks.test(rnd_window, stat_window, exact=TRUE)
     st <- unlist(ks_res[1])
     state$p_value <- unlist(ks_res[2])
+    obj$last_drifter_output <- cbind(st, state$p_value)
     
     if((state$p_value < state$alpha) & (st > 0.1)){
       state$window <- tail(state$window, (state$stat_size))
@@ -108,12 +114,20 @@ update_state.dfr_kswin <- function(obj, value) {
 
 #'@export
 fit.dfr_kswin <- function(obj, data, ...){
+  
+  obj$drifter_output <- NULL
+  obj$last_drifter_output <- NULL
   output <- update_state(obj, data[1])
+  output$obj$drifter_output <- rbind(output$obj$drifter_output, output$obj$last_drifter_output)
   if (length(data) > 1){
     for (i in 2:length(data)){
       output <- update_state(output$obj, data[i])
+      output$obj$drifter_output <- rbind(output$obj$drifter_output, output$obj$last_drifter_output)
     }
   }
+  
+  output$obj$drifter_output <- as.data.frame(output$obj$drifter_output)
+  names(output$obj$drifter_output) <- c('D', 'p')
   
   return(output$obj)
 }

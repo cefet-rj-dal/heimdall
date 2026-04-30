@@ -9,14 +9,13 @@
 #'@param monitoring_step The number of rows that the drifter waits to be is updated
 #'@param criteria The method to be used to check if there is a drift. May be mann_whitney (default), kolmogorov_smirnov, levene
 #'@param alpha The significance threshold for the statistical test used in criteria
-#'@param reporting If TRUE, some data are returned as norm_x_oh, drift_input, hist_proj, and recent_proj.
 #AEDD detection: Daniil Kaminskyi, Bin Li and Emmanuel Müller. “Reconstruction-based unsupervised drift detection over multivariate streaming data.” 2022 IEEE International Conference on Data Mining Workshops (ICDMW).
 #'@return `dfr_aedd` object
 #'@examples
 #'#See an example of using `dfr_aedd` at this
 #'#https://github.com/cefet-rj-dal/heimdall/blob/main/multivariate/dfr_aedd.md
 #'@export
-dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney', alpha=0.01, reporting=FALSE) {
+dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney', alpha=0.01) {
   obj <- mv_dist_based()
   
   obj$ae_class <- ae_class
@@ -34,10 +33,11 @@ dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size =
   state$criteria <- criteria
   state$data <- c()
   
-  state$autoencoder <- NULL
+  state$autoencoder <- obj$ae_class(input_size=1, encoding_size=state$encoding_size, batch_size=state$batch_size, num_epochs=state$num_epochs, learning_rate=state$learning_rate)
   state$is_fitted <- FALSE
   
-  obj$reporting <- reporting
+  obj$last_drifter_output <- NULL
+  obj$drifter_output <- NULL
   obj$drifted <- FALSE
   obj$state <- state
   class(obj) <- append("dfr_aedd", class(obj))
@@ -46,10 +46,15 @@ dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size =
 
 #'@export
 update_state.dfr_aedd <- function(obj, value){
+
   state <- obj$state
   
+  obj$last_drifter_output <- NULL
+  
   if(length(value) == 1){
-    if(value > 1){value <- 1}else if(value < 0){value <- 0}
+    if(value > 1){value <- 1}else if(value < 0){
+      value <- 0
+      }
   }else if(length(value) > 1){
     value[value > 1] <- 1
     value[value < 0] <- 0
@@ -83,10 +88,9 @@ update_state.dfr_aedd <- function(obj, value){
   }
   
   if (currentLength >= state$window_size){
-    state$data <- tail(state$data, -1)
-    history_window <- tail(state$data, state$window_size/2)
-    recent_window <- head(state$data, state$window_size/2)
-    
+    sliding_window <- state$data #tail(state$data, state$window_size)
+    history_window <- head(sliding_window, state$window_size/2)
+    recent_window <- tail(sliding_window, state$window_size/2)
     
     if(!state$is_fitted){
       if(is.null(ncol(state$data))){
@@ -102,28 +106,31 @@ update_state.dfr_aedd <- function(obj, value){
     }
     
     state$drifted <- FALSE
+
+    history_window_output <- transform(state$autoencoder, history_window)
+    recent_window_output <- transform(state$autoencoder, recent_window)
     
-    history_window_proj <- transform(state$autoencoder, history_window)
-    history_rec_error <- (history_window_proj - history_window)
-    recent_window_proj <- transform(state$autoencoder, recent_window)
-    recent_rec_error <- (recent_window_proj - recent_window)
-    
-    if(obj$reporting){
-      obj$history_window_proj <- history_window_proj
-      obj$recent_window_proj <- transform(state$autoencoder, value)
-      }
+    if(any(c('autoenc_ed', 'autoenc_variational_ed') %in% class(state$autoencoder))){
+      history_rec_marker <- (history_window_output - history_window)
+      recent_rec_marker <- (recent_window_output - recent_window)
+      obj$last_drifter_output <- recent_rec_marker
+      recent_rec_marker <- rowMeans(abs(recent_rec_marker))
+    }else if(any(c('autoenc_e', 'autoenc_variational_e') %in% class(state$autoencoder))){
+      history_rec_marker <- history_window_output
+      recent_rec_marker <- recent_window_output
+      obj$last_drifter_output <- as.data.frame(recent_rec_marker)
+    }
     
     if (state$criteria == 'mann_whitney'){
-      mw_results <- wilcox.test(unlist(as.vector(t(history_rec_error))), unlist(as.vector(t(recent_rec_error))))
+      mw_results <- wilcox.test(unlist(as.vector(t(history_rec_marker))), unlist(as.vector(t(recent_rec_marker))))
       
       if (mw_results['p.value'] < obj$alpha){
         state$drifted <- TRUE
       }
-      
     }
     
     if (state$criteria == 'kolmogorov_smirnov'){
-      ks_results <- ks.test(unlist(as.vector(t(history_rec_error))), unlist(as.vector(t(recent_rec_error))))
+      ks_results <- ks.test(unlist(as.vector(t(history_rec_marker))), unlist(as.vector(t(recent_rec_marker))))
       
       if (ks_results['p.value'] < obj$alpha){
         state$drifted <- TRUE
@@ -132,11 +139,11 @@ update_state.dfr_aedd <- function(obj, value){
     }
     
     if (state$criteria == 'levene'){
-      history_window_proj <- as.data.frame(history_window_proj)
-      recent_window_proj <- as.data.frame(recent_window_proj)
-      history_window_proj['window'] <- 'History'
-      recent_window_proj['window'] <- 'Recent'
-      levene_df <- as.data.frame(rbind(history_window_proj, recent_window_proj))
+      history_window_output <- as.data.frame(history_window_output)
+      recent_window_output <- as.data.frame(recent_window_output)
+      history_window_output['window'] <- 'History'
+      recent_window_output['window'] <- 'Recent'
+      levene_df <- as.data.frame(rbind(history_window_output, recent_window_output))
       levene_df['window'] <- factor(levene_df[['window']])
       
       levene_results <- car::leveneTest(V1 ~ window, data=as.data.frame(levene_df))
@@ -148,9 +155,9 @@ update_state.dfr_aedd <- function(obj, value){
     }
     
     if (state$criteria == 'parametric_threshold'){
-      mean_history_rec_error <- abs(mean(apply(history_rec_error, 2, mean)))
-      sd_history_rec_error <- abs(mean(apply(history_rec_error, 2, sd)))
-      mean_recent_rec_error <- abs(mean(apply(recent_rec_error, 2, mean)))
+      mean_history_rec_error <- abs(mean(apply(history_rec_marker, 2, mean)))
+      sd_history_rec_error <- abs(mean(apply(history_rec_marker, 2, sd)))
+      mean_recent_rec_error <- abs(mean(apply(history_rec_marker, 2, mean)))
       
       if(mean_recent_rec_error >= (mean_history_rec_error + (3*sd_history_rec_error))){
         state$drifted <- TRUE
@@ -158,24 +165,20 @@ update_state.dfr_aedd <- function(obj, value){
     }
     
     if (state$criteria == 'nonparametric_threshold'){
-      top_limit <- as.vector(quantile(unlist(as.vector(t(history_rec_error))), 0.99))
-      median_recent_rec_error <- abs(median(apply(recent_rec_error, 2, median)))
+      top_limit <- as.vector(quantile(unlist(as.vector(t(history_rec_marker))), 0.99))
+      median_recent_rec_error <- abs(median(apply(recent_rec_marker, 2, median)))
       
       if(median_recent_rec_error >= top_limit){
         state$drifted <- TRUE
       }
     }
     
-    
     if(state$drifted){
       obj$drifted <- TRUE
       state$is_fitted <- FALSE
     }
-  }else{
-    if(obj$reporting){
-      obj$recent_window_proj <- 0
-    }
   }
+
   obj$state <- state
   return(list(obj=obj, drift=obj$drifted))
 }
@@ -183,11 +186,7 @@ update_state.dfr_aedd <- function(obj, value){
 #'@export
 fit.dfr_aedd <- function(obj, data, ...){
   state <- obj$state
-  if(obj$reporting){
-      obj$hist_proj <- c()
-      obj$recent_proj <- c()
-  }
-  
+
   if((!is.null(state$data))){
     if(nrow(state$data) & (!is.null(ncol(state$data)))){
       if(!state$is_fitted){
@@ -212,18 +211,24 @@ fit.dfr_aedd <- function(obj, data, ...){
   }
   
   obj$state <- state
-
+  obj$drifter_output <- NULL
+  obj$last_drifter_output <- NULL
   output <- update_state(obj, data[1,])
+  output$obj$drifter_output <- rbind(output$obj$drifter_output, output$obj$last_drifter_output)
   if(nrow(data) >= 2){
     for (i in 2:nrow(data)){
       output <- update_state(output$obj, data[i,])
-      # if(obj$reporting){
-      #   output$obj$hist_proj <- rbind(output$obj$hist_proj, output$obj$history_window_proj[nrow(output$obj$history_window_proj),])
-      #   output$obj$recent_proj <- rbind(output$obj$recent_proj, output$obj$recent_window_proj)
-      # }
+      output$obj$drifter_output <- rbind(output$obj$drifter_output, output$obj$last_drifter_output)
     }
   }
   
+  # print(identical(output$obj$drifter_output, last_drifter_output))
+  # print(mean(output$obj$drifter_output == last_drifter_output, na.rm=TRUE))
+  # print(class(output$obj$drifter_output))
+  # print(class(last_drifter_output))
+  # print(dim(output$obj$drifter_output))
+  # print(dim(last_drifter_output))
+
   return(output$obj)
 }
 
@@ -239,8 +244,7 @@ reset_state.dfr_aedd <- function(obj) {
     window_size=obj$state$window_size,
     monitoring_step=obj$state$monitoring_step,
     criteria=obj$state$criteria,
-    alpha=obj$state$alpha,
-    reporting=obj$state$reporting
+    alpha=obj$state$alpha
   )$state
   return(obj) 
 }

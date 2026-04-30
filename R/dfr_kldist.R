@@ -54,6 +54,9 @@ dfr_kldist <- function(target_feat=NULL, window_size=100, p_th=0.05, data=NULL) 
     }
     
     obj$state <- state
+    
+    obj$last_drifter_output <- NULL
+    obj$drifter_output <- NULL
 
     class(obj) <- append("dfr_kldist", class(obj))
     return(obj)
@@ -62,6 +65,8 @@ dfr_kldist <- function(target_feat=NULL, window_size=100, p_th=0.05, data=NULL) 
 #'@importFrom utils head tail
 #'@export
 update_state.dfr_kldist <- function(obj, value) {
+  obj$last_drifter_output <- NULL
+  
   state <- obj$state
 
   state$n <- state$n + 1
@@ -71,7 +76,7 @@ update_state.dfr_kldist <- function(obj, value) {
   }
   
   if (currentLength >= state$window_size){
-    state$window <- tail(state$window, -1)
+    state$window <- state$window #tail(state$window, -1)
     p_window <- tail(state$window, state$window_size/2)
     q_window <- head(state$window, state$window_size/2)
     
@@ -83,6 +88,7 @@ update_state.dfr_kldist <- function(obj, value) {
     
     
     state$kl <- sum(p * log(p/q, base=2), na.rm=TRUE)
+    obj$last_drifter_output <- state$kl
     
     if((state$kl >= state$p_th)){
       state$window <- tail(state$window, state$window_size/2)
@@ -111,12 +117,20 @@ update_state.dfr_kldist <- function(obj, value) {
 
 #'@export
 fit.dfr_kldist <- function(obj, data, ...){
+  
+  obj$drifter_output <- NULL
+  obj$last_drifter_output <- NULL
   output <- update_state(obj, data[1])
+  output$obj$drifter_output <- rbind(output$obj$drifter_output, output$obj$last_drifter_output)
   if (length(data) > 1){
     for (i in 2:length(data)){
       output <- update_state(output$obj, data[i])
+      output$obj$drifter_output <- rbind(output$obj$drifter_output, output$obj$last_drifter_output)
     }
   }
+  
+  output$obj$drifter_output <- as.data.frame(output$obj$drifter_output)
+  
   return(output$obj)
 }
 

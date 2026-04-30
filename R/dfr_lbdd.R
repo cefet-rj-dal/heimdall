@@ -65,7 +65,7 @@ update_state.dfr_lbdd <- function(obj, value) {
   }
   
   if (currentLength >= state$window_size){
-    state$window <- tail(state$window, -1)
+    state$window <- state$window #tail(, -1)
     new_window <- tail(state$window, state$window_size/2)
     old_window <- head(state$window, state$window_size/2)
     
