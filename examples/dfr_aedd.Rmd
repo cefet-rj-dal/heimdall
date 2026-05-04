@@ -1,3 +1,9 @@
+---
+title: "dfr_aedd Example"
+output:
+  html_document: 
+    self_contained: true
+---
 # AEDD Example
 
 AEDD is an unsupervised multivariate detector based on autoencoder reconstruction error. The intuition is that if recent data become harder to reconstruct than historical data, the feature distribution may have changed.
@@ -16,42 +22,39 @@ This example introduces the multivariate and autoencoder-based workflow in Heimd
 4. inspect the detected drifts visually.
 
 
-``` r
+```{r}
 # Load the autoencoder backend and Heimdall.
 library(daltoolboxdp)
 library(heimdall)
 ```
 
 
-``` r
+```{r}
 # Fix the seed so the example can be reproduced consistently.
 seed <- 1
 set.seed(seed)
 ```
 
 
-``` r
+```{r}
 # Load the multivariate synthetic stream.
 data(st_drift_examples)
 serie <- st_drift_examples$dataset2
 ```
 
 
-``` r
+```{r}
 # Plot the monitored variables before running the detector.
 plot(x=serie$i, y=serie$serie1)
 ```
 
 ![plot of chunk unnamed-chunk-4](fig/dfr_aedd/unnamed-chunk-4-1.png)
 
-``` r
+```{r}
 plot(x=serie$i, y=serie$serie2)
 ```
 
-![plot of chunk unnamed-chunk-4](fig/dfr_aedd/unnamed-chunk-4-2.png)
-
-
-``` r
+```{r}
 # Instantiate AEDD with a compact latent representation.
 model <- dfr_aedd(
   encoding_size=1,
@@ -64,7 +67,7 @@ monitored_features <- c('serie1', 'serie2')
 ```
 
 
-``` r
+```{r}
 # Update AEDD row by row using only the selected monitored features.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
@@ -81,7 +84,7 @@ for (i in seq_len(nrow(serie))){
 ```
 
 
-``` r
+```{r}
 # Print the detected drift points.
 detection[detection$type == 'drift',]
 ```
@@ -92,7 +95,7 @@ detection[detection$type == 'drift',]
 ```
 
 
-``` r
+```{r}
 # Display the alarms on top of one monitored variable.
 plot(x=serie$i, y=serie$serie2)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
@@ -100,4 +103,6 @@ for (drift_index in detection[detection$type == 'drift', 'idx']) {
 }
 ```
 
-![plot of chunk unnamed-chunk-8](fig/dfr_aedd/unnamed-chunk-8-1.png)
+```{r}
+print(paste('Successfull run at', Sys.time()))
+```
