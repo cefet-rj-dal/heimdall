@@ -48,7 +48,7 @@ serie <- st_drift_examples$uv_virtual_drift
 print(plot(x=seq_len(nrow(serie)), y=serie$serie))
 ```
 
-![plot of chunk unnamed-chunk-4](fig/dfr_adwin/unnamed-chunk-4-1.png)
+![plot of chunk unnamed-chunk-13](fig/dfr_adwin/unnamed-chunk-13-1.png)
 
 ```
 ## NULL
@@ -99,7 +99,7 @@ for (drift_index in detection[detection$type == 'drift', 'idx']) {
 }
 ```
 
-![plot of chunk unnamed-chunk-8](fig/dfr_adwin/unnamed-chunk-8-1.png)
+![plot of chunk unnamed-chunk-17](fig/dfr_adwin/unnamed-chunk-17-1.png)
 
 
 ``` r
@@ -107,6 +107,6 @@ print(paste('Successfull run at', Sys.time()))
 ```
 
 ```
-## [1] "Successfull run at 2026-05-05 14:12:27.684283"
+## [1] "Successfull run at 2026-05-05 15:26:03.423262"
 ```
 

@@ -88,7 +88,7 @@ monitoring_step <- batch_size # Process data in batch_size frequency
 # Define the stealthy model
 model <- stealthy(
   model=daltoolbox::cla_dtree(target, slevels), # Naive Bayes Classifier
-  drift_method=dfr_ddm(), # Using DDM
+  drift_method=dfr_ddm(min_instances = batch_size, out_control_level = 5), # Using DDM
   norm_class=nrm_memory(norm_class = daltoolbox::minmax()), # Normalization with MinMax
   warmup_size=warmup_size, # Warmup size used to train models
   incremental_memory=FALSE, # Do not force retrain in each batch
@@ -179,13 +179,6 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
 
 ```
 ## [1] "Time Step:4"
-```
-
-```
-## Stealthy detected a drift, discarding old data
-```
-
-```
 ## [1] "Time Step:5"
 ## [1] "Time Step:6"
 ## [1] "Time Step:7"
@@ -215,15 +208,15 @@ results
 
 ```
 ##   Batch Index tp fp tn fn drifted         elap
-## 1           2  0  0  0  0       0 0.0006921291
-## 2           3 20  0 26  4       0 0.0065402985
-## 3           4  0  0  0  0       1 0.0027973652
-## 4           5 22  2 24  2       0 0.0054986477
-## 5           6  3 18  1 28       0 0.0033597946
-## 6           7  0  0  0  0       1 0.0026926994
-## 7           8 18  4 25  3       0 0.0056622028
-## 8           9 21  4 17  8       0 0.0037341118
-## 9          10 20  1 25  4       0 0.0035154819
+## 1           2  0  0  0  0       0 0.0006854534
+## 2           3 20  0 26  4       0 0.0063624382
+## 3           4 20  0 29  1       0 0.0037004948
+## 4           5 20  3 23  4       0 0.0067329407
+## 5           6  2 18  1 29       0 0.0037670135
+## 6           7  0  0  0  0       1 0.0024352074
+## 7           8 18  4 25  3       0 0.0058872700
+## 8           9 21  4 17  8       0 0.0036475658
+## 9          10 20  1 25  4       0 0.0038018227
 ```
 
 
@@ -243,7 +236,7 @@ print(paste('Precision', precision, 'Recall', recall, 'F1', f1, 'Accuracy', accu
 ```
 
 ```
-## [1] "Precision 0.781954887218045 Recall 0.679738562091503 F1 0.727272727272727 Accuracy 0.74"
+## [1] "Precision 0.801324503311258 Recall 0.695402298850575 F1 0.744615384615385 Accuracy 0.762857142857143"
 ```
 
 ``` r
