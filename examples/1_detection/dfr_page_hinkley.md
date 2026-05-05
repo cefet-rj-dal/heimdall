@@ -1,0 +1,105 @@
+---
+title: "dfr_page_hinkley Example"
+output:
+  html_document: 
+    self_contained: true
+---
+# Page-Hinkley Example
+
+The Page-Hinkley test monitors cumulative deviations from a running mean and raises an alarm when those deviations become persistently large. It is a classical sequential change-point detector and a good tool for learning the idea of stream monitoring.
+
+In this example, Page-Hinkley is used on a numeric stream, so the interpretation is **virtual concept drift**.
+
+Reference: Page, E. S. (1954). *Continuous inspection schemes*. Biometrika, 41(1/2), 100-115. <doi:10.2307/2333009>
+
+## Learning goal
+
+This example gives a compact introduction to a classic sequential detector and shows how easily it fits into the Heimdall update loop.
+
+
+
+``` r
+# Load Heimdall and the synthetic stream example.
+library(heimdall)
+```
+
+
+``` r
+# Fix the seed for reproducibility.
+seed <- 1
+set.seed(seed)
+```
+
+
+``` r
+# Load the univariate numeric stream monitored in this example.
+data(st_drift_examples)
+serie <- st_drift_examples$uv_virtual_drift
+```
+
+
+``` r
+# Plot the monitored signal before detection.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+```
+
+![plot of chunk unnamed-chunk-4](fig/dfr_page_hinkley/unnamed-chunk-4-1.png)
+
+
+``` r
+# Instantiate the Page-Hinkley detector.
+model <- dfr_page_hinkley(target_feat='serie')
+```
+
+
+``` r
+# Update the detector sequentially and record every drift alarm.
+detection <- NULL
+output <- list(obj=model, drift=FALSE)
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie$serie[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+}
+```
+
+
+``` r
+# Print the detected drift points.
+detection[detection$type == 'drift',]
+```
+
+```
+##     idx event  type
+## 207 207  TRUE drift
+```
+
+```
+##     idx event  type
+## 205 205  TRUE drift
+```
+
+
+``` r
+# Overlay those alarms on the original numeric stream.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
+```
+
+![plot of chunk unnamed-chunk-8](fig/dfr_page_hinkley/unnamed-chunk-8-1.png)
+
+
+``` r
+print(paste('Successfull run at', Sys.time()))
+```
+
+```
+## [1] "Successfull run at 2026-05-05 14:12:33.249153"
+```

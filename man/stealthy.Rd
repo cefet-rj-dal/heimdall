@@ -12,6 +12,8 @@ stealthy(
   th = 0.5,
   target_uni_drifter = FALSE,
   incremental_memory = TRUE,
+  active_warmup = FALSE,
+  class_balance = "inactive",
   verbose = FALSE
 )
 }
@@ -29,6 +31,10 @@ stealthy(
 \item{target_uni_drifter}{Passes the prediction target to the drifts as the target feat when the drifter is univariate and dist_based.}
 
 \item{incremental_memory}{If true, the model will retrain with all available data whenever the fit is called. If false, it only retrains when a drift is detected.}
+
+\item{active_warmup}{If true, the models will be retrained for each batch while the number of rows for the warmup_size is not met.}
+
+\item{class_balance}{Class balancing strategy. 'buffer' sets a buffer with the last warmup_size/2 rows for each class. Inactive does nothing.}
 
 \item{verbose}{if TRUE shows drift messages}
 }

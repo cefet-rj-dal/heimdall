@@ -7,7 +7,7 @@ set.seed(seed)
 
 # Load the univariate numeric stream monitored in this example.
 data(st_drift_examples)
-serie <- st_drift_examples$univariate
+serie <- st_drift_examples$uv_virtual_drift
 
 # Plot the monitored signal before detection.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
@@ -37,3 +37,5 @@ plot(x=seq_len(nrow(serie)), y=serie$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
 }
+
+print(paste('Successfull run at', Sys.time()))

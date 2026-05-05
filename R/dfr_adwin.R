@@ -5,9 +5,7 @@
 #ADWIN detection: Bifet, Albert, and Ricard Gavalda. “Learning from time-changing data with adaptive windowing.” In Proceedings of the 2007 SIAM international conference on data mining, pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
 #'@references Bifet, A., and Gavaldà, R. (2007). Learning from time-changing data with adaptive windowing. In *Proceedings of the 2007 SIAM International Conference on Data Mining*, 443-448. <doi:10.1137/1.9781611972771.42>
 #'@return `dfr_adwin` object
-#'@examples
-#'#Use the same example of dfr_cumsum changing the constructor to:
-#'#model <- dfr_adwin(target_feat='serie')
+#'@example examples/1_detection/r/dfr_adwin.R
 #'@import reticulate
 #'@export
 dfr_adwin <- function(target_feat=NULL, delta=0.00002) {

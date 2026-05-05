@@ -20,31 +20,45 @@ dfr_lbdd(target_feat = NULL, alpha = 0.01, window_size = 1500)
 LBDD is a window-based detector that compares the variability of reference and recent samples using Levene's test. Because it monitors changes in the distribution of an observed feature rather than model performance, it is primarily aimed at \strong{virtual concept drift}. In this package, the detector follows the statistical-testing approach discussed by Giusti et al. (2021) for drift analysis, using Levene's variance test as its core mechanism.
 }
 \examples{
-library(daltoolbox)
+# Load Heimdall and the synthetic univariate stream.
 library(heimdall)
 
-# This example uses a dist-based drift detector with a synthetic dataset.
+# Fix the seed for reproducibility.
+seed <- 1
+set.seed(seed)
 
+# Load the numeric stream monitored by the detector.
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
+serie <- st_drift_examples$uv_virtual_drift
 
-model <- dfr_lbdd(target_feat='depart_visibility')
+# Plot the series before starting drift detection.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
 
+# Instantiate the Levene-based detector.
+model <- dfr_lbdd(target_feat='serie', window_size=100)
+
+# Update the detector over the stream and record each drift alarm.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$serie)){
- output <- update_state(output$obj, data$serie[i])
- if (output$drift){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie$serie[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 
+# Print the positions where LBDD detected drift.
 detection[detection$type == 'drift',]
+
+# Overlay those drift points on the original numeric stream.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
 }
 \references{
 Giusti, L., Carvalho, L., Gomes, A. T., Coutinho, R., Soares, J., and Ogasawara, E. (2021). Analysing flight delay under concept drift. \emph{Evolving Systems}. \url{doi:10.1007/s12530-021-09415-z}

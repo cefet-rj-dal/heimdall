@@ -5,10 +5,9 @@
 #'# See ?dd_ddm for an example of DDM drift detector
 #'@import daltoolbox
 #'@export
-drifter <- function(detec_cooldown=0) {
+drifter <- function() {
   obj <- dal_base()
   obj$drifted <- FALSE
-  obj$detec_cooldown <- detec_cooldown
   obj$state <- list()
   class(obj) <- append("drifter", class(obj))
   return(obj)

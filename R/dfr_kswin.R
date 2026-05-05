@@ -9,32 +9,7 @@
 #KSWIN detection implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/kswin.py#L5
 #'@references Raab, C., Heusinger, M., and Schleif, F.-M. (2020). Reactive soft prototype computing for concept drift streams. *Neurocomputing*, 416, 340-351. <doi:10.1016/j.neucom.2019.11.111>
 #'@return `dfr_kswin` object
-#'@examples
-#'library(daltoolbox)
-#'library(heimdall)
-#'
-#'# This example uses a dist-based drift detector with a synthetic dataset.
-#'
-#'data(st_drift_examples)
-#'data <- st_drift_examples$univariate
-#'data$event <- NULL
-#'
-#'model <- dfr_kswin(target_feat='serie')
-#'
-#'detection <- NULL
-#'output <- list(obj=model, drift=FALSE)
-#'for (i in 1:length(data$serie)){
-#'  output <- update_state(output$obj, data$serie[i])
-#'  if (output$drift){
-#'    type <- 'drift'
-#'    output$obj <- reset_state(output$obj)
-#'  }else{
-#'    type <- ''
-#'  }
-#'  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
-#'}
-#'
-#'detection[detection$type == 'drift',]
+#'@example examples/1_detection/r/dfr_kswin.R
 #'@export
 dfr_kswin <- function(target_feat=NULL, window_size=1500, stat_size=500, alpha=0.0000001, data=NULL) {
     obj <- dist_based(target_feat=target_feat)
@@ -81,7 +56,7 @@ update_state.dfr_kswin <- function(obj, value) {
   currentLength <- length(state$window)
   
   if (currentLength >= state$window_size){
-    rnd_window <- head(state$window, nrow(state$window)-state$stat_size)
+    rnd_window <- head(state$window, length(state$window)-state$stat_size)
     stat_window <- tail(state$window, state$stat_size)
     
     ks_res <- stats::ks.test(rnd_window, stat_window, exact=TRUE)
@@ -89,7 +64,7 @@ update_state.dfr_kswin <- function(obj, value) {
     state$p_value <- unlist(ks_res[2])
     obj$last_drifter_output <- cbind(st, state$p_value)
     
-    if((state$p_value < state$alpha) & (st > threshold)){
+    if((state$p_value < state$alpha)){
       state$window <- tail(state$window, state$stat_size)
       
       obj$drifted <- TRUE

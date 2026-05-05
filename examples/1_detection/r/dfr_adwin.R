@@ -7,10 +7,10 @@ set.seed(seed)
 
 # Load the synthetic univariate stream used in the walkthrough.
 data(st_drift_examples)
-serie <- st_drift_examples$univariate
+serie <- st_drift_examples$uv_virtual_drift
 
 # Plot the monitored variable before starting the sequential updates.
-plot(x=seq_len(nrow(serie)), y=serie$serie)
+print(plot(x=seq_len(nrow(serie)), y=serie$serie))
 
 # Instantiate ADWIN to monitor the numeric stream directly.
 model <- dfr_adwin(target_feat='serie')
@@ -30,10 +30,12 @@ for (i in seq_len(nrow(serie))){
 }
 
 # Print the drift positions detected by ADWIN.
-detection[detection$type == 'drift',]
+print(detection[detection$type == 'drift',])
 
 # Overlay the detected drifts on the original numeric stream.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
 }
+
+print(paste('Successfull run at', Sys.time()))

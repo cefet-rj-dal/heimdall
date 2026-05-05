@@ -30,34 +30,47 @@ dfr_page_hinkley(
 The Page-Hinkley test is a sequential change-point detector that monitors cumulative deviations from a running mean and signals a change when those deviations grow persistently. In this package, the implementation is primarily used for \strong{virtual concept drift} when it monitors a numeric feature stream, although the same statistic can also be applied to error streams to detect \strong{real concept drift}. The method is based on Page (1954) and the later streaming adaptation popularized in data-stream mining.
 }
 \examples{
-library(daltoolbox)
+# Load Heimdall and the synthetic stream example.
 library(heimdall)
 
-# This example assumes a model residual where 1 is an error and 0 is a correct prediction.
+# Fix the seed for reproducibility.
+seed <- 1
+set.seed(seed)
 
+# Load the univariate numeric stream monitored in this example.
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
-data$prediction <- st_drift_examples$univariate$serie > 4
+serie <- st_drift_examples$uv_virtual_drift
 
+# Plot the monitored signal before detection.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
 
+# Instantiate the Page-Hinkley detector.
 model <- dfr_page_hinkley(target_feat='serie')
 
-detection <- c()
+# Update the detector sequentially and record every drift alarm.
+detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$serie)){
- output <- update_state(output$obj, data$serie[i])
- if (output$drift){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, list(idx=i, event=output$drift, type=type))
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie$serie[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 
-detection <- as.data.frame(detection)
+# Print the detected drift points.
 detection[detection$type == 'drift',]
+
+# Overlay those alarms on the original numeric stream.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
+
+print(paste('Successfull run at', Sys.time()))
 }
 \references{
 Page, E. S. (1954). Continuous inspection schemes. \emph{Biometrika}, 41(1/2), 100-115. \url{doi:10.2307/2333009}

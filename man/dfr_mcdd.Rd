@@ -20,31 +20,45 @@ dfr_mcdd(target_feat = NULL, alpha = 1e-08, window_size = 1500)
 MCDD is a window-based detector that compares the location of reference and recent samples by means of hypothesis tests on their central tendency. Because it monitors the distribution of observed features rather than predictive errors, it is primarily intended for \strong{virtual concept drift}. In this package, the detector follows the statistical-testing perspective adopted by Giusti et al. (2021) for drift analysis.
 }
 \examples{
-library(daltoolbox)
+# Load Heimdall and the synthetic stream.
 library(heimdall)
 
-# This example uses a dist-based drift detector with a synthetic dataset.
+# Fix the seed to keep the walkthrough reproducible.
+seed <- 1
+set.seed(seed)
 
+# Load the univariate series monitored in this example.
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
+serie <- st_drift_examples$uv_virtual_drift
 
-model <- dfr_mcdd(target_feat='depart_visibility')
+# Plot the monitored signal before running the detector.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
 
+# Instantiate the mean-comparison detector.
+model <- dfr_mcdd(target_feat='serie', window_size=100)
+
+# Update the detector sequentially and collect the alarm positions.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$serie)){
- output <- update_state(output$obj, data$serie[i])
- if (output$drift){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie$serie[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 
+# Print the detected drift points.
 detection[detection$type == 'drift',]
+
+# Overlay the detected drifts on the original series.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
 }
 \references{
 Giusti, L., Carvalho, L., Gomes, A. T., Coutinho, R., Soares, J., and Ogasawara, E. (2021). Analysing flight delay under concept drift. \emph{Evolving Systems}. \url{doi:10.1007/s12530-021-09415-z}

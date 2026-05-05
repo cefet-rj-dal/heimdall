@@ -7,34 +7,9 @@
 #HDDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/hddm_a.py#L6
 #'@references Frias-Blanco, I., del Campo-Avila, J., Ramos-Jimenez, G., Morales-Bueno, R., Ortiz-Diaz, A., and Caballero-Mota, Y. (2015). Online and nonparametric drift detection methods based on Hoeffding's bounds. *IEEE Transactions on Knowledge and Data Engineering*, 27(3), 810-823. <doi:10.1109/TKDE.2014.2345382>
 #'@return `dfr_hddm` object
-#'@examples
-#'library(daltoolbox)
-#'library(heimdall)
-#'
-#'# This example uses an error-based drift detector with a synthetic a 
-#'# model residual where 1 is an error and 0 is a correct prediction.
-#'
-#'data(st_drift_examples)
-#'data <- st_drift_examples$univariate
-#'data$event <- NULL
-#'data$prediction <- st_drift_examples$univariate$serie > 4
-#'
-#'model <- dfr_hddm()
-#'
-#'detection <- NULL
-#'output <- list(obj=model, drift=FALSE)
-#'for (i in 1:length(data$prediction)){
-#'  output <- update_state(output$obj, data$prediction[i])
-#'  if (output$drift){
-#'    type <- 'drift'
-#'    output$obj <- reset_state(output$obj)
-#'  }else{
-#'    type <- ''
-#'  }
-#'  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
-#'}
-#'
-#'detection[detection$type == 'drift',]
+#'@importFrom daltoolbox cla_dtree
+#'@example examples/1_detection/r/dfr_hddm.R
+#'@example examples/2_online_prediction/r/dfr_hddm.R
 #'@export
 dfr_hddm <- function(drift_confidence=0.001, warning_confidence=0.005, two_side_option=TRUE) {
   obj <- error_based()

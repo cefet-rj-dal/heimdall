@@ -7,7 +7,7 @@ set.seed(seed)
 
 # Load the numeric stream monitored by the detector.
 data(st_drift_examples)
-serie <- st_drift_examples$univariate
+serie <- st_drift_examples$uv_virtual_drift
 
 # Plot the series before starting drift detection.
 plot(x=seq_len(nrow(serie)), y=serie$serie)

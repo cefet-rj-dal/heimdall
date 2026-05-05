@@ -9,35 +9,7 @@
 #Page Hinkley detection implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/page_hinkley.py#L4
 #'@references Page, E. S. (1954). Continuous inspection schemes. *Biometrika*, 41(1/2), 100-115. <doi:10.2307/2333009>
 #'@return `dfr_page_hinkley` object
-#'@examples
-#'library(daltoolbox)
-#'library(heimdall)
-#'
-#'# This example assumes a model residual where 1 is an error and 0 is a correct prediction.
-#'
-#'data(st_drift_examples)
-#'data <- st_drift_examples$univariate
-#'data$event <- NULL
-#'data$prediction <- st_drift_examples$univariate$serie > 4
-#'
-#'
-#'model <- dfr_page_hinkley(target_feat='serie')
-#'
-#'detection <- c()
-#'output <- list(obj=model, drift=FALSE)
-#'for (i in 1:length(data$serie)){
-#'  output <- update_state(output$obj, data$serie[i])
-#'  if (output$drift){
-#'    type <- 'drift'
-#'    output$obj <- reset_state(output$obj)
-#'  }else{
-#'    type <- ''
-#'  }
-#'  detection <- rbind(detection, list(idx=i, event=output$drift, type=type))
-#'}
-#'
-#'detection <- as.data.frame(detection)
-#'detection[detection$type == 'drift',]
+#'@example examples/1_detection/r/dfr_page_hinkley.R
 #'@export
 dfr_page_hinkley <- function(target_feat=NULL, min_instances=30, delta=0.005, threshold=50, alpha=1-0.0001) {
   obj <- dist_based(target_feat=target_feat)

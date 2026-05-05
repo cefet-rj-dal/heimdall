@@ -7,8 +7,8 @@ set.seed(seed)
 
 # Load the stream and derive the binary monitored signal.
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$prediction <- st_drift_examples$univariate$serie > 4
+data <- st_drift_examples$uv_virtual_drift
+data$prediction <- st_drift_examples$uv_virtual_drift$serie > 4
 
 # Plot the binary stream that HDDM_A will monitor.
 plot(x=seq_len(nrow(data)), y=data$prediction)

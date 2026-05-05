@@ -7,32 +7,7 @@
 #KL divergence: Solomon Kullback and Richard A. Leibler. On information and sufficiency. Annals of Mathematical Statistics, 1951.
 #'@references Kullback, S., and Leibler, R. A. (1951). On information and sufficiency. *The Annals of Mathematical Statistics*, 22(1), 79-86. <doi:10.1214/aoms/1177729694>
 #'@return `dfr_kldist` object
-#'@examples
-#'library(daltoolbox)
-#'library(heimdall)
-#'
-#'# This example uses a dist-based drift detector with a synthetic dataset.
-#'
-#'data(st_drift_examples)
-#'data <- st_drift_examples$univariate
-#'data$event <- NULL
-#'
-#'model <- dfr_kldist(target_feat='serie')
-#'
-#'detection <- NULL
-#'output <- list(obj=model, drift=FALSE)
-#'for (i in 1:length(data$serie)){
-#'  output <- update_state(output$obj, data$serie[i])
-#'  if (output$drift){
-#'    type <- 'drift'
-#'    output$obj <- reset_state(output$obj)
-#'  }else{
-#'    type <- ''
-#'  }
-#'  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
-#'}
-#'
-#'detection[detection$type == 'drift',]
+#'@example examples/1_detection/r/dfr_kldist.R
 #'@export
 dfr_kldist <- function(target_feat=NULL, window_size=100, p_th=0.05, data=NULL) {
     obj <- dist_based(target_feat=target_feat)

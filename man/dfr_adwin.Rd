@@ -18,8 +18,47 @@ dfr_adwin(target_feat = NULL, delta = 2e-05)
 ADWIN (Adaptive Windowing) is a sequential change detector that maintains a variable-length window and tests whether the means of two subwindows differ significantly. In this package, the implementation is primarily used for \strong{virtual concept drift} when it monitors a numeric feature stream, although the same mechanism can also detect \strong{real concept drift} if applied to an error or loss stream. The theoretical basis follows Bifet and Gavaldà (2007) \url{doi:10.1137/1.9781611972771.42}.
 }
 \examples{
-#Use the same example of dfr_cumsum changing the constructor to:
-#model <- dfr_adwin(target_feat='serie')
+# Load Heimdall so the detector and built-in datasets are available.
+library(heimdall)
+
+# Fix the seed to keep the example reproducible.
+seed <- 1
+set.seed(seed)
+
+# Load the synthetic univariate stream used in the walkthrough.
+data(st_drift_examples)
+serie <- st_drift_examples$uv_virtual_drift
+
+# Plot the monitored variable before starting the sequential updates.
+print(plot(x=seq_len(nrow(serie)), y=serie$serie))
+
+# Instantiate ADWIN to monitor the numeric stream directly.
+model <- dfr_adwin(target_feat='serie')
+
+# Run the sequential detection loop and record every drift alarm.
+detection <- NULL
+output <- list(obj=model, drift=FALSE)
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie$serie[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+}
+
+# Print the drift positions detected by ADWIN.
+print(detection[detection$type == 'drift',])
+
+# Overlay the detected drifts on the original numeric stream.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
+
+print(paste('Successfull run at', Sys.time()))
 }
 \references{
 Bifet, A., and Gavaldà, R. (2007). Learning from time-changing data with adaptive windowing. In \emph{Proceedings of the 2007 SIAM International Conference on Data Mining}, 443-448. \url{doi:10.1137/1.9781611972771.42}

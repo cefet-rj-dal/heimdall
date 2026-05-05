@@ -8,34 +8,9 @@
 #EDDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/eddm.py
 #'@references Baena-Garcia, M., del Campo-Avila, J., Fidalgo, R., Bifet, A., Gavaldà, R., and Morales-Bueno, R. (2006). Early drift detection method. In *Fourth International Workshop on Knowledge Discovery from Data Streams*.
 #'@return `dfr_eddm` object
-#'@examples
-#'library(daltoolbox)
-#'library(heimdall)
-#'
-#'# This example uses an error-based drift detector with a synthetic a 
-#'# model residual where 1 is an error and 0 is a correct prediction.
-#'
-#'data(st_drift_examples)
-#'data <- st_drift_examples$univariate
-#'data$event <- NULL
-#'data$prediction <- st_drift_examples$univariate$serie > 4
-#'
-#'model <- dfr_eddm()
-#'
-#'detection <- NULL
-#'output <- list(obj=model, drift=FALSE)
-#'for (i in 1:length(data$prediction)){
-#'  output <- update_state(output$obj, data$prediction[i])
-#'  if (output$drift){
-#'    type <- 'drift'
-#'    output$obj <- reset_state(output$obj)
-#'  }else{
-#'    type <- ''
-#'  }
-#'  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
-#'}
-#'
-#'detection[detection$type == 'drift',]
+#'@importFrom daltoolbox cla_dtree
+#'@example examples/1_detection/r/dfr_eddm.R
+#'@example examples/2_online_prediction/r/dfr_eddm.R
 #'@export
 dfr_eddm <- function(min_instances=30, min_num_errors=30, warning_level=0.95, out_control_level=0.9) {
   

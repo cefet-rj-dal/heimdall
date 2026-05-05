@@ -22,31 +22,45 @@ dfr_kldist(target_feat = NULL, window_size = 100, p_th = 0.05, data = NULL)
 This detector compares consecutive reference and recent windows through the Kullback-Leibler divergence estimated from their empirical distributions. In this package, it is primarily used for \strong{virtual concept drift}, since it monitors changes in the distribution of a numeric feature stream rather than predictive error. The statistical foundation is the Kullback-Leibler divergence introduced by Kullback and Leibler (1951).
 }
 \examples{
-library(daltoolbox)
+# Load Heimdall and the example data stream.
 library(heimdall)
 
-# This example uses a dist-based drift detector with a synthetic dataset.
+# Fix the seed to keep the example reproducible.
+seed <- 1
+set.seed(seed)
 
+# Load the univariate stream monitored in this walkthrough.
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
+serie <- st_drift_examples$uv_virtual_drift
 
-model <- dfr_kldist(target_feat='serie')
+# Plot the monitored numeric signal before detection.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
 
+# Instantiate the KL-divergence-based detector.
+model <- dfr_kldist(target_feat='serie', window_size=100)
+
+# Update the detector sequentially and store drift alarms.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$serie)){
- output <- update_state(output$obj, data$serie[i])
- if (output$drift){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie$serie[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 
+# Print the points where KLDIST detected drift.
 detection[detection$type == 'drift',]
+
+# Overlay the detected drifts on the original numeric stream.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
 }
 \references{
 Kullback, S., and Leibler, R. A. (1951). On information and sufficiency. \emph{The Annals of Mathematical Statistics}, 22(1), 79-86. \url{doi:10.1214/aoms/1177729694}

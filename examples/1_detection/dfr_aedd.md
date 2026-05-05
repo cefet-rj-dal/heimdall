@@ -1,0 +1,131 @@
+---
+title: "dfr_aedd Example"
+output:
+  html_document: 
+    self_contained: true
+---
+# AEDD Example
+
+AEDD is an unsupervised multivariate detector based on autoencoder reconstruction error. The intuition is that if recent data become harder to reconstruct than historical data, the feature distribution may have changed.
+
+In this example, AEDD is used on a multivariate stream, so the interpretation is **virtual concept drift**.
+
+Reference: Kaminskyi, D., Li, B., and Muller, E. (2022). *Reconstruction-based unsupervised drift detection over multivariate streaming data*. IEEE ICDMW. <doi:10.1109/ICDMW58026.2022.00109>
+
+## Learning goal
+
+This example introduces the multivariate and autoencoder-based workflow in Heimdall:
+
+1. choose the monitored features;
+2. instantiate AEDD with an autoencoder backend;
+3. update the detector row by row;
+4. inspect the detected drifts visually.
+
+
+
+``` r
+# Load the autoencoder backend and Heimdall.
+library(daltoolboxdp)
+library(heimdall)
+```
+
+
+
+``` r
+# Fix the seed so the example can be reproduced consistently.
+seed <- 1
+set.seed(seed)
+```
+
+
+
+``` r
+# Load the multivariate synthetic stream.
+data(st_drift_examples)
+serie <- st_drift_examples$mv_vct_real_drift
+```
+
+
+
+``` r
+# Plot the monitored variables before running the detector.
+plot(x=serie$i, y=serie$serie1)
+```
+
+![plot of chunk unnamed-chunk-4](fig/dfr_aedd/unnamed-chunk-4-1.png)
+
+
+``` r
+plot(x=serie$i, y=serie$serie2)
+```
+
+![plot of chunk unnamed-chunk-5](fig/dfr_aedd/unnamed-chunk-5-1.png)
+
+
+``` r
+# Instantiate AEDD with a compact latent representation.
+model <- dfr_aedd(
+  encoding_size=1,
+  ae_class=autoenc_ed,
+  batch_size=64,
+  monitoring_step=10,
+  window_size=256
+)
+monitored_features <- c('serie1', 'serie2')
+```
+
+
+
+``` r
+# Update AEDD row by row using only the selected monitored features.
+detection <- NULL
+output <- list(obj=model, drift=FALSE)
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie[i, monitored_features])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+}
+```
+
+
+
+``` r
+# Print the detected drift points.
+detection[detection$type == 'drift',]
+```
+
+```
+##     idx event  type
+## 260 260  TRUE drift
+```
+
+```
+##     idx event  type
+## 270 270  TRUE drift
+```
+
+
+
+``` r
+# Display the alarms on top of one monitored variable.
+plot(x=serie$i, y=serie$serie2)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
+```
+
+![plot of chunk unnamed-chunk-9](fig/dfr_aedd/unnamed-chunk-9-1.png)
+
+
+``` r
+print(paste('Successfull run at', Sys.time()))
+```
+
+```
+## [1] "Successfull run at 2026-05-05 14:12:30.022205"
+```

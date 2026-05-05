@@ -1,0 +1,325 @@
+Conversion run started at 2026-05-05 09:58:35
+Working directory: /home/lucas/heimdall
+
+================================================================================
+[2026-05-05 09:58:48] rmd->docx
+file: Rmd/examples/1_detection/dfr_kswin.Rmd
+message: invalid 'n' - must contain at least one non-missing element, got none.
+call: head.default(state$window, nrow(state$window) - state$stat_size)
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:49] rmd->docx
+file: Rmd/examples/1_detection/dfr_mcdd.Rmd
+message: argument is of length zero
+call: if ((nrow(unique(new_window)) >= 2) & (nrow(unique(old_window)) >=      2)) {     new_p <- shapiro.test(as.numeric(new_window[, 1]))$p     old_p <- shapiro.test(as.numeric(old_window[, 1]))$p     if ((new_p > state$alpha) & (old_p > state$alpha)) {         comp_p <- t.test(new_window, old_window)$p.value         if (comp_p < state$alpha) {             obj$drifted <- TRUE             obj$last_drifter_output <- cbind(old_p, new_p, comp_p)             obj$state <- state             return(list(obj = obj, drift = TRUE))         }     } }
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:49] rmd->docx
+file: Rmd/examples/1_detection/dfr_page_hinkley.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(serie))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:49] rmd->docx
+file: Rmd/examples/2_online_prediction/dfr_cusum.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(df))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:49] rmd->docx
+file: Rmd/examples/2_online_prediction/dfr_ddm.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(df))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:49] rmd->docx
+file: Rmd/examples/2_online_prediction/dfr_eddm.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(df))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:49] rmd->docx
+file: Rmd/examples/2_online_prediction/dfr_hddm.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(df))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:50] rmd->docx
+file: Rmd/examples/dfr_adwin.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(serie))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:50] rmd->docx
+file: Rmd/examples/dfr_aedd.Rmd
+message: need finite 'xlim' values
+call: plot.window(...)
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:50] rmd->docx
+file: Rmd/examples/dfr_cusum.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(data))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:50] rmd->docx
+file: Rmd/examples/dfr_ddm.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(data))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:50] rmd->docx
+file: Rmd/examples/dfr_ecdd.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(data))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:50] rmd->docx
+file: Rmd/examples/dfr_eddm.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(data))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:50] rmd->docx
+file: Rmd/examples/dfr_hddm.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(data))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:50] rmd->docx
+file: Rmd/examples/dfr_kldist.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(serie))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:50] rmd->docx
+file: Rmd/examples/dfr_kswin.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(serie))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:50] rmd->docx
+file: Rmd/examples/dfr_lbdd.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(serie))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:50] rmd->docx
+file: Rmd/examples/dfr_mcdd.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(serie))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)
+
+================================================================================
+[2026-05-05 09:58:50] rmd->docx
+file: Rmd/examples/dfr_page_hinkley.Rmd
+message: argument must be coercible to non-negative integer
+call: seq_len(nrow(serie))
+stack:
+001: source("~/heimdall/Rmd/conversor.R", echo = TRUE)
+002: withVisible(eval(ei, envir))
+003: eval(ei, envir)
+004: eval(ei, envir)
+005: run_phase(texs, "rmd->docx", convert_rmd_docx)
+006: tryCatch({     converter(input)     list(ok = TRUE, input = input, phase = phase, message = NULL) }, error = function(err) {     record_condition(phase, input, err)     list(ok = FALSE, input = input, phase = phase, message = conditionMessage(err)) })
+007: tryCatchList(expr, classes, parentenv, handlers)
+008: tryCatchOne(expr, names, parentenv, handlers[[1L]])
+009: value[[3L]](cond)
+010: record_condition(phase, input, err)

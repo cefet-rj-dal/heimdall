@@ -7,6 +7,8 @@
 #'@param th The threshold to be used with classification algorithms
 #'@param target_uni_drifter Passes the prediction target to the drifts as the target feat when the drifter is univariate and dist_based.
 #'@param incremental_memory If true, the model will retrain with all available data whenever the fit is called. If false, it only retrains when a drift is detected.
+#'@param active_warmup If true, the models will be retrained for each batch while the number of rows for the warmup_size is not met.
+#'@param class_balance Class balancing strategy. 'buffer' sets a buffer with the last warmup_size/2 rows for each class. Inactive does nothing.
 #'@param verbose if TRUE shows drift messages
 #'@return Stealthy object
 #'@examples

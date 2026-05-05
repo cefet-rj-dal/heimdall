@@ -8,10 +8,11 @@ set.seed(seed)
 
 # Load the multivariate synthetic stream.
 data(st_drift_examples)
-serie <- st_drift_examples$dataset2
+serie <- st_drift_examples$mv_vct_real_drift
 
 # Plot the monitored variables before running the detector.
 plot(x=serie$i, y=serie$serie1)
+
 plot(x=serie$i, y=serie$serie2)
 
 # Instantiate AEDD with a compact latent representation.
@@ -46,3 +47,5 @@ plot(x=serie$i, y=serie$serie2)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
 }
+
+print(paste('Successfull run at', Sys.time()))

@@ -12,9 +12,8 @@
 #AEDD detection: Daniil Kaminskyi, Bin Li and Emmanuel Müller. “Reconstruction-based unsupervised drift detection over multivariate streaming data.” 2022 IEEE International Conference on Data Mining Workshops (ICDMW).
 #'@references Kaminskyi, D., Li, B., and Muller, E. (2022). Reconstruction-based unsupervised drift detection over multivariate streaming data. In *2022 IEEE International Conference on Data Mining Workshops (ICDMW)*. <doi:10.1109/ICDMW58026.2022.00109>
 #'@return `dfr_aedd` object
-#'@examples
-#'#See an example of using `dfr_aedd` at this
-#'#https://github.com/cefet-rj-dal/heimdall/blob/main/multivariate/dfr_aedd.md
+#'@import daltoolboxdp
+#'@example examples/1_detection/r/dfr_aedd.R
 #'@export
 dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney', alpha=0.01) {
   obj <- mv_dist_based()
