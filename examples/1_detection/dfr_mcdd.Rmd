@@ -1,51 +1,51 @@
 ---
-title: "dfr_lbdd Example"
+title: "dfr_mcdd Example"
 output:
   html_document: 
     self_contained: true
 ---
-# LBDD Example
+# MCDD Example
 
-LBDD compares the variability of historical and recent windows using Levene's test. It is useful when the most relevant change is not the average level of the signal, but its dispersion.
+MCDD compares historical and recent windows through statistical tests on their central tendency. It is useful when you want to detect shifts in the average behavior of the monitored signal.
 
-In this example, LBDD is used for **virtual concept drift** detection.
+In this example, MCDD is used for **virtual concept drift** detection.
 
 Reference: Giusti, L., Carvalho, L., Gomes, A. T., Coutinho, R., Soares, J., and Ogasawara, E. (2021). *Analysing flight delay under concept drift*. Evolving Systems. <doi:10.1007/s12530-021-09415-z>
 
 ## Learning goal
 
-This example is intended to show how a variance-oriented detector can be used in the same streaming workflow as the other Heimdall methods.
+This example demonstrates a mean-comparison workflow that fits the same streaming pattern used by the other Heimdall detectors.
 
 
 ```{r}
-# Load Heimdall and the synthetic univariate stream.
+# Load Heimdall and the synthetic stream.
 library(heimdall)
 ```
 
 ```{r}
-# Fix the seed for reproducibility.
+# Fix the seed to keep the walkthrough reproducible.
 seed <- 1
 set.seed(seed)
 ```
 
 ```{r}
-# Load the numeric stream monitored by the detector.
+# Load the univariate series monitored in this example.
 data(st_drift_examples)
-serie <- st_drift_examples$univariate
+serie <- st_drift_examples$uv_virtual_drift
 ```
 
 ```{r}
-# Plot the series before starting drift detection.
+# Plot the monitored signal before running the detector.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 ```
 
 ```{r}
-# Instantiate the Levene-based detector.
-model <- dfr_lbdd(target_feat='serie', window_size=100)
+# Instantiate the mean-comparison detector.
+model <- dfr_mcdd(target_feat='serie', window_size=100)
 ```
 
 ```{r}
-# Update the detector over the stream and record each drift alarm.
+# Update the detector sequentially and collect the alarm positions.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in seq_len(nrow(serie))){
@@ -60,21 +60,20 @@ for (i in seq_len(nrow(serie))){
 }
 ```
 
+
 ```{r}
-# Print the positions where LBDD detected drift.
+# Print the detected drift points.
 detection[detection$type == 'drift',]
 ```
 
 ```
 ##     idx event  type
-## 119 119  TRUE drift
 ## 219 219  TRUE drift
 ## 328 328  TRUE drift
 ## 428 428  TRUE drift
 ```
-
 ```{r}
-# Overlay those drift points on the original numeric stream.
+# Overlay the detected drifts on the original series.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)

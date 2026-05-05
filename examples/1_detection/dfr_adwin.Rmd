@@ -25,7 +25,6 @@ This example is meant to help you understand the standard Heimdall workflow for 
 ```{r}
 # Load Heimdall so the detector and built-in datasets are available.
 library(heimdall)
-knitr::opts_chunk$set(include = TRUE, echo = TRUE, eval = TRUE)
 ```
 
 ```{r}
@@ -37,7 +36,7 @@ set.seed(seed)
 ```{r}
 # Load the synthetic univariate stream used in the walkthrough.
 data(st_drift_examples)
-serie <- st_drift_examples$univariate
+serie <- st_drift_examples$uv_virtual_drift
 ```
 
 ```{r}

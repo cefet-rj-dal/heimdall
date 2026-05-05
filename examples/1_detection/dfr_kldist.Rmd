@@ -33,7 +33,7 @@ set.seed(seed)
 ```{r}
 # Load the univariate stream monitored in this walkthrough.
 data(st_drift_examples)
-serie <- st_drift_examples$univariate
+serie <- st_drift_examples$uv_virtual_drift
 ```
 
 

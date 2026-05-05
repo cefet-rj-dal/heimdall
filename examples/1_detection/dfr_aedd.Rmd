@@ -39,7 +39,7 @@ set.seed(seed)
 ```{r}
 # Load the multivariate synthetic stream.
 data(st_drift_examples)
-serie <- st_drift_examples$dataset2
+serie <- st_drift_examples$mv_vct_real_drift
 ```
 
 
@@ -47,8 +47,6 @@ serie <- st_drift_examples$dataset2
 # Plot the monitored variables before running the detector.
 plot(x=serie$i, y=serie$serie1)
 ```
-
-![plot of chunk unnamed-chunk-4](fig/dfr_aedd/unnamed-chunk-4-1.png)
 
 ```{r}
 plot(x=serie$i, y=serie$serie2)

@@ -125,14 +125,15 @@ fit.stealthy <- function(obj, x, y, ...){
     }else{
       obj$train_model <- TRUE
     }
+  }else if (obj$class_balance == 'inactive'){
+    # Aggregate new data
+    obj$x_train <- rbind(obj$x_train, x)
+    obj$y_train <- rbind(obj$y_train, y)
+    obj$train_model <- TRUE
   }
   
   # Define update models
   if(obj$incremental_memory | (!obj$fitted) | (obj$active_warmup & (nrow(obj$x_train) < obj$warmup_size))){
-    # Aggregate new data
-    obj$x_train <- rbind(obj$x_train, x)
-    obj$y_train <- rbind(obj$y_train, y)
-    
     if(((nrow(obj$x_train) >= obj$warmup_size) | (obj$active_warmup & (nrow(obj$x_train) < obj$warmup_size))) & obj$train_model){
       # Class Balance
       if(obj$class_balance == 'buffer'){
@@ -167,7 +168,7 @@ fit.stealthy <- function(obj, x, y, ...){
       # Normalize 
       obj$norm_model <- fit(obj$norm_model, x_train_dummy)
       norm_x_oh <- transform(obj$norm_model, x_train_dummy)
-      
+
       # Fit Drifter
       if ('dist_based' %in% class(obj$drift_method)){
         if (is.null(obj$drift_method$target_feat)){
@@ -235,24 +236,6 @@ fit.stealthy <- function(obj, x, y, ...){
   }
   rownames(obj$drifter_output) <- 1:nrow(obj$drifter_output)
   obj$drifter_input <- rbind(obj$drifter_input, cbind(x, y))
-
-  # htmlfilename <- "//home/lucas/lucas/aels_method/results/testing/batch_plot.html"
-  # if(!file.exists(htmlfilename)){
-  #   batch_plot <- ggplotly(ggplot(data=fit_drifter_output, aes(x=rownames(fit_drifter_output), y=.data[['AF4']], group=1)) +
-  #                            geom_line() +
-  #                            xlab('') +
-  #                            ylab('AF4') +
-  #                            theme_minimal() +
-  #                            theme(
-  #                              panel.background = element_rect(fill = "white"),
-  #                              panel.grid.major = element_blank(),
-  #                              panel.grid.minor = element_blank(),
-  #                              axis.title.x = element_blank(),
-  #                              axis.text.x = element_blank(),
-  #                              axis.ticks.x = element_blank()
-  #                            ))
-  #   saveWidget(batch_plot, htmlfilename, selfcontained = F, libdir = "lib")
-  # }
   
   if(obj$drift_method$drifted){
     if(obj$verbose){

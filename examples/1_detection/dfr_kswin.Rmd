@@ -31,7 +31,7 @@ set.seed(seed)
 ```{r}
 # Load the numeric stream used by the detector.
 data(st_drift_examples)
-serie <- st_drift_examples$univariate
+serie <- st_drift_examples$uv_virtual_drift
 ```
 
 ```{r}
