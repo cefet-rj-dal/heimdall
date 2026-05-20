@@ -22,7 +22,7 @@ A list of multivariate time series for drift detection
 }
 \examples{
 data(st_drift_examples)
-dataset <- st_drift_examples$example1
+dataset <- st_drift_examples$uv_virtual_drift
 }
 \references{
 \href{https://github.com/cefet-rj-dal/heimdall}{Stealthy package}

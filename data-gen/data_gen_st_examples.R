@@ -27,9 +27,9 @@ gen_data <- function() {
     posdrift <- nrow(tsantes) + 1
     tsdepois <- data[posdrift:nrow(data), 'serie', drop=FALSE]
     
-    tsantes$target <- (tsantes$serie > 0) | (tsantes$serie < 0)
-    tsdepois$target <- (tsdepois$serie < 0) | (tsdepois$serie > 0)
-    tsdepois$serie <- tsdepois$serie + 2
+    tsdepois$serie <- tsdepois$serie + 10
+    tsantes$target <- (tsantes$serie < 0)
+    tsdepois$target <- (tsdepois$serie > 10)
     
     s_data <- rbind(tsantes, tsdepois)
     s_data$i <- 1:nrow(s_data)
@@ -54,9 +54,9 @@ gen_data <- function() {
     posdrift <- nrow(tsantes) + 1
     tsdepois <- data[posdrift:nrow(data), 'serie', drop=FALSE]
     
-    tsantes$target <- (tsantes$serie > 0) | (tsantes$serie < 0)
-    tsdepois$target <- (tsdepois$serie < 0) | (tsdepois$serie > 0)
-    tsdepois$serie <- rnorm(n/2, sd=2)
+    tsantes$target <- (tsantes$serie > 0)
+    tsdepois$serie <- rnorm(n/2, sd=10)
+    tsdepois$target <- (tsdepois$serie < 0)
     
     
     s_data <- rbind(tsantes, tsdepois)
@@ -112,8 +112,8 @@ gen_data <- function() {
     
     tsantes$target <- ((tsantes$serie1 > 0) & (tsantes$serie2 > 0)) | ( (tsantes$serie1 < 0) & (tsantes$serie2 < 0))
     tsdepois$target <- ((tsdepois$serie1 < 0) & (tsdepois$serie2 > 0)) | ( (tsdepois$serie1 > 0) & (tsdepois$serie2 < 0))
-    tsdepois$serie1 <- tsdepois$serie1 + 2
-    tsdepois$serie2 <- tsdepois$serie2 + 2
+    tsdepois$serie1 <- tsdepois$serie1 + 15
+    tsdepois$serie2 <- tsdepois$serie2 + 15
     
     s_data <- rbind(tsantes, tsdepois)
     s_data$i <- 1:nrow(s_data)

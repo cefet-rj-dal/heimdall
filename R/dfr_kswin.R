@@ -43,7 +43,7 @@ dfr_kswin <- function(target_feat=NULL, window_size=1500, stat_size=500, alpha=0
 #'@importFrom stats ks.test
 #'@export
 update_state.dfr_kswin <- function(obj, value) {
-  obj$last_drifter_output <- NULL
+  obj$last_drifter_output <- c(NA, NA)
   
   state <- obj$state
 
@@ -53,6 +53,8 @@ update_state.dfr_kswin <- function(obj, value) {
     obj$state <- state
     return(list(obj=obj, drift=FALSE))
   }
+  state$window <- c(state$window, value)
+  
   currentLength <- length(state$window)
   
   if (currentLength >= state$window_size){
@@ -77,8 +79,6 @@ update_state.dfr_kswin <- function(obj, value) {
       return(list(obj=obj, drift=FALSE))
     }
   }else{
-    state$window <- c(state$window, value)
-  
     obj$state <- state
     return(list(obj=obj, drift=FALSE))
   }

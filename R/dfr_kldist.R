@@ -41,7 +41,7 @@ dfr_kldist <- function(target_feat=NULL, window_size=100, p_th=0.05, data=NULL) 
 #'@importFrom utils head tail
 #'@export
 update_state.dfr_kldist <- function(obj, value) {
-  obj$last_drifter_output <- NULL
+  obj$last_drifter_output <- NA
   
   state <- obj$state
 
@@ -95,6 +95,7 @@ fit.dfr_kldist <- function(obj, data, ...){
   obj$last_drifter_output <- NULL
   output <- update_state(obj, data[1])
   output$obj$drifter_output <- rbind(output$obj$drifter_output, output$obj$last_drifter_output)
+  
   if (length(data) > 1){
     for (i in 2:length(data)){
       output <- update_state(output$obj, data[i])
@@ -102,7 +103,7 @@ fit.dfr_kldist <- function(obj, data, ...){
     }
   }
   
-  output$obj$drifter_output <- as.data.frame(output$obj$drifter_output)
+  output$obj$drifter_output <- as.data.frame(output$obj$drifter_output, col.names = c('kl'))
   
   return(output$obj)
 }

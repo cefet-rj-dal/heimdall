@@ -76,8 +76,12 @@ detection[detection$type == 'drift',]
 ```
 
 ```
-## [1] idx   event type 
-## <0 rows> (or 0-length row.names)
+##     idx event  type
+## 222 222  TRUE drift
+## 272 272  TRUE drift
+## 336 336  TRUE drift
+## 386 386  TRUE drift
+## 436 436  TRUE drift
 ```
 
 ```
@@ -93,12 +97,9 @@ detection[detection$type == 'drift',]
 ``` r
 # Overlay the detected drifts on the original stream.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
-```
-
-![plot of chunk unnamed-chunk-8](fig/dfr_kswin/unnamed-chunk-8-1.png)
-
-``` r
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
 }
 ```
+
+![plot of chunk unnamed-chunk-8](fig/dfr_kswin/unnamed-chunk-8-1.png)

@@ -6,7 +6,7 @@
 \usage{
 dfr_aedd(
   encoding_size,
-  ae_class = autoenc_encode_decode,
+  ae_class = daltoolboxdp::autoenc_ed,
   batch_size = 32,
   num_epochs = 1000,
   learning_rate = 0.001,

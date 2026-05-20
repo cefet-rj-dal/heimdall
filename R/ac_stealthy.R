@@ -127,15 +127,15 @@ fit.stealthy <- function(obj, x, y, ...){
     }else{
       obj$train_model <- TRUE
     }
-  }else if (obj$class_balance == 'inactive'){
-    # Aggregate new data
-    obj$x_train <- rbind(obj$x_train, x)
-    obj$y_train <- rbind(obj$y_train, y)
+  }else{
     obj$train_model <- TRUE
   }
   
   # Define update models
   if(obj$incremental_memory | (!obj$fitted) | (obj$active_warmup & (nrow(obj$x_train) < obj$warmup_size))){
+    # Aggregate new data
+    obj$x_train <- rbind(obj$x_train, x)
+    obj$y_train <- rbind(obj$y_train, y)
     if(((nrow(obj$x_train) >= obj$warmup_size) | (obj$active_warmup & (nrow(obj$x_train) < obj$warmup_size))) & obj$train_model){
       # Class Balance
       if(obj$class_balance == 'buffer'){

@@ -12,5 +12,5 @@
 #' @source \href{https://github.com/cefet-rj-dal/heimdall}{Stealthy package}
 #' @examples
 #' data(st_drift_examples)
-#' dataset <- st_drift_examples$example1
+#' dataset <- st_drift_examples$uv_virtual_drift
 "st_drift_examples"

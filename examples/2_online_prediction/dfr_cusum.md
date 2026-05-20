@@ -166,18 +166,6 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
 ```
 ## [1] "Time Step:2"
 ## [1] "Time Step:3"
-```
-
-```
-## Warning in fit.nrm_memory(obj$norm_model, x_model_train_dummy): nrm_memory: Some categories present in most recent data are not on the history dataset. Creating zero
-## columns.
-```
-
-```
-## Warning in fit.nrm_memory(obj$norm_model, x_train_dummy): nrm_memory: Some categories present in most recent data are not on the history dataset. Creating zero columns.
-```
-
-```
 ## [1] "Time Step:4"
 ## [1] "Time Step:5"
 ## [1] "Time Step:6"
@@ -207,16 +195,16 @@ results
 ```
 
 ```
-##   Batch Index tp fp tn fn drifted         elap
-## 1           2  0  0  0  0       0 0.0006728172
-## 2           3 20  0 26  4       0 0.0064306259
-## 3           4 20  0 29  1       0 0.0030193329
-## 4           5 20  3 23  4       0 0.0153617859
-## 5           6  2 18  1 29       0 0.0027568340
-## 6           7  0  0  0  0       1 0.0022714138
-## 7           8 18  4 25  3       0 0.0054447651
-## 8           9 21  4 17  8       0 0.0034511089
-## 9          10 20  1 25  4       0 0.0036473274
+##   Batch Index tp fp tn fn drifted        elap
+## 1           2  0  0  0  0       0 0.000780344
+## 2           3 20  0 26  4       0 0.006762266
+## 3           4 20  0 29  1       0 0.003202438
+## 4           5 20  3 23  4       0 0.005073547
+## 5           6  2 18  1 29       0 0.002557278
+## 6           7  0  0  0  0       1 0.002030373
+## 7           8 18  4 25  3       0 0.005756617
+## 8           9 21  4 17  8       0 0.003286839
+## 9          10 20  1 25  4       0 0.003303051
 ```
 
 

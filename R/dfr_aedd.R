@@ -15,7 +15,7 @@
 #'@import daltoolboxdp
 #'@example examples/1_detection/r/dfr_aedd.R
 #'@export
-dfr_aedd <- function(encoding_size, ae_class=autoenc_encode_decode, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney', alpha=0.01) {
+dfr_aedd <- function(encoding_size, ae_class=daltoolboxdp::autoenc_ed, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney', alpha=0.01) {
   obj <- mv_dist_based()
   
   obj$ae_class <- ae_class
