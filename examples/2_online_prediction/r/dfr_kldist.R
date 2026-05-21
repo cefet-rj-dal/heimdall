@@ -1,5 +1,7 @@
 # Load Heimdall and the built-in synthetic data stream.
 library(heimdall)
+# library(devtools)
+# load_all('/home/lucas/heimdall')
 
 # Fix the seed to make the example reproducible.
 seed <- 1
@@ -46,7 +48,7 @@ monitoring_step <- batch_size # Process data in batch_size frequency
 # Define the stealthy model
 model <- stealthy(
   model=daltoolbox::cla_dtree(target, slevels), # Naive Bayes Classifier
-  drift_method=dfr_kldist(target_feat='serie'), # Using KLDIST
+  drift_method=dfr_kldist(window_size=batch_size*2, p_th=0.1), # Using KLDIST
   norm_class=nrm_memory(norm_class = daltoolbox::minmax()), # Normalization with MinMax
   warmup_size=warmup_size, # Warmup size used to train models
   incremental_memory=FALSE, # Do not force retrain in each batch

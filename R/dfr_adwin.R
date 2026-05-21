@@ -6,6 +6,7 @@
 #'@references Bifet, A., and Gavaldà, R. (2007). Learning from time-changing data with adaptive windowing. In *Proceedings of the 2007 SIAM International Conference on Data Mining*, 443-448. <doi:10.1137/1.9781611972771.42>
 #'@return `dfr_adwin` object
 #'@example examples/1_detection/r/dfr_adwin.R
+#'@example examples/2_online_prediction/r/dfr_adwin.R
 #'@import reticulate
 #'@export
 dfr_adwin <- function(target_feat=NULL, delta=0.00002) {

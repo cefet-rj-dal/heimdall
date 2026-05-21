@@ -10,6 +10,7 @@
 #'@references Page, E. S. (1954). Continuous inspection schemes. *Biometrika*, 41(1/2), 100-115. <doi:10.2307/2333009>
 #'@return `dfr_page_hinkley` object
 #'@example examples/1_detection/r/dfr_page_hinkley.R
+#'@example examples/2_online_prediction/r/dfr_page_hinkley.R
 #'@export
 dfr_page_hinkley <- function(target_feat=NULL, min_instances=30, delta=0.005, threshold=50, alpha=1-0.0001) {
   obj <- dist_based(target_feat=target_feat)

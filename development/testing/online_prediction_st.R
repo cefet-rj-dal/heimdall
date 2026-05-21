@@ -7,7 +7,7 @@ detectors_list <- c(
   ,
   'lbdd' # UV Dist-Based DP Drift Detectors
   ,
-  'aedd' # MV Dist-Based Drift Detectors
+  'aedd', 'kldist' # MV Dist-Based Drift Detectors
                     )
 
 for (detector in detectors_list){

@@ -10,6 +10,7 @@
 #'@references Raab, C., Heusinger, M., and Schleif, F.-M. (2020). Reactive soft prototype computing for concept drift streams. *Neurocomputing*, 416, 340-351. <doi:10.1016/j.neucom.2019.11.111>
 #'@return `dfr_kswin` object
 #'@example examples/1_detection/r/dfr_kswin.R
+#'@example examples/2_online_prediction/r/dfr_kswin.R
 #'@export
 dfr_kswin <- function(target_feat=NULL, window_size=1500, stat_size=500, alpha=0.0000001, data=NULL) {
     obj <- dist_based(target_feat=target_feat)

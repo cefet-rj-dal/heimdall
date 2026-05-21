@@ -21,6 +21,8 @@ This example is a compact template for online prediction with distribution-based
 ``` r
 # Load Heimdall and the built-in synthetic data stream.
 library(heimdall)
+# library(devtools)
+# load_all('/home/lucas/heimdall')
 ```
 
 
@@ -84,7 +86,7 @@ monitoring_step <- batch_size # Process data in batch_size frequency
 # Define the stealthy model
 model <- stealthy(
   model=daltoolbox::cla_dtree(target, slevels), # Naive Bayes Classifier
-  drift_method=dfr_kldist(target_feat='serie'), # Using KLDIST
+  drift_method=dfr_kldist(window_size=batch_size*2, p_th=0.1), # Using KLDIST
   norm_class=nrm_memory(norm_class = daltoolbox::minmax()), # Normalization with MinMax
   warmup_size=warmup_size, # Warmup size used to train models
   incremental_memory=FALSE, # Do not force retrain in each batch
@@ -173,42 +175,11 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
 ```
 ## [1] "Time Step:2"
 ## [1] "Time Step:3"
-## [1] "Time Step:4"
 ```
 
 ```
-## Stealthy detected a drift, discarding old data
-```
-
-```
-## [1] "Time Step:5"
-## [1] "Time Step:6"
-```
-
-```
-## Stealthy detected a drift, discarding old data
-```
-
-```
-## [1] "Time Step:7"
-```
-
-```
-## Warning in update_state.dfr_kldist(output$obj, data[i]): NaNs produced
-## Warning in update_state.dfr_kldist(output$obj, data[i]): NaNs produced
-```
-
-```
-## [1] "Time Step:8"
-```
-
-```
-## Stealthy detected a drift, discarding old data
-```
-
-```
-## [1] "Time Step:9"
-## [1] "Time Step:10"
+## Error in `update_state.dfr_kldist()`:
+## ! 'list' object cannot be coerced to type 'double'
 ```
 
 ``` r
@@ -225,15 +196,7 @@ results
 
 ```
 ##   Batch Index tp fp tn fn drifted         elap
-## 1           2  0  0  0  0       0 0.0006089211
-## 2           3 33  0 17  0       0 0.0058848858
-## 3           4  0  0  0  0       1 0.0075199604
-## 4           5 27  0 23  0       0 0.0056333542
-## 5           6  0  0  0  0       1 0.0018525124
-## 6           7 26  0 23  1       0 0.0063440800
-## 7           8  0  0  0  0       1 0.0022845268
-## 8           9 19  0 31  0       0 0.0082197189
-## 9          10 25  0 25  0       0 0.0036122799
+## 1           2  0  0  0  0       0 0.0006427765
 ```
 
 
@@ -253,15 +216,18 @@ print(paste('Precision', precision, 'Recall', recall, 'F1', f1, 'Accuracy', accu
 ```
 
 ```
-## [1] "Precision 1 Recall 0.99236641221374 F1 0.996168582375479 Accuracy 0.996"
+## [1] "Precision NaN Recall NaN F1 NaN Accuracy NaN"
 ```
 
 ``` r
 plot(x=seq_len(nrow(df)), y=df$serie, col=as.numeric(df[[target]]))
 abline(v=250, col='blue', lty=2)
+```
+
+![plot of chunk unnamed-chunk-9](fig/dfr_kldist/unnamed-chunk-9-1.png)
+
+``` r
 for (drift_index in results[results['drifted'] == 1, 'Batch Index']) {
   abline(v=drift_index*batch_size, col='red', lty=2)
 }
 ```
-
-![plot of chunk unnamed-chunk-9](fig/dfr_kldist/unnamed-chunk-9-1.png)

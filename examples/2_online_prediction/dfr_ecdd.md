@@ -82,7 +82,7 @@ monitoring_step <- batch_size # Process data in batch_size frequency
 # Define the stealthy model
 model <- stealthy(
   model=daltoolbox::cla_dtree(target, slevels), # Naive Bayes Classifier
-  drift_method=dfr_ecdd(target_feat='serie'), # Using ECDD
+  drift_method=dfr_ecdd(), # Using ECDD
   norm_class=nrm_memory(norm_class = daltoolbox::minmax()), # Normalization with MinMax
   warmup_size=warmup_size, # Warmup size used to train models
   incremental_memory=FALSE, # Do not force retrain in each batch
@@ -91,11 +91,6 @@ model <- stealthy(
   active_warmup = FALSE, # Only trains when warmup_size rows are available
   verbose=TRUE # Shows status messages
 )
-```
-
-```
-## Error in `dfr_ecdd()`:
-## ! unused argument (target_feat = "serie")
 ```
 
 
@@ -175,21 +170,33 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
 
 ```
 ## [1] "Time Step:2"
+## [1] "Time Step:3"
+## [1] "Time Step:4"
+## [1] "Time Step:5"
+## [1] "Time Step:6"
 ```
 
 ```
-## Error:
-## ! object 'model' not found
+## Stealthy detected a drift, discarding old data
+```
+
+```
+## [1] "Time Step:7"
+## [1] "Time Step:8"
+```
+
+```
+## Stealthy detected a drift, discarding old data
+```
+
+```
+## [1] "Time Step:9"
+## [1] "Time Step:10"
 ```
 
 ``` r
 results<- as.data.frame(results)
 names(results) <- c('Batch Index', 'tp', 'fp', 'tn', 'fn', 'drifted', 'elap')
-```
-
-```
-## Error in `names(results) <- c("Batch Index", "tp", "fp", "tn", "fn", "drifted", "elap")`:
-## ! 'names' attribute [7] must be the same length as the vector [0]
 ```
 
 
@@ -200,7 +207,16 @@ results
 ```
 
 ```
-## data frame with 0 columns and 0 rows
+##   Batch Index tp fp tn fn drifted         elap
+## 1           2  0  0  0  0       0 0.0006630421
+## 2           3 33  0 17  0       0 0.0047764778
+## 3           4 27  0 23  0       0 0.0026822090
+## 4           5 26  0 23  1       0 0.0028519630
+## 5           6  0  0  0  0       1 0.0024209023
+## 6           7 26  0 23  1       0 0.0044221878
+## 7           8  0  0  0  0       1 0.0023841858
+## 8           9 19  0 31  0       0 0.0044119358
+## 9          10 25  0 25  0       0 0.0026845932
 ```
 
 
@@ -208,99 +224,27 @@ results
 # Calculate metrics
 beta <- 1
 tp_sum <- sum(results['tp'])
-```
-
-```
-## Error in `[.data.frame`:
-## ! undefined columns selected
-```
-
-``` r
 fp_sum <- sum(results['fp'])
-```
-
-```
-## Error in `[.data.frame`:
-## ! undefined columns selected
-```
-
-``` r
 tn_sum <- sum(results['tn'])
-```
-
-```
-## Error in `[.data.frame`:
-## ! undefined columns selected
-```
-
-``` r
 fn_sum <- sum(results['fn'])
-```
-
-```
-## Error in `[.data.frame`:
-## ! undefined columns selected
-```
-
-``` r
 precision <- tp_sum/(tp_sum + fp_sum)
-```
-
-```
-## Error:
-## ! object 'tp_sum' not found
-```
-
-``` r
 recall <- tp_sum/(tp_sum + fn_sum)
-```
-
-```
-## Error:
-## ! object 'tp_sum' not found
-```
-
-``` r
 accuracy <- (tp_sum + tn_sum)/(tp_sum + fp_sum + tn_sum + fn_sum)
-```
-
-```
-## Error:
-## ! object 'tp_sum' not found
-```
-
-``` r
 f1 <- 2 * (precision * recall) / (((beta^2)*precision) + recall)
-```
 
-```
-## Error in `precision * recall`:
-## ! non-numeric argument to binary operator
-```
-
-``` r
 print(paste('Precision', precision, 'Recall', recall, 'F1', f1, 'Accuracy', accuracy))
 ```
 
 ```
-## Error:
-## ! object 'f1' not found
+## [1] "Precision 1 Recall 0.987341772151899 F1 0.993630573248408 Accuracy 0.993333333333333"
 ```
 
 ``` r
 plot(x=seq_len(nrow(df)), y=df$serie, col=as.numeric(df[[target]]))
 abline(v=250, col='blue', lty=2)
-```
-
-![plot of chunk unnamed-chunk-9](fig/dfr_ecdd/unnamed-chunk-9-1.png)
-
-``` r
 for (drift_index in results[results['drifted'] == 1, 'Batch Index']) {
   abline(v=drift_index*batch_size, col='red', lty=2)
 }
 ```
 
-```
-## Error in `[.data.frame`:
-## ! undefined columns selected
-```
+![plot of chunk unnamed-chunk-9](fig/dfr_ecdd/unnamed-chunk-9-1.png)

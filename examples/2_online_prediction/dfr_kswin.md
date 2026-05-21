@@ -84,7 +84,9 @@ monitoring_step <- batch_size # Process data in batch_size frequency
 # Define the stealthy model
 model <- stealthy(
   model=daltoolbox::cla_dtree(target, slevels), # Naive Bayes Classifier
-  drift_method=dfr_kswin(target_feat='serie', window_size=100, stat_size=50, alpha=0.0001), # Using KSWIN
+  drift_method=dfr_kswin(
+    target_feat='serie', window_size=100, stat_size=50, alpha=0.0001
+    ), # Using KSWIN
   norm_class=nrm_memory(norm_class = daltoolbox::minmax()), # Normalization with MinMax
   warmup_size=warmup_size, # Warmup size used to train models
   incremental_memory=FALSE, # Do not force retrain in each batch
@@ -203,15 +205,15 @@ results
 
 ```
 ##   Batch Index tp fp tn fn drifted         elap
-## 1           2  0  0  0  0       0 0.0007777214
-## 2           3 33  0 17  0       0 0.0073988438
-## 3           4 27  0 23  0       0 0.0088891983
-## 4           5 26  0 23  1       0 0.0080993176
-## 5           6  0  0 23 27       0 0.0073983669
-## 6           7  0  0  0  0       1 0.0040059090
-## 7           8 24  1 25  0       0 0.0059940815
-## 8           9 19  0 31  0       0 0.0067000389
-## 9          10 25  0 25  0       0 0.0068430901
+## 1           2  0  0  0  0       0 0.0006701946
+## 2           3 33  0 17  0       0 0.0066332817
+## 3           4 27  0 23  0       0 0.0087420940
+## 4           5 26  0 23  1       0 0.0101757050
+## 5           6  0  0 23 27       0 0.0102834702
+## 6           7  0  0  0  0       1 0.0046222210
+## 7           8 24  1 25  0       0 0.0063815117
+## 8           9 19  0 31  0       0 0.0055270195
+## 9          10 25  0 25  0       0 0.0072922707
 ```
 
 

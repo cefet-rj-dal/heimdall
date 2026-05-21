@@ -85,7 +85,9 @@ monitoring_step <- batch_size # Process data in batch_size frequency
 # Define the stealthy model
 model <- stealthy(
   model=daltoolbox::cla_dtree(target, slevels), # Naive Bayes Classifier
-  drift_method=dfr_aedd(encoding_size=1, ae_class=daltoolboxdp::autoenc_ed, criteria='levene', alpha=0.05, monitoring_step=batch_size), # Using AEDD
+  drift_method=dfr_aedd(
+    encoding_size=1, ae_class=daltoolboxdp::autoenc_ed, criteria='levene', alpha=0.05, 
+    monitoring_step=batch_size), # Using AEDD
   norm_class=nrm_memory(norm_class = daltoolbox::minmax()), # Normalization with MinMax
   warmup_size=warmup_size, # Warmup size used to train models
   incremental_memory=FALSE, # Do not force retrain in each batch
@@ -204,15 +206,15 @@ results
 
 ```
 ##   Batch Index tp fp tn fn drifted         elap
-## 1           2  0  0  0  0       0 0.0006844997
-## 2           3 20  0 26  4       0 1.7272658348
-## 3           4 20  0 29  1       0 0.0322513580
-## 4           5 20  3 23  4       0 0.0201511383
-## 5           6  0  0 19 31       0 0.0213637352
-## 6           7  0  0  0  0       1 0.0264010429
-## 7           8 18  4 25  3       0 1.3054029942
-## 8           9 21  4 17  8       0 0.0205113888
-## 9          10 20  1 25  4       0 0.0239357948
+## 1           2  0  0  0  0       0 0.0006690025
+## 2           3 20  0 26  4       0 1.4835772514
+## 3           4 20  0 29  1       0 0.0215146542
+## 4           5 20  3 23  4       0 0.0226352215
+## 5           6  0  0 19 31       0 0.0225510597
+## 6           7  0  0  0  0       1 0.0243589878
+## 7           8 18  4 25  3       0 1.4758367538
+## 8           9 21  4 17  8       0 0.0209794044
+## 9          10 20  1 25  4       0 0.0209741592
 ```
 
 

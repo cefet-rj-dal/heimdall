@@ -14,6 +14,7 @@
 #'@return `dfr_aedd` object
 #'@import daltoolboxdp
 #'@example examples/1_detection/r/dfr_aedd.R
+#'@example examples/2_online_prediction/r/dfr_aedd.R
 #'@export
 dfr_aedd <- function(encoding_size, ae_class=daltoolboxdp::autoenc_ed, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney', alpha=0.01) {
   obj <- mv_dist_based()
@@ -160,6 +161,39 @@ update_state.dfr_aedd <- function(obj, value){
         state$drifted <- TRUE
       }
       
+    }
+    
+    if (state$criteria == 'psi'){
+      analysis_window <- rbind(as.data.frame(history_window_output), as.data.frame(recent_window_output))
+      
+      state$psi = 0
+      state$breaks <- state$window_size/5
+      for(c in names(analysis_window)){
+        analysis_window['bin'] <- cut(analysis_window[[c]], breaks=state$breaks)
+        
+        p_window <- tail(analysis_window, state$window_size/2)
+        q_window <- head(analysis_window, state$window_size/2)
+        if(c != 'bin'){
+          for(b in unique(analysis_window[['bin']])){
+            ob <- sum(p_window['bin'] == b)/nrow(p_window)
+            p <- (ob + 0.005)/(1 + state$breaks * 0.005)
+            ex <- sum(q_window['bin'] == b)/nrow(q_window)
+            q <- (ex + 0.005)/(1 + state$breaks * 0.005)
+            
+            psi_cb <- (p - q) * log(p/q)
+            
+            state$psi <- state$psi + psi_cb
+          }
+        }
+      }
+      
+      state$psi <- state$psi / state$breaks / length(names(analysis_window))
+      
+      if((state$psi >= obj$alpha)){
+        state$window <- tail(state$window, state$window_size/2)
+        
+        obj$drifted <- TRUE
+      }
     }
     
     if (state$criteria == 'parametric_threshold'){

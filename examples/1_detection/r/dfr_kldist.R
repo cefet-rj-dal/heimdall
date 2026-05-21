@@ -13,13 +13,13 @@ serie <- st_drift_examples$uv_virtual_drift
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 
 # Instantiate the KL-divergence-based detector.
-model <- dfr_kldist(target_feat='serie', window_size=100)
+model <- dfr_kldist(window_size=100, p_th=0.10)
 
 # Update the detector sequentially and store drift alarms.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
 for (i in seq_len(nrow(serie))){
-  output <- update_state(output$obj, serie$serie[i])
+  output <- update_state(output$obj, serie[i, 'serie', drop=FALSE])
   if (output$drift){
     type <- 'drift'
     output$obj <- reset_state(output$obj)
@@ -31,7 +31,6 @@ for (i in seq_len(nrow(serie))){
 
 # Print the points where KLDIST detected drift.
 detection[detection$type == 'drift',]
-
 # Overlay the detected drifts on the original numeric stream.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {

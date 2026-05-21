@@ -9,6 +9,7 @@
 #'@references Ross, G. J., Adams, N. M., Tasoulis, D. K., and Hand, D. J. (2012). Exponentially weighted moving average charts for detecting concept drift. *Pattern Recognition Letters*, 33(2), 191-198. <doi:10.1016/j.patrec.2011.08.019>
 #'@return `dfr_ecdd` object
 #'@example examples/1_detection/r/dfr_ecdd.R
+#'@example examples/2_online_prediction/r/dfr_ecdd.R
 #'@export
 dfr_ecdd <- function(lambda=0.2, min_run_instances=30, average_run_length=100) {
   obj <- error_based()
