@@ -9,7 +9,7 @@
 #'@example examples/1_detection/r/dfr_lbdd.R
 #'@example examples/2_online_prediction/r/dfr_lbdd.R
 #'@export
-dfr_lbdd <- function(target_feat=NULL, alpha=0.01, window_size=1500) {
+dfr_lbdd <- function(target_feat=NULL, alpha=0.05, window_size=1500) {
     obj <- dist_based(target_feat = target_feat)
     
     obj$drifted <- FALSE

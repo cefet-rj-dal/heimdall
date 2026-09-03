@@ -58,7 +58,7 @@ update_state.dfr_kldist <- function(obj, value) {
     analysis_window <- rbind(tail(state$window, state$window_size/2), head(state$window, state$window_size/2))
     
     state$psi = 0
-    state$breaks <- state$window_size/5
+    state$breaks <- 20
     for(c in names(analysis_window)){
       analysis_window['bin'] <- cut(analysis_window[[c]], breaks=state$breaks)
       

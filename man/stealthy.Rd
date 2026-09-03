@@ -11,7 +11,7 @@ stealthy(
   warmup_size = 100,
   th = 0.5,
   target_uni_drifter = FALSE,
-  incremental_memory = TRUE,
+  incremental_memory = FALSE,
   active_warmup = FALSE,
   class_balance = "inactive",
   verbose = FALSE

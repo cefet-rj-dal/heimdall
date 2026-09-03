@@ -4,7 +4,7 @@
 \alias{dfr_lbdd}
 \title{Levene Based Drift Detection Method method}
 \usage{
-dfr_lbdd(target_feat = NULL, alpha = 0.01, window_size = 1500)
+dfr_lbdd(target_feat = NULL, alpha = 0.05, window_size = 1500)
 }
 \arguments{
 \item{target_feat}{Feature to be monitored}

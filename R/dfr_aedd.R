@@ -16,26 +16,31 @@
 #'@example examples/1_detection/r/dfr_aedd.R
 #'@example examples/2_online_prediction/r/dfr_aedd.R
 #'@export
-dfr_aedd <- function(encoding_size, ae_class=daltoolboxdp::autoenc_ed, batch_size = 32, num_epochs = 1000, learning_rate = 0.001, window_size=100, monitoring_step=1700, criteria='mann_whitney', alpha=0.01) {
+dfr_aedd <- function(encoding_size, ae_class=daltoolboxdp::autoenc_ed, ae_params=list(batch_size = 32, num_epochs = 1000, learning_rate = 0.001, error_function='mae'), window_size=100, window_type='fixed', monitoring_step=1700, criteria='mann_whitney', alpha=0.01) {
   obj <- mv_dist_based()
   
   obj$ae_class <- ae_class
+  obj$error_function <- ae_params[['error_function']]
+  ae_params[['error_function']] <- NULL
+  obj$ae_params <- ae_params
   obj$alpha <- alpha
+  obj$encoding_size <- encoding_size
+  obj$window_type <- window_type
   
   # Attributes
   state <- list()
-  
-  state$encoding_size <- encoding_size
-  state$batch_size <- batch_size
-  state$num_epochs <- num_epochs
-  state$learning_rate <- learning_rate
   state$window_size <- window_size
   state$monitoring_step <- monitoring_step
   state$criteria <- criteria
   state$data <- NULL
   state$n <- 0
-  
-  state$autoencoder <- obj$ae_class(input_size=1, encoding_size=state$encoding_size, batch_size=state$batch_size, num_epochs=state$num_epochs, learning_rate=state$learning_rate)
+  state$autoencoder <- do.call(obj$ae_class, c(
+    list(
+      input_size=1,
+      encoding_size=obj$encoding_size
+    ),
+    obj$ae_params
+  ))
   state$is_fitted <- FALSE
   
   obj$last_drifter_output <- NULL
@@ -97,9 +102,14 @@ update_state.dfr_aedd <- function(obj, value){
   }
   
   if (currentLength >= state$window_size){
-    sliding_window <- state$data #tail(state$data, state$window_size)
-    history_window <- head(sliding_window, state$window_size/2)
-    recent_window <- tail(sliding_window, state$window_size/2)
+    if(obj$window_type == 'fixed'){
+      reference_window <- tail(state$data, state$window_size)
+    }else if(obj$window_type == 'moving'){
+      reference_window <- state$data
+    }
+    
+    history_window <- head(reference_window, state$window_size/2)
+    recent_window <- tail(reference_window, state$window_size/2)
     
     if(!state$is_fitted){
       if(is.null(ncol(state$data))){
@@ -108,7 +118,14 @@ update_state.dfr_aedd <- function(obj, value){
         input_size <- ncol(state$data)
       }
 
-      state$autoencoder <- obj$ae_class(input_size=input_size, encoding_size=state$encoding_size, batch_size=state$batch_size, num_epochs=state$num_epochs, learning_rate=state$learning_rate)
+      state$autoencoder <- do.call(obj$ae_class, c(
+        list(
+        input_size=input_size,
+        encoding_size=obj$encoding_size
+        ),
+        obj$ae_params
+        ))
+      
       state$autoencoder <- fit(state$autoencoder, history_window)
       
       state$is_fitted <- TRUE
@@ -123,7 +140,14 @@ update_state.dfr_aedd <- function(obj, value){
       history_rec_marker <- (history_window_output - history_window)
       recent_rec_marker <- (recent_window_output - recent_window)
       obj$last_drifter_output <- recent_rec_marker
-      recent_rec_marker <- rowMeans(abs(recent_rec_marker))
+      
+      if(obj$error_function == 'rmse'){
+        history_rec_marker <- rowMeans(sqrt(history_rec_marker^2))
+        recent_rec_marker <- rowMeans(sqrt(recent_rec_marker^2))
+      }else if(obj$error_function == 'mae'){
+        history_rec_marker <- rowMeans(abs(history_rec_marker))
+        recent_rec_marker <- rowMeans(abs(recent_rec_marker))
+      }
     }else if(any(c('autoenc_e', 'autoenc_variational_e') %in% class(state$autoencoder))){
       history_rec_marker <- history_window_output
       recent_rec_marker <- recent_window_output
@@ -148,23 +172,30 @@ update_state.dfr_aedd <- function(obj, value){
     }
     
     if (state$criteria == 'levene'){
-      history_window_output <- as.data.frame(history_window_output)
-      recent_window_output <- as.data.frame(recent_window_output)
-      history_window_output['window'] <- 'History'
-      recent_window_output['window'] <- 'Recent'
-      levene_df <- as.data.frame(rbind(history_window_output, recent_window_output))
+      history_rec_marker <- as.data.frame(history_rec_marker)
+      colnames(history_rec_marker) <- paste0("V", 1:ncol(history_rec_marker))
+      recent_rec_marker <- as.data.frame(recent_rec_marker)
+      colnames(recent_rec_marker) <- paste0("V", 1:ncol(recent_rec_marker))
+      history_rec_marker['window'] <- 'History'
+      recent_rec_marker['window'] <- 'Recent'
+      levene_df <- as.data.frame(rbind(history_rec_marker, recent_rec_marker))
       levene_df['window'] <- factor(levene_df[['window']])
       
       levene_results <- car::leveneTest(V1 ~ window, data=as.data.frame(levene_df))
       
-      if (levene_results['group', 'Pr(>F)'] < obj$alpha){
-        state$drifted <- TRUE
+      if(!is.na(levene_results['group', 'Pr(>F)'])){
+        if (levene_results['group', 'Pr(>F)'] < obj$alpha){
+          state$drifted <- TRUE
+        }
       }
-      
     }
     
     if (state$criteria == 'psi'){
-      analysis_window <- rbind(as.data.frame(history_window_output), as.data.frame(recent_window_output))
+      history_rec_marker <- as.data.frame(history_rec_marker)
+      colnames(history_rec_marker) <- paste0("V", 1:ncol(history_rec_marker))
+      recent_rec_marker <- as.data.frame(recent_rec_marker)
+      colnames(recent_rec_marker) <- paste0("V", 1:ncol(recent_rec_marker))
+      analysis_window <- rbind(history_rec_marker, recent_rec_marker)
       
       state$psi = 0
       state$breaks <- state$window_size/5
@@ -215,6 +246,14 @@ update_state.dfr_aedd <- function(obj, value){
       }
     }
     
+    if (state$criteria == 'diff_threshold'){
+      rmse_diff <- median(recent_rec_marker - history_rec_marker)
+      
+      if(rmse_diff >= obj$alpha){
+       state$drifted <- TRUE
+      }    
+    }
+    
     if(state$drifted){
       obj$drifted <- TRUE
       state$is_fitted <- FALSE
@@ -260,16 +299,18 @@ fit.dfr_aedd <- function(obj, data, ...){
   if(nrow(data) >= 2){
     for (i in 2:nrow(data)){
       output <- update_state(output$obj, data[i,])
-      output$obj$drifter_output <- rbind(output$obj$drifter_output, output$obj$last_drifter_output)
+      tryCatch({
+        output$obj$drifter_output <- rbind(output$obj$drifter_output, output$obj$last_drifter_output)
+      },
+      error = function(e) {
+        print(output$obj$drifter_output)
+        print(output$obj$last_drifter_output)
+        message("An error occurred: ", e)
+        return(NA) # Return a fallback value
+      }
+      )
     }
   }
-  
-  # print(identical(output$obj$drifter_output, last_drifter_output))
-  # print(mean(output$obj$drifter_output == last_drifter_output, na.rm=TRUE))
-  # print(class(output$obj$drifter_output))
-  # print(class(last_drifter_output))
-  # print(dim(output$obj$drifter_output))
-  # print(dim(last_drifter_output))
 
   return(output$obj)
 }
@@ -280,9 +321,7 @@ reset_state.dfr_aedd <- function(obj) {
   obj$state <- dfr_aedd(
     encoding_size=obj$state$encoding_size,
     ae_class=obj$ae_class,
-    batch_size=obj$state$batch_size,
-    num_epochs=obj$state$num_epochs,
-    learning_rate=obj$state$learning_rate,
+    ae_params=obj$ae_params,
     window_size=obj$state$window_size,
     monitoring_step=obj$state$monitoring_step,
     criteria=obj$state$criteria,

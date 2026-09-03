@@ -7,10 +7,9 @@
 dfr_aedd(
   encoding_size,
   ae_class = daltoolboxdp::autoenc_ed,
-  batch_size = 32,
-  num_epochs = 1000,
-  learning_rate = 0.001,
+  ae_params = list(batch_size = 32, num_epochs = 1000, learning_rate = 0.001),
   window_size = 100,
+  window_type = "fixed",
   monitoring_step = 1700,
   criteria = "mann_whitney",
   alpha = 0.01
@@ -21,12 +20,6 @@ dfr_aedd(
 
 \item{ae_class}{Autoencoder Class}
 
-\item{batch_size}{Batch Size for batch learning}
-
-\item{num_epochs}{Number of Epochs for training}
-
-\item{learning_rate}{Learning Rate}
-
 \item{window_size}{Size of the most recent data to be used}
 
 \item{monitoring_step}{The number of rows that the drifter waits to be is updated}
@@ -34,6 +27,12 @@ dfr_aedd(
 \item{criteria}{The method to be used to check if there is a drift. May be mann_whitney (default), kolmogorov_smirnov, levene, parametric_threshold, nonparametric_threshold}
 
 \item{alpha}{The significance threshold for the statistical test used in criteria}
+
+\item{batch_size}{Batch Size for batch learning}
+
+\item{num_epochs}{Number of Epochs for training}
+
+\item{learning_rate}{Learning Rate}
 }
 \value{
 \code{dfr_aedd} object

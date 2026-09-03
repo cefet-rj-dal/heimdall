@@ -17,7 +17,7 @@
 #'@import stats
 #'@importFrom caret dummyVars
 #'@export
-stealthy <- function(model, drift_method, norm_class=daltoolbox::zscore(), warmup_size=100, th=0.5, target_uni_drifter=FALSE, incremental_memory=TRUE, active_warmup=FALSE, class_balance='inactive', verbose=FALSE){
+stealthy <- function(model, drift_method, norm_class=daltoolbox::zscore(), warmup_size=100, th=0.5, target_uni_drifter=FALSE, incremental_memory=FALSE, active_warmup=FALSE, class_balance='inactive', obsolete_model='null', verbose=FALSE){
   obj <- dal_base()
   obj$dummy <- NULL
   obj$model <- model
@@ -33,6 +33,7 @@ stealthy <- function(model, drift_method, norm_class=daltoolbox::zscore(), warmu
   obj$incremental_memory <- incremental_memory
   obj$active_warmup <- active_warmup
   obj$class_balance <- class_balance
+  obj$obsolete_model <- obsolete_model
   if(class_balance=='buffer'){
     obj$class_buffer <- list(
       true=list(x=NULL, y=NULL),
@@ -58,7 +59,7 @@ fit.stealthy <- function(obj, x, y, ...){
   fit_drifter_output <- NULL
   obj$drift_method$drifter_output <- NULL
   
-  # Check Drift
+  # Virtual Drift Check
   obj$drifted <- FALSE
   if (obj$fitted){
     if (nrow(obj$x_train) >= obj$warmup_size){
@@ -75,17 +76,6 @@ fit.stealthy <- function(obj, x, y, ...){
       
       if('dummy' %in% class(obj$drift_method)){
         fit_drifter_input <- norm_x_oh
-        obj$drift_method <- fit(obj$drift_method, fit_drifter_input)
-      }
-      
-      if ('error_based' %in% class(obj$drift_method)){
-        predictions <- predict(obj$model, norm_x_oh)
-        y_pred <- predictions[, 2] > obj$th
-        
-        model_result <- !(as.logical(y[, 1])==y_pred)
-        model_result <- model_result[complete.cases(model_result)]
-        
-        fit_drifter_input <- model_result
         obj$drift_method <- fit(obj$drift_method, fit_drifter_input)
       }
       
@@ -115,6 +105,19 @@ fit.stealthy <- function(obj, x, y, ...){
       norm_x_oh <- NULL
     }
   }
+  if(('dist_based' %in% class(obj$drift_method)) | ('mv_dist_based' %in% class(obj$drift_method)) | ('dfr_passive' %in% class(obj$drift_method))){
+    if(obj$drift_method$drifted){
+      if(obj$verbose){
+        message('Stealthy detected a drift, discarding old data')
+      }
+      obj$x_train <- data.frame()
+      obj$y_train <- data.frame()
+      obj$drift_method <- reset_state(obj$drift_method)
+      obj$drifted <- TRUE
+      obj$fitted <- FALSE
+    }
+  }
+  
   # Class Balance
   if(obj$class_balance == 'buffer'){
     obj$class_buffer[['true']][['x']] <- tail(rbind(obj$class_buffer[['true']][['x']], x[y == 1,]), obj$warmup_size/2)
@@ -131,12 +134,12 @@ fit.stealthy <- function(obj, x, y, ...){
     obj$train_model <- TRUE
   }
   
-  # Define update models
+  # Update models
   if(obj$incremental_memory | (!obj$fitted) | (obj$active_warmup & (nrow(obj$x_train) < obj$warmup_size))){
     # Aggregate new data
     obj$x_train <- rbind(obj$x_train, x)
     obj$y_train <- rbind(obj$y_train, y)
-    if(((nrow(obj$x_train) >= obj$warmup_size) | (obj$active_warmup & (nrow(obj$x_train) < obj$warmup_size))) & obj$train_model){
+    if((((nrow(obj$x_train) >= obj$warmup_size)) | ((obj$active_warmup & (nrow(obj$x_train) < obj$warmup_size)))) & obj$train_model){
       # Class Balance
       if(obj$class_balance == 'buffer'){
         obj$x_model_train <- rbind(obj$class_buffer[['false']][['x']], obj$class_buffer[['true']][['x']])
@@ -198,19 +201,41 @@ fit.stealthy <- function(obj, x, y, ...){
     }
   }
   
-  # Drifter Output
-  
-  fit_drifter_output <- tail(obj$drift_method$drifter_output, nrow(x))
+  # Real Drift Check
+  if ('error_based' %in% class(obj$drift_method)){
+    predictions <- predict(obj$model, norm_x_oh)
+    y_pred <- predictions[, 2] > obj$th
+    
+    model_result <- !(as.logical(y[, 1])==y_pred)
+    model_result <- model_result[complete.cases(model_result)]
+    
+    fit_drifter_input <- model_result
+    obj$drift_method <- fit(obj$drift_method, fit_drifter_input)
 
+    if(obj$drift_method$drifted){
+      if(obj$verbose){
+        message('Stealthy detected a drift, discarding old data')
+      }
+      obj$x_train <- x
+      obj$y_train <- y
+      obj$drift_method <- reset_state(obj$drift_method)
+      obj$drifted <- TRUE
+      obj$fitted <- FALSE
+    }
+  }
+  
+  # Drifter Output
+  fit_drifter_output <- tail(obj$drift_method$drifter_output, nrow(x))
+  
   if(is.null(fit_drifter_output)){
     if(c('dfr_aedd' %in% class(obj$drift_method))){
       if(any(c('autoenc_ed', 'autoenc_variational_ed') %in% class(obj$drift_method$state$autoencoder))){
         fit_drifter_output <- as.data.frame(matrix(NA, nrow = nrow(x), ncol = ncol(x)))
         names(fit_drifter_output) <- names(x)
       }else if(any(c('autoenc_e') %in% class(obj$drift_method$state$autoencoder))){
-        fit_drifter_output <- as.data.frame(matrix(NA, nrow = nrow(x), ncol = obj$drift_method$state$encoding_size))
+        fit_drifter_output <- as.data.frame(matrix(NA, nrow = nrow(x), ncol = obj$drift_method$encoding_size))
       }else if(c('autoenc_variational_e' %in% class(obj$drift_method$state$autoencoder))){
-        fit_drifter_output <- as.data.frame(matrix(NA, nrow = nrow(x), ncol = obj$drift_method$state$encoding_size * 2))
+        fit_drifter_output <- as.data.frame(matrix(NA, nrow = nrow(x), ncol = obj$drift_method$encoding_size * 2))
       }
     }else if(c('dfr_kswin' %in% class(obj$drift_method))){
       fit_drifter_output <- as.data.frame(matrix(NA, nrow = nrow(x), ncol = 2))
@@ -230,7 +255,6 @@ fit.stealthy <- function(obj, x, y, ...){
     }
   }
   
-  # print(obj$drifter_output)
   if(is.null(obj$drifter_output)){
     obj$drifter_output <- fit_drifter_output
   }else{
@@ -239,34 +263,32 @@ fit.stealthy <- function(obj, x, y, ...){
   rownames(obj$drifter_output) <- 1:nrow(obj$drifter_output)
   obj$drifter_input <- rbind(obj$drifter_input, cbind(x, y))
   
-  if(obj$drift_method$drifted){
-    if(obj$verbose){
-      message('Stealthy detected a drift, discarding old data')
-    }
-    obj$x_train <- x
-    obj$y_train <- y
-    obj$drift_method <- reset_state(obj$drift_method)
-    obj$drifted <- TRUE
-    obj$fitted <- FALSE
-  }
-  
   return(obj)
 }
 
 #'@export
 predict.stealthy <- function(object, data, ...){
+  
+  prediction_model <- object$model
   # Return format if not fitted
   if(!object$fitted){
-    output <- c()
-    for (i in 1:length(object$model$slevels)){
-      output <- cbind(output, vector(mode='logical', length=nrow(data)))
+    if(object$obsolete_model == 'null'){
+      output <- c()
+      for (i in 1:length(object$model$slevels)){
+        output <- cbind(output, vector(mode='logical', length=nrow(data)))
+      }
+      output <- as.data.frame(output)
+      names(output) <- object$model$slevels
+      return(output)
+  }else if(object$obsolete_model == 'majority'){
+    prediction_model <- cla_majority(object$model$attribute, object$model$slevels) 
+    return(predict(model, norm_data_oh))
+  }else if(object$obsolete_model == 'last_model'){
+    prediction_model <- object$model
     }
-    output <- as.data.frame(output)
-    names(output) <- object$model$slevels
-    return(output)
   }
   
-  # Prediction if fitted
+  # Prediction
   data_oh <- data.frame(predict(object$dummy, newdata = data))
   for (feat in object$model$feat_names){
     if (!(feat %in% names(data_oh))){
@@ -274,5 +296,6 @@ predict.stealthy <- function(object, data, ...){
     }
   }
   norm_data_oh <- transform(object$norm_model, data_oh)
-  return(predict(object$model, norm_data_oh))
+  
+  return(predict(prediction_model, norm_data_oh))
 }
