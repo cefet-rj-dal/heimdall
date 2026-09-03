@@ -2,9 +2,11 @@
 #'@description ECDD applies an exponentially weighted moving average (EWMA) control chart to the online classification error stream. Since it monitors predictive errors directly, it is primarily designed to detect **real concept drift**. The method follows Ross et al. (2012), who adapted EWMA charts for concept-drift detection in streaming classifiers <doi:10.1016/j.patrec.2011.08.019>.
 #'@param lambda EWMA smoothing parameter
 #'@param min_run_instances The minimum number of instances before detecting change
-#'@param average_run_length Desired Average Run Length (ARL)
+#'@param average_run_length Desired Average Run Length (ARL). The published
+#'control-limit coefficients are only defined for target run lengths up to
+#'1000, so larger values are rejected.
+#'@details Missing values are treated as correct predictions (`0`).
 #ECDD: Gordon Ross, Niall Adams, Dimitris Tasoulis, David Hand: Exponentially weighted moving average charts for detecting concept drift. Pattern Recognition Letters 2012, Volume 33, Issue 2: 191-198, DOI:10.1016/j.patrec.2011.08.019
-#ECDD Implementation: Jaime Sisniega, Álvaro García: Frouros: An open-source Python library for drift detection in machine learning systems. Neurocomputing, Volume 26, 2024, DOI: 10.1016/j.softx.2024.101733
 #ECDD implementation: Frouros, https://github.com/IFCA-Advanced-Computing/frouros/blob/acde82386da735ca8e15f85112f48d5cfb10cc9a/frouros/detectors/concept_drift/streaming/statistical_process_control/ecdd.py
 #'@references Ross, G. J., Adams, N. M., Tasoulis, D. K., and Hand, D. J. (2012). Exponentially weighted moving average charts for detecting concept drift. *Pattern Recognition Letters*, 33(2), 191-198. <doi:10.1016/j.patrec.2011.08.019>
 #'@return `dfr_ecdd` object
@@ -12,7 +14,8 @@
 #'library(daltoolbox)
 #'library(heimdall)
 #'
-#'# This example uses an error-based drift detector where 1 is an error and 0 is a correct prediction.
+#'# This example uses an error-based drift detector with a synthetic
+#'# model residual where 1 is an error and 0 is a correct prediction.
 #'
 #'data(st_drift_examples)
 #'data <- st_drift_examples$univariate
@@ -23,7 +26,7 @@
 #'
 #'detection <- NULL
 #'output <- list(obj=model, drift=FALSE)
-#'for (i in 1:length(data$prediction)){
+#'for (i in seq_along(data$prediction)){
 #'  output <- update_state(output$obj, data$prediction[i])
 #'  if (output$drift){
 #'    type <- 'drift'
@@ -36,82 +39,86 @@
 #'
 #'detection[detection$type == 'drift',]
 #'@export
-dfr_ecdd <- function(lambda=0.2, min_run_instances=30, average_run_length=100) {
+dfr_ecdd <- function(lambda = 0.2, min_run_instances = 30, average_run_length = 100) {
+  .check_probability(lambda, "lambda")
+  .check_positive_integer(min_run_instances, "min_run_instances", min_value = 1L)
+  .check_positive_integer(average_run_length, "average_run_length", min_value = 1L)
+  if (average_run_length > 1000) {
+    stop("average_run_length must be lower than or equal to 1000", call. = FALSE)
+  }
+
   obj <- error_based()
-  
+
   state <- list()
-  
+
   state$size <- 0
-  
+
   state$p <- 0
   state$last_p <- NULL
   state$Z <- 0
   state$last_Z <- NULL
-  
+
   state$lambda <- lambda
   state$min_run_instances <- min_run_instances
   state$average_run_length <- average_run_length
-  
+
   obj$state <- state
-  
+
   obj$drifted <- FALSE
-  
+
   class(obj) <- append("dfr_ecdd", class(obj))
-  
+
   return(obj)
 }
 
 #'@export
-update_state.dfr_ecdd <- function(obj, value){
-  if (is.na(value)){
+update_state.dfr_ecdd <- function(obj, value, ...) {
+  value <- .as_scalar(value)
+  if (is.na(value)) {
     value <- 0
   }
+
   state <- obj$state
-  
+
   state$size <- state$size + 1
-  
+
   state$last_p <- state$p
   state$p <- state$last_p + ((value - state$last_p) / state$size)
-  
+
   state$last_Z <- state$Z
-  state$Z <- ((1 - state$lambda)*state$last_Z) + (state$lambda * value)
-  
-  if (state$size > state$min_run_instances){
+  state$Z <- ((1 - state$lambda) * state$last_Z) + (state$lambda * value)
+
+  if (state$size > state$min_run_instances) {
     error_rate_variance <- state$p * (1 - state$p)
     z_variance <- sqrt(
-      abs((state$lambda / (2 - state$lambda)) * (1 - (1 - state$lambda) ** (2 * state$size)) * error_rate_variance)
+      abs((state$lambda / (2 - state$lambda)) * (1 - (1 - state$lambda)^(2 * state$size)) * error_rate_variance)
     )
-    
-    if (state$average_run_length <= 100){
-      control_limit <- 2.76 - (6.23 * state$p) + (18.12 * (state$p ** 3)) - (312.45 * (state$p ** 5)) + (1002.18 * (state$p ** 7))
-    }else if(state$average_run_length <= 400){
-      control_limit <- 3.97 - (6.56 * state$p) + (48.73 * (state$p ** 3)) - (330.13 * (state$p ** 5)) + (987.23 * (state$p ** 7))
-    }else if(state$average_run_length <= 1000){
-      control_limit <- 1.17 + (7.56 * state$p) - (21.24 * (state$p ** 3)) + (112.12 * (state$p ** 5)) - (987.23 * (state$p ** 7))
+
+    if (state$average_run_length <= 100) {
+      control_limit <- 2.76 - (6.23 * state$p) + (18.12 * (state$p^3)) - (312.45 * (state$p^5)) + (1002.18 * (state$p^7))
+    } else if (state$average_run_length <= 400) {
+      control_limit <- 3.97 - (6.56 * state$p) + (48.73 * (state$p^3)) - (330.13 * (state$p^5)) + (987.23 * (state$p^7))
+    } else {
+      control_limit <- 1.17 + (7.56 * state$p) - (21.24 * (state$p^3)) + (112.12 * (state$p^5)) - (987.23 * (state$p^7))
     }
-    
-    if (state$Z > (state$p + 1 * control_limit * z_variance)){
+
+    if (state$Z > (state$p + control_limit * z_variance)) {
       obj$state <- state
       obj$drifted <- TRUE
-      return(list(obj=obj, drift=TRUE))
-    }else{
+      return(list(obj = obj, drift = TRUE))
+    } else {
       obj$state <- state
-      return(list(obj=obj, drift=FALSE))
+      return(list(obj = obj, drift = FALSE))
     }
-  }else{
+  } else {
     obj$state <- state
-    return(list(obj=obj, drift=FALSE))
+    return(list(obj = obj, drift = FALSE))
   }
 }
 
 #'@export
-fit.dfr_ecdd <- function(obj, data, ...){
-  output <- update_state(obj, data[1])
-  for (i in 2:length(data)){
-    output <- update_state(output$obj, data[i])
-  }
-  
-  return(output$obj)
+fit.dfr_ecdd <- function(obj, data, ...) {
+  return(.fit_vector_stream(obj, data))
 }
 
 #'@export
@@ -121,7 +128,6 @@ reset_state.dfr_ecdd <- function(obj) {
     lambda = obj$state$lambda,
     min_run_instances = obj$state$min_run_instances,
     average_run_length = obj$state$average_run_length
-    
   )$state
-  return(obj)  
+  return(obj)
 }

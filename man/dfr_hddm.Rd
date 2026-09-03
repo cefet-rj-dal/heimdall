@@ -23,11 +23,14 @@ dfr_hddm(
 \description{
 HDDM_A is a sequential detector based on Hoeffding's inequality that tests whether the mean of the monitored error stream has increased beyond statistically expected fluctuations. Because this implementation is error-based, it is primarily targeted at \strong{real concept drift}. The theoretical basis follows Frias-Blanco et al. (2015) \url{doi:10.1109/TKDE.2014.2345382}.
 }
+\details{
+Missing values are treated as correct predictions (\code{0}).
+}
 \examples{
 library(daltoolbox)
 library(heimdall)
 
-# This example uses an error-based drift detector with a synthetic a 
+# This example uses an error-based drift detector with a synthetic
 # model residual where 1 is an error and 0 is a correct prediction.
 
 data(st_drift_examples)
@@ -39,7 +42,7 @@ model <- dfr_hddm()
 
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$prediction)){
+for (i in seq_along(data$prediction)){
  output <- update_state(output$obj, data$prediction[i])
  if (output$drift){
    type <- 'drift'

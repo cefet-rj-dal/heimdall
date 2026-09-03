@@ -1,6 +1,6 @@
 Package: heimdall
 Title: Drift Adaptable Models
-Version: 1.2.727
+Version: 1.3.0
 Authors@R: 
   c(
     person(given = "Lucas", family = "Tavares", role = c("aut"), email = "lucas.giusti@eic.cefet-rj.br"),
@@ -19,26 +19,29 @@ Description:
   Methods for concept drift detection are described in Tavares (2022) <doi:10.1007/s12530-021-09415-z>.
 License: MIT + file LICENSE
 URL: https://cefet-rj-dal.github.io/heimdall/, https://github.com/cefet-rj-dal/heimdall
+BugReports: https://github.com/cefet-rj-dal/heimdall/issues
 Encoding: UTF-8
+Depends:
+  R (>= 3.5.0)
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Imports: 
   stats,
+  utils,
+  graphics,
   caret,
   daltoolbox,
-  ggplot2,
   Metrics,
+  pROC
+Suggests:
   reticulate,
-  pROC,
-  car
+  testthat (>= 3.0.0),
+  knitr,
+  rmarkdown
+Config/testthat/edition: 3
 Config/reticulate:
   list(
     packages = list(
-      list(package = "scipy"),
-      list(package = "torch"),
-      list(package = "pandas"),
-      list(package = "numpy"),
-      list(package = "matplotlib"),
-      list(package = "scikit-learn")
+      list(package = "numpy")
     )
   )
+Config/roxygen2/version: 8.1.0

@@ -19,11 +19,14 @@ dfr_ddm(min_instances = 30, warning_level = 2, out_control_level = 3)
 \description{
 DDM monitors the online error rate of a predictive model under the PAC-learning assumption that, in a stationary environment, the error should decrease or remain stable as more samples are observed. Because it operates on the classifier error stream, it is primarily a detector of \strong{real concept drift}. The method follows Gama et al. (2004) \url{doi:10.1007/978-3-540-28645-5_29}.
 }
+\details{
+Missing values are treated as correct predictions (\code{0}).
+}
 \examples{
 library(daltoolbox)
 library(heimdall)
 
-# This example uses an error-based drift detector with a synthetic a 
+# This example uses an error-based drift detector with a synthetic
 # model residual where 1 is an error and 0 is a correct prediction.
 
 data(st_drift_examples)
@@ -35,7 +38,7 @@ model <- dfr_ddm()
 
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$prediction)){
+for (i in seq_along(data$prediction)){
  output <- update_state(output$obj, data$prediction[i])
  if (output$drift){
    type <- 'drift'

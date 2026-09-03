@@ -7,15 +7,42 @@
 dfr_multi_criteria(drifter_list, combination = "or", fuzzy_window = 10)
 }
 \arguments{
-\item{drifter_list}{List of drifters to combine.}
+\item{drifter_list}{Named list of drifters to combine. Every element must
+inherit from either \code{dist_based} or \code{mv_dist_based}.}
 
-\item{combination}{How the drifters will be combined. Possible values: 'fuzzy', 'or', 'and'.}
+\item{combination}{How the drifters will be combined. One of \code{'or'}
+(default), \code{'and'} or \code{'fuzzy'}.}
 
-\item{fuzzy_window}{Sets the fuzzy window size. Only if combination = 'fuzzy'.}
+\item{fuzzy_window}{Sets the fuzzy window size. Only used when
+\code{combination = 'fuzzy'}.}
 }
 \value{
 Drifter object
 }
 \description{
-Implements Multi Criteria drift detectors
+Combines the output of several drift detectors into a single
+decision.
+}
+\note{
+The \code{'fuzzy'} combination rebuilds the whole membership matrix on every
+update, so its cost grows quadratically with the length of the stream. Prefer
+\code{'or'} or \code{'and'} for long streams.
+}
+\examples{
+library(daltoolbox)
+library(heimdall)
+
+set.seed(1)
+data <- data.frame(serie = c(stats::rnorm(100), stats::rnorm(100, mean = 10)))
+
+model <- dfr_multi_criteria(
+ drifter_list = list(
+   ph = dfr_page_hinkley(),
+   ph_sensitive = dfr_page_hinkley(threshold = 10)
+ ),
+ combination = 'or'
+)
+
+model <- fit(model, data)
+model$drifted
 }

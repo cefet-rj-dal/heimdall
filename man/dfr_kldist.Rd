@@ -4,14 +4,22 @@
 \alias{dfr_kldist}
 \title{KL Distance method}
 \usage{
-dfr_kldist(target_feat = NULL, window_size = 100, p_th = 0.05, data = NULL)
+dfr_kldist(
+  target_feat = NULL,
+  window_size = 100,
+  p_th = 0.05,
+  monitoring_step = 1,
+  data = NULL
+)
 }
 \arguments{
 \item{target_feat}{Feature to be monitored.}
 
 \item{window_size}{Size of the sliding window}
 
-\item{p_th}{Drift threshold applied to the KL divergence}
+\item{p_th}{Drift threshold applied to the KL divergence. Despite the name, this is not a p-value.}
+
+\item{monitoring_step}{Number of observations between two consecutive tests. The default (\code{1}) tests at every observation; larger values reduce the computational cost on long streams.}
 
 \item{data}{Already collected data to avoid cold start.}
 }
@@ -21,11 +29,17 @@ dfr_kldist(target_feat = NULL, window_size = 100, p_th = 0.05, data = NULL)
 \description{
 This detector compares consecutive reference and recent windows through the Kullback-Leibler divergence estimated from their empirical distributions. In this package, it is primarily used for \strong{virtual concept drift}, since it monitors changes in the distribution of a numeric feature stream rather than predictive error. The statistical foundation is the Kullback-Leibler divergence introduced by Kullback and Leibler (1951).
 }
+\details{
+Missing observations are skipped instead of being imputed. When a
+drift is reported the window is trimmed to its most recent half, and
+\code{reset_state()} preserves that window so the detector does not restart cold.
+}
 \examples{
 library(daltoolbox)
 library(heimdall)
 
-# This example uses a dist-based drift detector with a synthetic dataset.
+# This example assumes a model residual where 1 is an error and 0 is a
+# correct prediction.
 
 data(st_drift_examples)
 data <- st_drift_examples$univariate
@@ -35,7 +49,7 @@ model <- dfr_kldist(target_feat='serie')
 
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$serie)){
+for (i in seq_along(data$serie)){
  output <- update_state(output$obj, data$serie[i])
  if (output$drift){
    type <- 'drift'

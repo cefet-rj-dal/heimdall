@@ -26,11 +26,14 @@ dfr_eddm(
 \description{
 EDDM extends DDM by monitoring the distance between classification errors instead of only the error rate, which makes it more sensitive to gradual degradation. Because it operates on the model error stream, it is primarily intended for \strong{real concept drift}. The method follows Baena-Garcia et al. (2006), who proposed EDDM for improved detection of gradual drift.
 }
+\details{
+Missing values are treated as correct predictions (\code{0}).
+}
 \examples{
 library(daltoolbox)
 library(heimdall)
 
-# This example uses an error-based drift detector with a synthetic a 
+# This example uses an error-based drift detector with a synthetic
 # model residual where 1 is an error and 0 is a correct prediction.
 
 data(st_drift_examples)
@@ -42,7 +45,7 @@ model <- dfr_eddm()
 
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$prediction)){
+for (i in seq_along(data$prediction)){
  output <- update_state(output$obj, data$prediction[i])
  if (output$drift){
    type <- 'drift'
@@ -56,5 +59,5 @@ for (i in 1:length(data$prediction)){
 detection[detection$type == 'drift',]
 }
 \references{
-Baena-Garcia, M., del Campo-Avila, J., Fidalgo, R., Bifet, A., Gavaldà, R., and Morales-Bueno, R. (2006). Early drift detection method. In \emph{Fourth International Workshop on Knowledge Discovery from Data Streams}.
+Baena-Garcia, M., del Campo-Avila, J., Fidalgo, R., Bifet, A., Gavalda, R., and Morales-Bueno, R. (2006). Early drift detection method. In \emph{Fourth International Workshop on Knowledge Discovery from Data Streams}.
 }

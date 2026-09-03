@@ -13,5 +13,6 @@ Metric object
 Ancestor class for metric calculation
 }
 \examples{
-# See ?metric for an example of DDM drift detector
+obj <- metric()
+class(obj)
 }

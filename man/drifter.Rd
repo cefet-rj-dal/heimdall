@@ -10,8 +10,19 @@ drifter()
 Drifter object
 }
 \description{
-Ancestor class for drift detection
+Ancestor class for drift detection.
+
+Every detector in the package follows the same contract:
+\itemize{
+\item \code{update_state(obj, value)} returns a list with the updated object
+(\code{obj}) and a logical flag (\code{drift}) telling whether a drift was detected
+\strong{in that call};
+\item \code{obj$drifted} is sticky: it stays \code{TRUE} after the first detection
+until \code{reset_state()} is called;
+\item \code{reset_state(obj)} returns the detector to its initial state.
+}
 }
 \examples{
-# See ?dd_ddm for an example of DDM drift detector
+model <- drifter()
+model$drifted
 }

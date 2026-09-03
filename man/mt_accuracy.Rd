@@ -13,5 +13,7 @@ Metric object
 Class for accuracy calculation
 }
 \examples{
-# See ?mt_accuracy for an example of Accuracy Calculator
+library(daltoolbox)
+obj <- mt_accuracy()
+evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
 }

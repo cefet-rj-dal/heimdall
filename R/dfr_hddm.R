@@ -3,7 +3,8 @@
 #'@param drift_confidence Confidence to the drift
 #'@param warning_confidence Confidence to the warning
 #'@param two_side_option Option to monitor error increments and decrements (two-sided) or only increments (one-sided)
-#HDDM: Frías-Blanco I, del Campo-Ávila J, Ramos-Jimenez G, et al. Online and non-parametric drift detection methods based on Hoeffding’s bounds. IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
+#'@details Missing values are treated as correct predictions (`0`).
+#HDDM: Frias-Blanco I, del Campo-Avila J, Ramos-Jimenez G, et al. Online and non-parametric drift detection methods based on Hoeffding's bounds. IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
 #HDDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/hddm_a.py#L6
 #'@references Frias-Blanco, I., del Campo-Avila, J., Ramos-Jimenez, G., Morales-Bueno, R., Ortiz-Diaz, A., and Caballero-Mota, Y. (2015). Online and nonparametric drift detection methods based on Hoeffding's bounds. *IEEE Transactions on Knowledge and Data Engineering*, 27(3), 810-823. <doi:10.1109/TKDE.2014.2345382>
 #'@return `dfr_hddm` object
@@ -11,7 +12,7 @@
 #'library(daltoolbox)
 #'library(heimdall)
 #'
-#'# This example uses an error-based drift detector with a synthetic a 
+#'# This example uses an error-based drift detector with a synthetic
 #'# model residual where 1 is an error and 0 is a correct prediction.
 #'
 #'data(st_drift_examples)
@@ -23,7 +24,7 @@
 #'
 #'detection <- NULL
 #'output <- list(obj=model, drift=FALSE)
-#'for (i in 1:length(data$prediction)){
+#'for (i in seq_along(data$prediction)){
 #'  output <- update_state(output$obj, data$prediction[i])
 #'  if (output$drift){
 #'    type <- 'drift'
@@ -36,9 +37,15 @@
 #'
 #'detection[detection$type == 'drift',]
 #'@export
-dfr_hddm <- function(drift_confidence=0.001, warning_confidence=0.005, two_side_option=TRUE) {
+dfr_hddm <- function(drift_confidence = 0.001, warning_confidence = 0.005, two_side_option = TRUE) {
+  .check_probability(drift_confidence, "drift_confidence")
+  .check_probability(warning_confidence, "warning_confidence")
+  if (!is.logical(two_side_option) || (length(two_side_option) != 1L) || is.na(two_side_option)) {
+    stop("two_side_option must be a single logical value", call. = FALSE)
+  }
+
   obj <- error_based()
-  
+
   # State
   state <- list()
   state$n_min <- 0
@@ -49,112 +56,123 @@ dfr_hddm <- function(drift_confidence=0.001, warning_confidence=0.005, two_side_
   state$c_max <- 0
   state$n_estimation <- 0
   state$c_estimation <- 0
-  
+  state$estimation <- 0
+  state$delay <- 0
+  state$in_warning_zone <- FALSE
+
   state$drift_confidence <- drift_confidence
   state$warning_confidence <- warning_confidence
   state$two_side_option <- two_side_option
-  
+
   obj$state <- state
-  
+
   obj$drifted <- FALSE
-  
-  # Methods
-  obj$mean_incr <- function(c_min, n_min, total_c, total_n, confidence){
-    if (n_min == total_n){
-      return(FALSE)
-    }
-    m <- ((total_n - n_min) / n_min) * (1.0 / total_n)
-    cota <- sqrt((m / 2) * log(2.0 / confidence))
-    return(((total_c / total_n) - (c_min / n_min)) >= cota)
-  }
-  
-  obj$mean_decr <- function(c_max, n_max, total_c, total_n){
-    if (n_max == total_n){
-      return(FALSE)
-    }
-    m <- ((total_n - n_max) / n_max) * (1.0 / total_n)
-    cota <- sqrt((m / 2) * log(2.0 / state$drift_confidence))
-    return(((c_max / n_max) - (total_c / total_n)) >= cota)
-  }
-  
-  obj$update_estimations <- function(obj){
-    state <- obj$state
-    if(state$total_n > 0){
-      state$estimation <- state$total_c / state$total_n
-      state$delay <- state$total_n
-    }
-    obj$state <- state
-    return(obj)
-  }
-  
+
   class(obj) <- append("dfr_hddm", class(obj))
   return(obj)
 }
 
-#'@export
-update_state.dfr_hddm <- function(obj, value){
-  state <- obj$state
-  
-  state$total_n <- state$total_n + 1
-  state$total_c <- state$total_c + value
-  if(state$n_min == 0){
-    state$n_min = state$total_n
-    state$c_min = state$total_c
+# Hoeffding bound on an increase of the monitored mean.
+#' @noRd
+.hddm_mean_incr <- function(c_min, n_min, total_c, total_n, confidence) {
+  if (n_min == total_n) {
+    return(FALSE)
   }
-  if(state$n_max == 0){
-    state$n_max = state$total_n
-    state$c_max = state$total_c
+  m <- ((total_n - n_min) / n_min) * (1.0 / total_n)
+  cota <- sqrt((m / 2) * log(2.0 / confidence))
+  return(((total_c / total_n) - (c_min / n_min)) >= cota)
+}
+
+# Hoeffding bound on a decrease of the monitored mean.
+#' @noRd
+.hddm_mean_decr <- function(c_max, n_max, total_c, total_n, confidence) {
+  if (n_max == total_n) {
+    return(FALSE)
   }
-  
-  cota <- sqrt(1.0 / (2 * state$n_min) * log(1.0 / state$drift_confidence))
-  cota1 <- sqrt(1.0 / (2 * state$total_n) * log(1.0 / state$drift_confidence))
-  
-  if((state$c_min / (state$n_min + cota)) >= (state$total_c / (state$total_n + cota1))){
-    state$c_min <- state$total_c
-    state$n_min <- state$total_n
-  }
-  
-  cota <- sqrt(1.0 / (2 * state$n_max) * log(1.0 / state$drift_confidence))
-  if(state$c_max / state$n_max - cota <= state$total_c / state$total_n - cota1){
-    state$c_max = state$total_c
-    state$n_max = state$total_n
-  }
-  
-  if(obj$mean_incr(state$c_min, state$n_min, state$total_c, state$total_n, state$drift_confidence)){
-    state$n_estimation = state$total_n - state$n_min
-    state$c_estimation = state$total_c - state$c_min
-    state$n_min = state$n_max = state$total_n = 0
-    state$c_min = state$c_max = state$total_c = 0
-    state$in_warning_zone <- FALSE
-    
-    obj$drifted <- TRUE
-    
-  }else if(obj$mean_incr(state$c_min, state$n_min, state$total_c, state$total_n, state$warning_confidence)){
-    state$in_warning_zone <- TRUE
-  }else{
-    state$in_warning_zone <- FALSE
-  }
-  if(state$two_side_option & obj$mean_decr(state$c_max, state$n_max, state$total_c, state$total_n)){
-    state$n_estimation = state$total_n - state$n_max
-    state$c_estimation = state$total_c - state$c_max
-    state$n_min = state$n_max = state$total_n = 0
-    state$c_min = state$c_max = state$total_c = 0
-  }
-  
-  obj$state <- state
-  obj <- obj$update_estimations(obj)
-  
-  return(list(obj=obj, drift=obj$drifted))
+  m <- ((total_n - n_max) / n_max) * (1.0 / total_n)
+  cota <- sqrt((m / 2) * log(2.0 / confidence))
+  return(((c_max / n_max) - (total_c / total_n)) >= cota)
 }
 
 #'@export
-fit.dfr_hddm <- function(obj, data, ...){
-  output <- update_state(obj, data[1])
-  for (i in 2:length(data)){
-    output <- update_state(output$obj, data[i])
+update_state.dfr_hddm <- function(obj, value, ...) {
+  value <- .as_scalar(value)
+  if (is.na(value)) {
+    value <- 0
   }
-  
-  return(output$obj)
+
+  state <- obj$state
+  has_drift <- FALSE
+
+  state$total_n <- state$total_n + 1
+  state$total_c <- state$total_c + value
+  if (state$n_min == 0) {
+    state$n_min <- state$total_n
+    state$c_min <- state$total_c
+  }
+  if (state$n_max == 0) {
+    state$n_max <- state$total_n
+    state$c_max <- state$total_c
+  }
+
+  cota <- sqrt(1.0 / (2 * state$n_min) * log(1.0 / state$drift_confidence))
+  cota1 <- sqrt(1.0 / (2 * state$total_n) * log(1.0 / state$drift_confidence))
+
+  if ((state$c_min / (state$n_min + cota)) >= (state$total_c / (state$total_n + cota1))) {
+    state$c_min <- state$total_c
+    state$n_min <- state$total_n
+  }
+
+  cota <- sqrt(1.0 / (2 * state$n_max) * log(1.0 / state$drift_confidence))
+  if ((state$c_max / state$n_max - cota) <= (state$total_c / state$total_n - cota1)) {
+    state$c_max <- state$total_c
+    state$n_max <- state$total_n
+  }
+
+  if (.hddm_mean_incr(state$c_min, state$n_min, state$total_c, state$total_n, state$drift_confidence)) {
+    state$n_estimation <- state$total_n - state$n_min
+    state$c_estimation <- state$total_c - state$c_min
+    state$n_min <- 0
+    state$n_max <- 0
+    state$total_n <- 0
+    state$c_min <- 0
+    state$c_max <- 0
+    state$total_c <- 0
+    state$in_warning_zone <- FALSE
+
+    has_drift <- TRUE
+    obj$drifted <- TRUE
+  } else if (.hddm_mean_incr(state$c_min, state$n_min, state$total_c, state$total_n, state$warning_confidence)) {
+    state$in_warning_zone <- TRUE
+  } else {
+    state$in_warning_zone <- FALSE
+  }
+
+  if (state$two_side_option &&
+      .hddm_mean_decr(state$c_max, state$n_max, state$total_c, state$total_n, state$drift_confidence)) {
+    state$n_estimation <- state$total_n - state$n_max
+    state$c_estimation <- state$total_c - state$c_max
+    state$n_min <- 0
+    state$n_max <- 0
+    state$total_n <- 0
+    state$c_min <- 0
+    state$c_max <- 0
+    state$total_c <- 0
+  }
+
+  if (state$total_n > 0) {
+    state$estimation <- state$total_c / state$total_n
+    state$delay <- state$total_n
+  }
+
+  obj$state <- state
+
+  return(list(obj = obj, drift = has_drift))
+}
+
+#'@export
+fit.dfr_hddm <- function(obj, data, ...) {
+  return(.fit_vector_stream(obj, data))
 }
 
 #'@export
@@ -165,5 +183,5 @@ reset_state.dfr_hddm <- function(obj) {
     warning_confidence = obj$state$warning_confidence,
     two_side_option = obj$state$two_side_option
   )$state
-  return(obj)  
+  return(obj)
 }

@@ -13,5 +13,7 @@ Metric object
 Class for precision calculation
 }
 \examples{
-# See ?mt_precision for an example of Precision Calculator
+library(daltoolbox)
+obj <- mt_precision()
+evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
 }

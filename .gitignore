@@ -3,4 +3,6 @@
 .RData
 .Ruserdata
 .ipynb_checkpoints
+docs
+inst/doc
 ./develop/data/xrays

@@ -4,20 +4,28 @@
 \alias{fit.drifter}
 \title{Process Batch}
 \usage{
-\method{fit}{drifter}(obj, data, prediction, ...)
+\method{fit}{drifter}(obj, data, prediction = NULL, ...)
 }
 \arguments{
 \item{obj}{Drifter object}
 
 \item{data}{data batch in data frame format}
 
-\item{prediction}{prediction batch as vector format}
+\item{prediction}{prediction batch as vector format. Optional, and unused by
+the default method; it is kept for compatibility with detectors that need the
+model output.}
 
-\item{...}{opitional arguments}
+\item{...}{optional arguments}
 }
 \value{
 updated Drifter object
 }
 \description{
 Process Batch
+}
+\examples{
+library(daltoolbox)
+model <- dfr_inactive()
+model <- fit(model, data.frame(serie = 1:10))
+model$drifted
 }

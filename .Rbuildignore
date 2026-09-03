@@ -8,7 +8,8 @@
 ^development$
 ^examples$
 ^Rmd$
+^_pkgdown\.yml$
+^docs$
+^\.lintr$
 package.R
 jupyter.R
-
-

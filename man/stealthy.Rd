@@ -42,8 +42,10 @@ stealthy(
 Stealthy object
 }
 \description{
-Ancestor class for drift adaptive models
+Ancestor class for drift adaptive models. It wraps a predictive
+model and a drift detector, retraining the model whenever a drift is
+reported.
 }
 \examples{
-# See ?dd_ddm for an example of DDM drift detector
+# See ?dfr_ddm for an example of a drift detector that can be plugged here.
 }

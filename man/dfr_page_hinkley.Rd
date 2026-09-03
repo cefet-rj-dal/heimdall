@@ -29,23 +29,25 @@ dfr_page_hinkley(
 \description{
 The Page-Hinkley test is a sequential change-point detector that monitors cumulative deviations from a running mean and signals a change when those deviations grow persistently. In this package, the implementation is primarily used for \strong{virtual concept drift} when it monitors a numeric feature stream, although the same statistic can also be applied to error streams to detect \strong{real concept drift}. The method is based on Page (1954) and the later streaming adaptation popularized in data-stream mining.
 }
+\details{
+Missing observations are skipped instead of being imputed.
+}
 \examples{
 library(daltoolbox)
 library(heimdall)
 
-# This example assumes a model residual where 1 is an error and 0 is a correct prediction.
+# This example assumes a model residual where 1 is an error and 0 is a
+# correct prediction.
 
 data(st_drift_examples)
 data <- st_drift_examples$univariate
 data$event <- NULL
-data$prediction <- st_drift_examples$univariate$serie > 4
-
 
 model <- dfr_page_hinkley(target_feat='serie')
 
-detection <- c()
+detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$serie)){
+for (i in seq_along(data$serie)){
  output <- update_state(output$obj, data$serie[i])
  if (output$drift){
    type <- 'drift'
@@ -53,10 +55,9 @@ for (i in 1:length(data$serie)){
  }else{
    type <- ''
  }
- detection <- rbind(detection, list(idx=i, event=output$drift, type=type))
+ detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 
-detection <- as.data.frame(detection)
 detection[detection$type == 'drift',]
 }
 \references{

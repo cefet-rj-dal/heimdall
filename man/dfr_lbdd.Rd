@@ -4,14 +4,24 @@
 \alias{dfr_lbdd}
 \title{Levene Based Drift Detection Method method}
 \usage{
-dfr_lbdd(target_feat = NULL, alpha = 0.01, window_size = 1500)
+dfr_lbdd(
+  target_feat = NULL,
+  alpha = 0.01,
+  window_size = 1500,
+  monitoring_step = 1,
+  data = NULL
+)
 }
 \arguments{
 \item{target_feat}{Feature to be monitored}
 
-\item{alpha}{Probability theshold for the test statistic}
+\item{alpha}{Probability threshold for the test statistic}
 
 \item{window_size}{Size of the sliding window}
+
+\item{monitoring_step}{Number of observations between two consecutive tests. The default (\code{1}) tests at every observation; larger values reduce the computational cost on long streams.}
+
+\item{data}{Already collected data to avoid cold start.}
 }
 \value{
 \code{dfr_lbdd} object
@@ -19,21 +29,30 @@ dfr_lbdd(target_feat = NULL, alpha = 0.01, window_size = 1500)
 \description{
 LBDD is a window-based detector that compares the variability of reference and recent samples using Levene's test. Because it monitors changes in the distribution of an observed feature rather than model performance, it is primarily aimed at \strong{virtual concept drift}. In this package, the detector follows the statistical-testing approach discussed by Giusti et al. (2021) for drift analysis, using Levene's variance test as its core mechanism.
 }
+\details{
+Levene's test is computed with the group spread centred on the
+median (the Brown-Forsythe variant).
+
+Missing observations are skipped instead of being imputed. When a drift is
+reported the window is trimmed to its most recent half, and \code{reset_state()}
+preserves that window so the detector does not restart cold.
+}
 \examples{
 library(daltoolbox)
 library(heimdall)
 
-# This example uses a dist-based drift detector with a synthetic dataset.
+# This example assumes a model residual where 1 is an error and 0 is a
+# correct prediction.
 
 data(st_drift_examples)
 data <- st_drift_examples$univariate
 data$event <- NULL
 
-model <- dfr_lbdd(target_feat='depart_visibility')
+model <- dfr_lbdd(target_feat='serie', window_size=100, alpha=0.05)
 
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$serie)){
+for (i in seq_along(data$serie)){
  output <- update_state(output$obj, data$serie[i])
  if (output$drift){
    type <- 'drift'

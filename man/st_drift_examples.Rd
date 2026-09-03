@@ -8,23 +8,24 @@
 A list of time series.
 }
 \source{
-\href{https://github.com/cefet-rj-dal/heimdall}{Stealthy package}
+\href{https://github.com/cefet-rj-dal/heimdall}{heimdall package}
 }
 \usage{
 data(st_drift_examples)
 }
 \description{
-A list of multivariate time series for drift detection
+A list of time series for drift detection. It contains, among
+others:
 \itemize{
-\item example1: a bivariate dataset with one multivariate concept drift example
+\item \code{example1}: a bivariate dataset with one multivariate concept drift example
+\item \code{univariate}: a univariate series with four known change points
 }
-#'
 }
 \examples{
 data(st_drift_examples)
 dataset <- st_drift_examples$example1
 }
 \references{
-\href{https://github.com/cefet-rj-dal/heimdall}{Stealthy package}
+\href{https://github.com/cefet-rj-dal/heimdall}{heimdall package}
 }
 \keyword{datasets}

@@ -1,0 +1,58 @@
+url: https://cefet-rj-dal.github.io/heimdall/
+
+template:
+  bootstrap: 5
+
+reference:
+  - title: Error-based detectors
+    desc: Detectors that monitor the residuals of a predictive model (real concept drift).
+    contents:
+      - dfr_cusum
+      - dfr_ddm
+      - dfr_ecdd
+      - dfr_eddm
+      - dfr_hddm
+  - title: Distribution-based detectors
+    desc: Detectors that monitor the distribution of the observed features (virtual concept drift).
+    contents:
+      - dfr_adwin
+      - dfr_kldist
+      - dfr_kswin
+      - dfr_lbdd
+      - dfr_mcdd
+      - dfr_page_hinkley
+  - title: Multivariate and combined detectors
+    contents:
+      - dfr_aedd
+      - dfr_multi_criteria
+  - title: Baselines
+    contents:
+      - dfr_inactive
+      - dfr_passive
+  - title: Adaptive models
+    contents:
+      - stealthy
+  - title: Metrics
+    contents:
+      - metric
+      - mt_accuracy
+      - mt_precision
+      - mt_recall
+      - mt_fscore
+      - mt_rocauc
+  - title: Normalization
+    contents:
+      - nrm_base
+      - nrm_memory
+  - title: Class hierarchy and generics
+    contents:
+      - drifter
+      - error_based
+      - dist_based
+      - mv_dist_based
+      - fit.drifter
+      - update_state
+      - reset_state
+  - title: Data
+    contents:
+      - st_drift_examples

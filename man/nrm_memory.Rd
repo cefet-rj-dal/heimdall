@@ -4,7 +4,7 @@
 \alias{nrm_memory}
 \title{Memory Normalizer}
 \usage{
-nrm_memory(norm_class = minmax())
+nrm_memory(norm_class = daltoolbox::minmax())
 }
 \arguments{
 \item{norm_class}{Normalizer class}
@@ -13,8 +13,14 @@ nrm_memory(norm_class = minmax())
 Norm object
 }
 \description{
-Normalizer that has own memory
+Normalizer that keeps its own memory of the data seen so far, so
+that the normalization parameters are estimated over the whole history rather
+than over the most recent batch alone.
 }
 \examples{
-# See ?nrm_mimax for an example of Memory Normalizer
+library(daltoolbox)
+
+obj <- nrm_memory(norm_class = minmax())
+obj <- fit(obj, data.frame(x = c(1, 2, 3)))
+transform(obj, data.frame(x = c(1, 2, 3)))
 }

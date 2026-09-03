@@ -7,14 +7,19 @@
 mt_fscore(f = 1)
 }
 \arguments{
-\item{f}{The F parameter for the F-Score metric}
+\item{f}{The beta parameter for the F-Score metric}
 }
 \value{
 Metric object
 }
 \description{
-Class for FScore calculation
+Class for F-Score calculation. The \code{f} parameter is the beta of
+the F-beta score, so \code{f = 1} (the default) gives the usual F1 score, values
+below 1 weight precision more heavily and values above 1 weight recall more
+heavily.
 }
 \examples{
-# See ?mt_fscore for an example of FScore Calculator
+library(daltoolbox)
+obj <- mt_fscore(f = 1)
+evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
 }

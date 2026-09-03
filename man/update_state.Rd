@@ -4,19 +4,24 @@
 \alias{update_state}
 \title{Update State}
 \usage{
-update_state(obj, value)
+update_state(obj, value, ...)
 }
 \arguments{
 \item{obj}{Drifter object}
 
 \item{value}{a value that represents a processed batch}
+
+\item{...}{optional arguments}
 }
 \value{
-updated Drifter object
+a list with two elements: \code{obj}, the updated Drifter object, and
+\code{drift}, a logical flag indicating whether a drift was detected in this call
 }
 \description{
-Update Drifter State
+Update Drifter State with a new observation.
 }
 \examples{
-# See ?hcd_ddm for an example of DDM drift detector
+model <- dfr_ddm()
+output <- update_state(model, 0)
+output$drift
 }

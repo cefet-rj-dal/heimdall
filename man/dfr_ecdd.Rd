@@ -11,7 +11,9 @@ dfr_ecdd(lambda = 0.2, min_run_instances = 30, average_run_length = 100)
 
 \item{min_run_instances}{The minimum number of instances before detecting change}
 
-\item{average_run_length}{Desired Average Run Length (ARL)}
+\item{average_run_length}{Desired Average Run Length (ARL). The published
+control-limit coefficients are only defined for target run lengths up to
+1000, so larger values are rejected.}
 }
 \value{
 \code{dfr_ecdd} object
@@ -19,11 +21,15 @@ dfr_ecdd(lambda = 0.2, min_run_instances = 30, average_run_length = 100)
 \description{
 ECDD applies an exponentially weighted moving average (EWMA) control chart to the online classification error stream. Since it monitors predictive errors directly, it is primarily designed to detect \strong{real concept drift}. The method follows Ross et al. (2012), who adapted EWMA charts for concept-drift detection in streaming classifiers \url{doi:10.1016/j.patrec.2011.08.019}.
 }
+\details{
+Missing values are treated as correct predictions (\code{0}).
+}
 \examples{
 library(daltoolbox)
 library(heimdall)
 
-# This example uses an error-based drift detector where 1 is an error and 0 is a correct prediction.
+# This example uses an error-based drift detector with a synthetic
+# model residual where 1 is an error and 0 is a correct prediction.
 
 data(st_drift_examples)
 data <- st_drift_examples$univariate
@@ -34,7 +40,7 @@ model <- dfr_ecdd()
 
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$prediction)){
+for (i in seq_along(data$prediction)){
  output <- update_state(output$obj, data$prediction[i])
  if (output$drift){
    type <- 'drift'

@@ -6,7 +6,7 @@
 \usage{
 dfr_aedd(
   encoding_size,
-  ae_class = autoenc_encode_decode,
+  ae_class = NULL,
   batch_size = 32,
   num_epochs = 1000,
   learning_rate = 0.001,
@@ -20,7 +20,8 @@ dfr_aedd(
 \arguments{
 \item{encoding_size}{Encoding Size}
 
-\item{ae_class}{Autoencoder Class}
+\item{ae_class}{Autoencoder Class. When \code{NULL} (the default),
+\code{daltoolbox::autoenc_encode_decode} is used.}
 
 \item{batch_size}{Batch Size for batch learning}
 
@@ -32,7 +33,7 @@ dfr_aedd(
 
 \item{monitoring_step}{The number of rows that the drifter waits to be is updated}
 
-\item{criteria}{The method to be used to check if there is a drift. May be mann_whitney (default), kolmogorov_smirnov, levene, parametric_threshold, nonparametric_threshold}
+\item{criteria}{The method to be used to check if there is a drift. One of \code{'mann_whitney'} (default), \code{'kolmogorov_smirnov'}, \code{'levene'}, \code{'parametric_threshold'} or \code{'nonparametric_threshold'}}
 
 \item{alpha}{The significance threshold for the statistical test used in criteria}
 
@@ -45,8 +46,8 @@ dfr_aedd(
 AEDD is an unsupervised multivariate detector that compares reconstruction errors produced by an autoencoder on reference and recent windows. Because it monitors changes in the input distribution rather than classifier performance, this implementation is primarily aimed at \strong{virtual concept drift}. The method follows Kaminskyi, Li, and Muller (2022) \url{doi:10.1109/ICDMW58026.2022.00109}.
 }
 \examples{
-#See an example of using `dfr_aedd` at this
-#https://github.com/cefet-rj-dal/heimdall/blob/main/multivariate/dfr_aedd.md
+# A rendered walkthrough is available at
+# https://github.com/cefet-rj-dal/heimdall/blob/main/examples/dfr_aedd.md
 }
 \references{
 Kaminskyi, D., Li, B., and Muller, E. (2022). Reconstruction-based unsupervised drift detection over multivariate streaming data. In \emph{2022 IEEE International Conference on Data Mining Workshops (ICDMW)}. \url{doi:10.1109/ICDMW58026.2022.00109}

@@ -10,8 +10,11 @@ dfr_inactive()
 Drifter object
 }
 \description{
-Implements Inactive Dummy Detector
+Implements a dummy detector that never reports a drift. Useful
+as a baseline when evaluating adaptation strategies.
 }
 \examples{
-# See ?hcd_ddm for an example of DDM drift detector
+model <- dfr_inactive()
+output <- update_state(model, 1)
+output$drift
 }

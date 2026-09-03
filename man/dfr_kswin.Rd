@@ -9,6 +9,8 @@ dfr_kswin(
   window_size = 1500,
   stat_size = 500,
   alpha = 1e-07,
+  monitoring_step = 1,
+  exact = TRUE,
   data = NULL
 )
 }
@@ -21,6 +23,12 @@ dfr_kswin(
 
 \item{alpha}{Probability for the test statistic of the Kolmogorov-Smirnov-Test The alpha parameter is very sensitive, therefore should be set below 0.01.}
 
+\item{monitoring_step}{Number of observations between two consecutive tests. The default (\code{1}) tests at every observation; larger values reduce the computational cost on long streams.}
+
+\item{exact}{Passed to \code{\link[stats:ks.test]{stats::ks.test()}}. The default (\code{TRUE}) preserves the
+behaviour of previous versions; setting it to \code{NULL} lets R choose, which is
+considerably faster for the default window sizes.}
+
 \item{data}{Already collected data to avoid cold start.}
 }
 \value{
@@ -29,11 +37,22 @@ dfr_kswin(
 \description{
 KSWIN applies a Kolmogorov-Smirnov test between a recent window and a reference sample drawn from older observations. In this package, the method is primarily used for \strong{virtual concept drift}, because it monitors distributional changes in a numeric feature stream. The method follows Raab et al. (2020) \url{doi:10.1016/j.neucom.2019.11.111}.
 }
+\details{
+The reference window is randomly subsampled, so results depend on the
+state of the random number generator. Call \code{\link[base:set.seed]{base::set.seed()}} before the stream loop
+if reproducibility is required.
+
+Missing observations are skipped instead of being imputed. When a drift is
+reported the window is trimmed to its most recent \code{stat_size} observations,
+and \code{reset_state()} preserves that window so the detector does not restart
+cold.
+}
 \examples{
 library(daltoolbox)
 library(heimdall)
 
-# This example uses a dist-based drift detector with a synthetic dataset.
+# This example assumes a model residual where 1 is an error and 0 is a
+# correct prediction.
 
 data(st_drift_examples)
 data <- st_drift_examples$univariate
@@ -43,7 +62,7 @@ model <- dfr_kswin(target_feat='serie')
 
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$serie)){
+for (i in seq_along(data$serie)){
  output <- update_state(output$obj, data$serie[i])
  if (output$drift){
    type <- 'drift'

@@ -10,5 +10,9 @@ mv_dist_based()
 Drifter object
 }
 \description{
-Implements Multivariate Distribution Based drift detectors
+Implements Multivariate Distribution Based drift detectors.
+}
+\examples{
+obj <- mv_dist_based()
+class(obj)
 }

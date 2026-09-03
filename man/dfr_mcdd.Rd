@@ -4,14 +4,24 @@
 \alias{dfr_mcdd}
 \title{Mean Comparison Distance method}
 \usage{
-dfr_mcdd(target_feat = NULL, alpha = 1e-08, window_size = 1500)
+dfr_mcdd(
+  target_feat = NULL,
+  alpha = 1e-08,
+  window_size = 1500,
+  monitoring_step = 1,
+  data = NULL
+)
 }
 \arguments{
 \item{target_feat}{Feature to be monitored}
 
-\item{alpha}{Probability theshold for all test statistics}
+\item{alpha}{Probability threshold for all test statistics}
 
 \item{window_size}{Size of the sliding window}
+
+\item{monitoring_step}{Number of observations between two consecutive tests. The default (\code{1}) tests at every observation; larger values reduce the computational cost on long streams.}
+
+\item{data}{Already collected data to avoid cold start.}
 }
 \value{
 \code{dfr_mcdd} object
@@ -19,21 +29,33 @@ dfr_mcdd(target_feat = NULL, alpha = 1e-08, window_size = 1500)
 \description{
 MCDD is a window-based detector that compares the location of reference and recent samples by means of hypothesis tests on their central tendency. Because it monitors the distribution of observed features rather than predictive errors, it is primarily intended for \strong{virtual concept drift}. In this package, the detector follows the statistical-testing perspective adopted by Giusti et al. (2021) for drift analysis.
 }
+\details{
+Normality of both halves of the window is checked with
+\code{\link[stats:shapiro.test]{stats::shapiro.test()}}; when it holds, a t-test is applied, otherwise a
+Wilcoxon rank-sum test is used. Shapiro-Wilk is only defined for samples of at
+most 5000 observations, so larger windows always fall back to the
+nonparametric test.
+
+Missing observations are skipped instead of being imputed. When a drift is
+reported the window is trimmed to its most recent half, and \code{reset_state()}
+preserves that window so the detector does not restart cold.
+}
 \examples{
 library(daltoolbox)
 library(heimdall)
 
-# This example uses a dist-based drift detector with a synthetic dataset.
+# This example assumes a model residual where 1 is an error and 0 is a
+# correct prediction.
 
 data(st_drift_examples)
 data <- st_drift_examples$univariate
 data$event <- NULL
 
-model <- dfr_mcdd(target_feat='depart_visibility')
+model <- dfr_mcdd(target_feat='serie', window_size=100, alpha=0.05)
 
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in 1:length(data$serie)){
+for (i in seq_along(data$serie)){
  output <- update_state(output$obj, data$serie[i])
  if (output$drift){
    type <- 'drift'

@@ -10,8 +10,10 @@ mt_rocauc()
 Metric object
 }
 \description{
-Class for QOC AUC calculation
+Class for ROC AUC calculation
 }
 \examples{
-# See ?mt_rocauc for an example of ROC AUC Calculator
+library(daltoolbox)
+obj <- mt_rocauc()
+evaluate(obj, c(0.9, 0.2, 0.8, 0.1), factor(c(TRUE, TRUE, FALSE, FALSE)))
 }
