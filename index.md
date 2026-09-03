@@ -1,0 +1,77 @@
+# ![Logo do pacote heimdall](https://raw.githubusercontent.com/cefet-rj-dal/heimdall/main/inst/logo.png) Heimdall
+
+![GitHub
+Stars](https://img.shields.io/github/stars/cefet-rj-dal/heimdall?logo=Github)![CRAN
+Downloads](https://cranlogs.r-pkg.org/badges/heimdall)
+
+Heimdall is a tool designed for concept drift detection in continuous
+data streams. When analyzing time series data, it is possible to observe
+significant changes in the data distribution or in the accuracy of
+predictive models during the forecasting process. These changes are
+known as concept drift.
+
+The goal of the Heimdall package is to detect when concept drift occurs,
+enabling the detection and adaptation of models in non-stationary
+contexts. The package offers several state-of-the-art methods to
+identify and handle concept drift, as well as techniques for efficient
+model adaptation.
+
+Heimdall is particularly useful when you need to move quickly from the
+theory of concept drift to a working streaming implementation. The
+package includes detectors for both **real concept drift** and **virtual
+concept drift**, and the repository examples are designed to help users
+understand that distinction through small, reproducible workflows.
+
+------------------------------------------------------------------------
+
+## Examples
+
+Heimdall usage examples are organized to help users learn the package
+progressively, not only to list detector names.
+
+The examples directory contains:
+
+- rendered walkthroughs for each detector;
+- extracted R scripts for quick reuse;
+- figure outputs and document exports;
+- a dedicated guide describing the purpose of each example.
+
+Recommended starting points:
+
+- `dfr_adwin` for a simple univariate distribution-monitoring example;
+- `dfr_ddm` for an error-based supervised example;
+- `dfr_aedd` for a multivariate unsupervised example.
+
+Browse the materials here:
+
+- [Examples
+  directory](https://github.com/cefet-rj-dal/heimdall/tree/main/examples)
+
+------------------------------------------------------------------------
+
+## Installation
+
+The latest version of Heimdall is available on CRAN:
+
+``` r
+
+install.packages("heimdall")
+```
+
+You can install the development version directly from GitHub:
+
+``` r
+
+# install.packages("devtools")
+library(devtools)
+devtools::install_github("cefet-rj-dal/heimdall", force = TRUE, upgrade = "never")
+```
+
+------------------------------------------------------------------------
+
+## Bugs and Feature Requests
+
+If you encounter any issues or would like to suggest new features,
+please open an issue:
+
+- [GitHub Issues](https://github.com/cefet-rj-dal/heimdall/issues)
