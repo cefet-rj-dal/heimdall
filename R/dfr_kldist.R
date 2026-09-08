@@ -145,8 +145,8 @@ reset_state.dfr_kldist <- function(obj) {
     p_th = obj$state$p_th,
     window_type = obj$state$window_type,
     breaks = obj$state$breaks,
-    monitoring_step = obj$state$monitoring_step,
-    data = obj$state$window
+    monitoring_step = obj$state$monitoring_step
+    # data = obj$state$window
   )$state
   return(obj)
 }

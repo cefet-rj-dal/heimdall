@@ -54,7 +54,6 @@ fit.nrm_memory <- function(obj, data, ...){
   
   obj$data <- rbind(obj$data, data)
   obj$data <- obj$data[!duplicated(obj$data), names(obj$data), drop=FALSE]
-  print(paste('Norm data len', nrow(obj$data)))
   obj$model <- fit(obj$model, obj$data)
 
   return(obj)
@@ -71,7 +70,6 @@ transform.nrm_memory <- function(obj, data, ...){
       }
     }
   }
-  
   tf_data <- transform(obj$model, data)
   
   return(tf_data)

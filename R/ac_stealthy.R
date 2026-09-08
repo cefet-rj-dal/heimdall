@@ -86,7 +86,10 @@ update_state.stealthy <- function(obj, value, ...){
     }
   }
   x_oh <- x_oh[obj$dummy$feat_names]
-  return(transform(obj$norm_model, x_oh))
+  if('nrm_memory' %in% class(obj$norm_model)){
+    obj$norm_model$data <- rbind(obj$norm_model$data, x_oh)
+  }
+  return(list(obj, transform(obj$norm_model, x_oh)))
 }
 
 #'@export
@@ -100,7 +103,9 @@ fit.stealthy <- function(obj, x, y, ...){
   # Drift check. It always runs before the models are updated, so that
   # error-based detectors observe prequential residuals.
   if (obj$fitted && (nrow(obj$x_train) >= obj$warmup_size)){
-    norm_batch <- .stealthy_project_batch(obj, x)
+    proj_batch_result <- .stealthy_project_batch(obj, x)
+    obj <- proj_batch_result[[1]]
+    norm_batch <- proj_batch_result[[2]]
 
     if ('error_based' %in% class(obj$drift_method)){
       predictions <- predict(obj$model, norm_batch)

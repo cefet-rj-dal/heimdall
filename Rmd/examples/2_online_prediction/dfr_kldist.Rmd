@@ -19,8 +19,7 @@ This example is a compact template for online prediction with distribution-based
 
 ```{r}
 # Load Heimdall and the built-in synthetic data stream.
-devtools::load_all('/home/lucas/heimdall/')
-# library(heimdall)
+library(heimdall)
 ```
 
 
