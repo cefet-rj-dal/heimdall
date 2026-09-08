@@ -4,12 +4,25 @@
 \alias{dfr_kldist}
 \title{KL Distance method}
 \usage{
-dfr_kldist(window_size = 100, p_th = 0.25, data = NULL)
+dfr_kldist(
+  window_size = 100,
+  p_th = 0.25,
+  window_type = "sliding",
+  breaks = 20,
+  monitoring_step = 1,
+  data = NULL
+)
 }
 \arguments{
-\item{window_size}{Size of the sliding window}
+\item{window_size}{Size of the window}
 
-\item{p_th}{Drift threshold applied to the PSI}
+\item{p_th}{Drift threshold applied to the divergence. Despite the name, this is not a p-value.}
+
+\item{window_type}{Window policy. \code{"sliding"} (default) keeps at most \code{window_size} rows, so both halves move with the stream. \code{"anchored"} keeps every row, which pins the reference half to the beginning of the stream and makes memory grow with the stream length.}
+
+\item{breaks}{Number of bins used to discretise each feature before the divergence is computed.}
+
+\item{monitoring_step}{Number of rows between two consecutive evaluations. The default (\code{1}) evaluates at every row; larger values reduce the computational cost on long streams.}
 
 \item{data}{Already collected data to avoid cold start.}
 }
@@ -17,7 +30,18 @@ dfr_kldist(window_size = 100, p_th = 0.25, data = NULL)
 \code{dfr_kldist} object
 }
 \description{
-This detector compares consecutive reference and recent windows through the Kullback-Leibler divergence estimated from their empirical distributions. In this package, it is primarily used for \strong{virtual concept drift}, since it monitors changes in the distribution of a numeric feature stream rather than predictive error. The statistical foundation is the Kullback-Leibler divergence introduced by Kullback and Leibler (1951).
+This detector compares a reference and a recent window through the symmetrised Kullback-Leibler divergence of their binned empirical distributions, \code{sum((p - q) * log(p / q))}, which is the quantity also known as the Jeffreys divergence or, in the credit-risk literature, the Population Stability Index. It is multivariate: every numeric column of the monitored stream contributes to the score. Because it monitors the distribution of the observed features rather than predictive error, it is primarily used for \strong{virtual concept drift}. The statistical foundation is the divergence introduced by Kullback and Leibler (1951).
+}
+\details{
+Bins are built over the reference and recent halves together, so the
+two histograms are always comparable. Empty bins are smoothed before the
+logarithm is taken, and the score is averaged over bins and over features.
+
+Rows whose first value is missing are skipped instead of being imputed.
+
+This detector consumes a data frame, one row at a time, and no longer takes a
+\code{target_feat} argument. Select the columns to monitor before passing the data
+in.
 }
 \examples{
 # Load Heimdall and the example data stream.
@@ -57,159 +81,6 @@ detection[detection$type == 'drift',]
 plot(x=seq_len(nrow(serie)), y=serie$serie)
 for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
-}
-# Load Heimdall and the built-in synthetic data stream.
-library(heimdall)
-# library(devtools)
-# load_all('/home/lucas/heimdall')
-
-# Fix the seed to make the example reproducible.
-seed <- 1
-set.seed(seed)
-
-# Load the univariate stream and derive the binary monitored signal.
-data(st_drift_examples)
-df <- st_drift_examples$uv_vct_real_drift
-
-# Plot the binary stream monitored by ADWIN.
-plot(x=seq_len(nrow(df)), y=df$serie, col=df$target)
-
-# Define features
-features <- c('serie')
-
-## Force Target as Factor
-target <- 'target'
-df[paste0(target)] <- factor(df[[target]])
-slevels <- levels(df[[target]])
-
-# Objects used to aggregate explainability data
-results <- c()
-norm_df <- c()
-drift_input_df <- c()
-hist_proj <- c()
-recent_proj <- c()
-
-# Model threshold
-th <- 0.5
-
-# Define batches
-batch_size <- 50
-batch_index <- c()
-for(c in (1:(as.integer(nrow(df)/batch_size)))){
-  batch_index <- cbind(batch_index, as.vector(rep(c, batch_size)))
-}
-df <- head(df, length(as.vector(batch_index)))
-df['batch_index'] <- as.vector(batch_index)
-ordered_batches <- sort(unique(df$batch_index))
-old_start_batch <- ordered_batches[1]
-# Simulation parameters
-warmup_size <- batch_size * 2 # 
-monitoring_step <- batch_size # Process data in batch_size frequency
-# Define the stealthy model
-model <- stealthy(
-  model=daltoolbox::cla_dtree(target, slevels), # Naive Bayes Classifier
-  drift_method=dfr_kldist(window_size=batch_size*2, p_th=0.1), # Using KLDIST
-  norm_class=nrm_memory(norm_class = daltoolbox::minmax()), # Normalization with MinMax
-  warmup_size=warmup_size, # Warmup size used to train models
-  incremental_memory=FALSE, # Do not force retrain in each batch
-  class_balance='inactive', # No class balancing
-  target_uni_drifter=FALSE, # Uses each features individually
-  active_warmup = FALSE, # Only trains when warmup_size rows are available
-  verbose=TRUE # Shows status messages
-)
-
- # Simulation
-start_time <- Sys.time()
-for (batch in ordered_batches[2:length(ordered_batches)]){
-  start_batch_time <- Sys.time()
-  
-  print(paste0('Time Step:', batch))
-  
-  # Define batches
-  new_batch <- df[df$batch_index == batch,]
-  last_batch <- df[(df$batch_index < batch) & (df$batch_index >= old_start_batch),]
-  old_start_batch <- batch
-  
-  # Define Training Data
-  x_train <- last_batch[, features, drop=FALSE]
-  y_train <- last_batch[, target, drop=FALSE]
-  
-  # Define Test Data
-  x_test <- new_batch[, features, drop=FALSE]
-  y_test <- new_batch[, target]
-  
-  model <- daltoolbox::fit(model, x_train, y_train)
-  
-  # If there is a model, predict and calculate metrics
-  if(model$fitted){
-    test_predictions <- predict(model, x_test)
-    # If only one class
-    if(length(names(test_predictions)) == 1){
-      if('TRUE' \%in\% names(test_predictions)){
-        y_pred <- factor(test_predictions[, 1] >= th)
-      }else if('FALSE' \%in\% names(test_predictions)){
-        y_pred <- factor(test_predictions[, 1] < th)
-      }
-    # If two classes
-    }else{
-      y_pred <- factor(test_predictions[, 2] >= th)
-    }
-    
-    levels(y_pred) <- slevels
-    
-    # Metrics calculation
-    y_pred <- as.numeric(y_pred)
-    y_test <- as.numeric(y_test)
-
-    true_positives <- sum((y_pred == 2) & (y_test == 2))
-    false_positives <- sum((y_pred == 2) & (y_test == 1))
-    true_negatives <- sum((y_pred == 1) & (y_test == 1))
-    false_negatives <- sum((y_pred == 1) & (y_test == 2))
-  }else{
-    true_positives <- 0
-    false_positives <- 0
-    true_negatives <- 0
-    false_negatives <- 0
-  }
-  
-  elap_batch_time <- Sys.time() - start_batch_time
-  
-  # Aggregate results
-  results <- rbind(results, 
-                   c(
-                     batch,
-                     true_positives,
-                     false_positives,
-                     true_negatives,
-                     false_negatives,
-                     model$drifted,
-                     elap_batch_time
-                   )
-  )
-  
-}
-results<- as.data.frame(results)
-names(results) <- c('Batch Index', 'tp', 'fp', 'tn', 'fn', 'drifted', 'elap')
-
-# Print the positions where DDM detected drift.
-results
-
-# Calculate metrics
-beta <- 1
-tp_sum <- sum(results['tp'])
-fp_sum <- sum(results['fp'])
-tn_sum <- sum(results['tn'])
-fn_sum <- sum(results['fn'])
-precision <- tp_sum/(tp_sum + fp_sum)
-recall <- tp_sum/(tp_sum + fn_sum)
-accuracy <- (tp_sum + tn_sum)/(tp_sum + fp_sum + tn_sum + fn_sum)
-f1 <- 2 * (precision * recall) / (((beta^2)*precision) + recall)
-
-print(paste('Precision', precision, 'Recall', recall, 'F1', f1, 'Accuracy', accuracy))
-plot(x=seq_len(nrow(df)), y=df$serie, col=as.numeric(df[[target]]))
-abline(v=250, col='blue', lty=2)
-for (drift_index in results[results['drifted'] == 1, 'Batch Index']) {
-  abline(v=drift_index*batch_size, col='red', lty=2)
 }
 }
 \references{

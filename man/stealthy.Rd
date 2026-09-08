@@ -14,6 +14,8 @@ stealthy(
   incremental_memory = FALSE,
   active_warmup = FALSE,
   class_balance = "inactive",
+  obsolete_model = "null",
+  reporting = FALSE,
   verbose = FALSE
 )
 }
@@ -34,7 +36,11 @@ stealthy(
 
 \item{active_warmup}{If true, the models will be retrained for each batch while the number of rows for the warmup_size is not met.}
 
-\item{class_balance}{Class balancing strategy. 'buffer' sets a buffer with the last warmup_size/2 rows for each class. Inactive does nothing.}
+\item{class_balance}{Class balancing strategy. \code{"buffer"} sets a buffer with the last \code{warmup_size/2} rows for each class. \code{"inactive"} does nothing.}
+
+\item{obsolete_model}{Strategy used by \code{predict()} while no model is fitted. One of \code{"null"} (default, returns all \code{FALSE}), \code{"majority"} (majority class classifier) or \code{"last_model"} (keeps using the previous model).}
+
+\item{reporting}{If TRUE, the per-batch drifter inputs and outputs are accumulated in \code{drifter_input} and \code{drifter_output}. Keep it FALSE on long streams, since the accumulated frames grow with the whole history.}
 
 \item{verbose}{if TRUE shows drift messages}
 }
@@ -42,8 +48,18 @@ stealthy(
 Stealthy object
 }
 \description{
-Ancestor class for drift adaptive models
+Ancestor class for drift adaptive models. It wraps a predictive
+model and a drift detector, retraining the model whenever a drift is
+reported.
+}
+\details{
+The batch is evaluated before the model is updated: error-based
+detectors see prequential residuals, computed with the model as it was at the
+beginning of the call, and the detector is fed the incoming batch exactly
+once per call.
 }
 \examples{
-# See ?dd_ddm for an example of DDM drift detector
+# See ?dfr_ddm for a drift detector that can be plugged here, and the
+# online prediction walkthroughs at
+# https://github.com/cefet-rj-dal/heimdall/tree/main/examples/2_online_prediction
 }

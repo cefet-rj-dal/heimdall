@@ -65,12 +65,15 @@ evaluate.mt_recall <- function(obj, y_pred, y_true, ...){
 
 #'@title FScore Calculator
 #'@description Class for FScore calculation
-#'@param f The F parameter for the F-Score metric
+#'@param f The beta parameter of the F-beta score. `f = 1` (the default) gives the usual F1 score, values below 1 weight precision more heavily and values above 1 weight recall more heavily.
 #'@return Metric object
 #'@examples
 #'# See ?mt_fscore for an example of FScore Calculator
 #'@export
 mt_fscore <- function(f=1) {
+  if (!is.numeric(f) || (length(f) != 1L) || is.na(f) || (f <= 0)) {
+    stop("f must be a single positive numeric value", call. = FALSE)
+  }
   obj <- metric()
   obj$f <- f
   class(obj) <- append("mt_fscore", class(obj))
@@ -79,11 +82,21 @@ mt_fscore <- function(f=1) {
 
 #'@export
 evaluate.mt_fscore <- function(obj, y_pred, y_true, ...){
+  beta <- obj$f
+  if (is.null(beta)) {
+    beta <- 1
+  }
+
   precision <- evaluate(mt_precision(), y_pred, y_true)
   recall <- evaluate(mt_recall(), y_pred, y_true)
-  
-  fscore <- (2 * (precision * recall)) / (precision + recall)
-  
+
+  denominator <- (beta^2 * precision) + recall
+  if (is.na(denominator) || (denominator == 0)) {
+    return(NA_real_)
+  }
+
+  fscore <- (1 + beta^2) * (precision * recall) / denominator
+
   return(fscore)
 }
 
@@ -103,12 +116,21 @@ mt_rocauc <- function() {
 #'@export
 evaluate.mt_rocauc <- function(obj, y_pred, y_true, ...){
   y_pred[is.na(y_pred)] <- FALSE
-  
-  if((sum(as.numeric(unlist(y_pred))-1) == 0) | (sum(as.numeric(unlist(y_true))-1) == 0)){
-    return(0)
-  }else{
-    rocauc <- pROC::auc(pROC::roc(y_true, y_pred, levels=levels(y_true), direction='<'))
-    
-    return(rocauc)
+
+  pred_values <- unlist(y_pred, use.names = FALSE)
+  true_values <- unlist(y_true, use.names = FALSE)
+
+  if ((length(unique(true_values)) < 2) || (length(unique(pred_values)) < 2)) {
+    warning('mt_rocauc: ROC AUC is undefined when the observed or the predicted values are constant. Returning NA.')
+    return(NA_real_)
   }
+
+  lv <- levels(y_true)
+  if (is.null(lv)) {
+    lv <- levels(as.factor(true_values))
+  }
+
+  rocauc <- pROC::auc(pROC::roc(y_true, y_pred, levels = lv, direction = '<', quiet = TRUE))
+
+  return(as.numeric(rocauc))
 }

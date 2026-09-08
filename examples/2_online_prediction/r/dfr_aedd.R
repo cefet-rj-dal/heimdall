@@ -144,7 +144,7 @@ fn_sum <- sum(results['fn'])
 precision <- tp_sum/(tp_sum + fp_sum)
 recall <- tp_sum/(tp_sum + fn_sum)
 accuracy <- (tp_sum + tn_sum)/(tp_sum + fp_sum + tn_sum + fn_sum)
-f1 <- 2 * (precision * recall) / (((beta^2)*precision) + recall)
+f1 <- (1 + beta^2) * (precision * recall) / (((beta^2)*precision) + recall)
 
 print(paste('Precision', precision, 'Recall', recall, 'F1', f1, 'Accuracy', accuracy))
 plot(x=seq_len(nrow(df)), y=df$serie1, col=as.numeric(df[[target]]))

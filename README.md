@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# <img src='https://raw.githubusercontent.com/cefet-rj-dal/heimdall/master/inst/logo.png' alt='Logo do pacote heimdall' align='centre' height='150' width='129'/> Heimdall
+# <img src='https://raw.githubusercontent.com/cefet-rj-dal/heimdall/main/inst/logo.png' alt='Logo do pacote heimdall' align='centre' height='150' width='129'/> Heimdall
 
 <!-- badges: start -->
 

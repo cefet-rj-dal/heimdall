@@ -1,4 +1,5 @@
 heimdall_path <- '//home/lucas/heimdall/'
+devtools::load_all(heimdall_path)
 
 detectors_list <- c(
   'cusum', 'ddm', 'eddm', 'hddm' # Error-Based Drift Detectors

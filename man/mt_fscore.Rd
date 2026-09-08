@@ -7,7 +7,7 @@
 mt_fscore(f = 1)
 }
 \arguments{
-\item{f}{The F parameter for the F-Score metric}
+\item{f}{The beta parameter of the F-beta score. \code{f = 1} (the default) gives the usual F1 score, values below 1 weight precision more heavily and values above 1 weight recall more heavily.}
 }
 \value{
 Metric object

@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# <img src='https://raw.githubusercontent.com/cefet-rj-dal/heimdall/master/inst/logo.png' alt='Logo do pacote heimdall' align='centre' height='150' width='129'/> Heimdall
+# <img src='https://raw.githubusercontent.com/cefet-rj-dal/heimdall/main/inst/logo.png' alt='Logo do pacote heimdall' align='centre' height='150' width='129'/> Heimdall
 
 <!-- badges: start -->
 ![GitHub Stars](https://img.shields.io/github/stars/cefet-rj-dal/heimdall?logo=Github)

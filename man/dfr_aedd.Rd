@@ -6,10 +6,11 @@
 \usage{
 dfr_aedd(
   encoding_size,
-  ae_class = daltoolboxdp::autoenc_ed,
-  ae_params = list(batch_size = 32, num_epochs = 1000, learning_rate = 0.001),
+  ae_class = NULL,
+  ae_params = list(batch_size = 32, num_epochs = 1000, learning_rate = 0.001,
+    error_function = "mae"),
   window_size = 100,
-  window_type = "fixed",
+  window_type = "sliding",
   monitoring_step = 1700,
   criteria = "mann_whitney",
   alpha = 0.01
@@ -18,21 +19,19 @@ dfr_aedd(
 \arguments{
 \item{encoding_size}{Encoding Size}
 
-\item{ae_class}{Autoencoder Class}
+\item{ae_class}{Autoencoder constructor. When \code{NULL} (the default), \code{daltoolboxdp::autoenc_ed} is used.}
+
+\item{ae_params}{Named list of arguments forwarded to \code{ae_class}, plus \code{error_function}, which selects how the reconstruction error is summarised. One of \code{"mae"} (default) or \code{"rmse"}.}
 
 \item{window_size}{Size of the most recent data to be used}
 
+\item{window_type}{Window policy. \code{"sliding"} (default) keeps at most \code{window_size} rows, so both halves move with the stream. \code{"anchored"} keeps every row, which pins the reference half to the beginning of the stream and makes memory grow with the stream length.}
+
 \item{monitoring_step}{The number of rows that the drifter waits to be is updated}
 
-\item{criteria}{The method to be used to check if there is a drift. May be mann_whitney (default), kolmogorov_smirnov, levene, parametric_threshold, nonparametric_threshold}
+\item{criteria}{The method used to check for a drift. One of \code{"mann_whitney"} (default), \code{"kolmogorov_smirnov"}, \code{"levene"}, \code{"psi"}, \code{"parametric_threshold"}, \code{"nonparametric_threshold"} or \code{"diff_threshold"}.}
 
-\item{alpha}{The significance threshold for the statistical test used in criteria}
-
-\item{batch_size}{Batch Size for batch learning}
-
-\item{num_epochs}{Number of Epochs for training}
-
-\item{learning_rate}{Learning Rate}
+\item{alpha}{Decision threshold for \code{criteria}. For the hypothesis tests it is a significance level; for \code{"psi"} and \code{"diff_threshold"} it is compared directly against the statistic, so it is a raw threshold rather than a probability.}
 }
 \value{
 \code{dfr_aedd} object
@@ -40,212 +39,15 @@ dfr_aedd(
 \description{
 AEDD is an unsupervised multivariate detector that compares reconstruction errors produced by an autoencoder on reference and recent windows. Because it monitors changes in the input distribution rather than classifier performance, this implementation is primarily aimed at \strong{virtual concept drift}. The method follows Kaminskyi, Li, and Muller (2022) \url{doi:10.1109/ICDMW58026.2022.00109}.
 }
+\details{
+The \code{"levene"} criterion tests every reconstructed feature and
+combines the per-feature p-values with a Bonferroni correction, instead of
+looking at the first feature only.
+}
 \examples{
-# Load the autoencoder backend and Heimdall.
-library(daltoolboxdp)
-library(heimdall)
-
-# Fix the seed so the example can be reproduced consistently.
-seed <- 1
-set.seed(seed)
-
-# Load the multivariate synthetic stream.
-data(st_drift_examples)
-serie <- st_drift_examples$mv_vct_real_drift
-
-# Plot the monitored variables before running the detector.
-plot(x=serie$i, y=serie$serie1)
-
-plot(x=serie$i, y=serie$serie2)
-
-# Instantiate AEDD with a compact latent representation.
-model <- dfr_aedd(
-  encoding_size=1,
-  ae_class=autoenc_ed,
-  batch_size=64,
-  monitoring_step=10,
-  window_size=256
-)
-monitored_features <- c('serie1', 'serie2')
-
-# Update AEDD row by row using only the selected monitored features.
-detection <- NULL
-output <- list(obj=model, drift=FALSE)
-for (i in seq_len(nrow(serie))){
-  output <- update_state(output$obj, serie[i, monitored_features])
-  if (output$drift){
-    type <- 'drift'
-    output$obj <- reset_state(output$obj)
-  } else {
-    type <- ''
-  }
-  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
-}
-
-# Print the detected drift points.
-detection[detection$type == 'drift',]
-
-# Display the alarms on top of one monitored variable.
-plot(x=serie$i, y=serie$serie2)
-for (drift_index in detection[detection$type == 'drift', 'idx']) {
-  abline(v=drift_index, col='red', lty=2)
-}
-
-print(paste('Successfull run at', Sys.time()))
-# Load Heimdall and the built-in synthetic data stream.
-library(daltoolboxdp)
-library(heimdall)
-
-# Fix the seed to make the example reproducible.
-seed <- 1
-set.seed(seed)
-
-# Load the univariate stream and derive the binary monitored signal.
-data(st_drift_examples)
-df <- st_drift_examples$mv_vct_real_drift
-
-# Plot the binary stream monitored by ADWIN.
-plot(x=seq_len(nrow(df)), y=df$serie1, col=df$target)
-
-# Define features
-features <- c('serie1', 'serie2')
-
-## Force Target as Factor
-target <- 'target'
-df[paste0(target)] <- factor(df[[target]])
-slevels <- levels(df[[target]])
-
-# Objects used to aggregate explainability data
-results <- c()
-norm_df <- c()
-drift_input_df <- c()
-hist_proj <- c()
-recent_proj <- c()
-
-# Model threshold
-th <- 0.5
-
-# Define batches
-batch_size <- 50
-batch_index <- c()
-for(c in (1:(as.integer(nrow(df)/batch_size)))){
-  batch_index <- cbind(batch_index, as.vector(rep(c, batch_size)))
-}
-df <- head(df, length(as.vector(batch_index)))
-df['batch_index'] <- as.vector(batch_index)
-ordered_batches <- sort(unique(df$batch_index))
-old_start_batch <- ordered_batches[1]
-# Simulation parameters
-warmup_size <- batch_size * 2 # 
-monitoring_step <- batch_size # Process data in batch_size frequency
-# Define the stealthy model
-model <- stealthy(
-  model=daltoolbox::cla_dtree(target, slevels), # Naive Bayes Classifier
-  drift_method=dfr_aedd(
-    encoding_size=1, ae_class=daltoolboxdp::autoenc_ed, criteria='levene', alpha=0.05, 
-    monitoring_step=batch_size), # Using AEDD
-  norm_class=nrm_memory(norm_class = daltoolbox::minmax()), # Normalization with MinMax
-  warmup_size=warmup_size, # Warmup size used to train models
-  incremental_memory=FALSE, # Do not force retrain in each batch
-  class_balance='inactive', # No class balancing
-  target_uni_drifter=FALSE, # Uses each features individually
-  active_warmup = FALSE, # Only trains when warmup_size rows are available
-  verbose=TRUE # Shows status messages
-)
-
- # Simulation
-start_time <- Sys.time()
-for (batch in ordered_batches[2:length(ordered_batches)]){
-  start_batch_time <- Sys.time()
-  
-  print(paste0('Time Step:', batch))
-  
-  # Define batches
-  new_batch <- df[df$batch_index == batch,]
-  last_batch <- df[(df$batch_index < batch) & (df$batch_index >= old_start_batch),]
-  old_start_batch <- batch
-  
-  # Define Training Data
-  x_train <- last_batch[, features, drop=FALSE]
-  y_train <- last_batch[, target, drop=FALSE]
-  
-  # Define Test Data
-  x_test <- new_batch[, features, drop=FALSE]
-  y_test <- new_batch[, target]
-  
-  model <- daltoolbox::fit(model, x_train, y_train)
-  
-  # If there is a model, predict and calculate metrics
-  if(model$fitted){
-    test_predictions <- predict(model, x_test)
-    # If only one class
-    if(length(names(test_predictions)) == 1){
-      if('TRUE' \%in\% names(test_predictions)){
-        y_pred <- factor(test_predictions[, 1] >= th)
-      }else if('FALSE' \%in\% names(test_predictions)){
-        y_pred <- factor(test_predictions[, 1] < th)
-      }
-    # If two classes
-    }else{
-      y_pred <- factor(test_predictions[, 2] >= th)
-    }
-    
-    levels(y_pred) <- slevels
-    
-    # Metrics calculation
-    y_pred <- as.numeric(y_pred)
-    y_test <- as.numeric(y_test)
-
-    true_positives <- sum((y_pred == 2) & (y_test == 2))
-    false_positives <- sum((y_pred == 2) & (y_test == 1))
-    true_negatives <- sum((y_pred == 1) & (y_test == 1))
-    false_negatives <- sum((y_pred == 1) & (y_test == 2))
-  }else{
-    true_positives <- 0
-    false_positives <- 0
-    true_negatives <- 0
-    false_negatives <- 0
-  }
-  
-  elap_batch_time <- Sys.time() - start_batch_time
-  
-  # Aggregate results
-  results <- rbind(results, 
-                   c(
-                     batch,
-                     true_positives,
-                     false_positives,
-                     true_negatives,
-                     false_negatives,
-                     model$drifted,
-                     elap_batch_time
-                   )
-  )
-  
-}
-results<- as.data.frame(results)
-names(results) <- c('Batch Index', 'tp', 'fp', 'tn', 'fn', 'drifted', 'elap')
-
-# Print the positions where DDM detected drift.
-results
-
-# Calculate metrics
-beta <- 1
-tp_sum <- sum(results['tp'])
-fp_sum <- sum(results['fp'])
-tn_sum <- sum(results['tn'])
-fn_sum <- sum(results['fn'])
-precision <- tp_sum/(tp_sum + fp_sum)
-recall <- tp_sum/(tp_sum + fn_sum)
-accuracy <- (tp_sum + tn_sum)/(tp_sum + fp_sum + tn_sum + fn_sum)
-f1 <- 2 * (precision * recall) / (((beta^2)*precision) + recall)
-
-print(paste('Precision', precision, 'Recall', recall, 'F1', f1, 'Accuracy', accuracy))
-plot(x=seq_len(nrow(df)), y=df$serie1, col=as.numeric(df[[target]]))
-abline(v=250, col='blue', lty=2)
-for (drift_index in results[results['drifted'] == 1, 'Batch Index']) {
-  abline(v=drift_index*batch_size, col='red', lty=2)
-}
+# Training an autoencoder is too slow for an inline example. A rendered
+# walkthrough is available at
+# https://github.com/cefet-rj-dal/heimdall/blob/main/examples/1_detection/dfr_aedd.md
 }
 \references{
 Kaminskyi, D., Li, B., and Muller, E. (2022). Reconstruction-based unsupervised drift detection over multivariate streaming data. In \emph{2022 IEEE International Conference on Data Mining Workshops (ICDMW)}. \url{doi:10.1109/ICDMW58026.2022.00109}

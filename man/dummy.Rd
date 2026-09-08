@@ -10,8 +10,10 @@ dummy()
 Drifter object
 }
 \description{
-Implements Error Based drift detectors
+Ancestor class for the baseline detectors that ignore the
+monitored signal, \code{dfr_inactive()} and \code{dfr_passive()}.
 }
 \examples{
-# See ?hcd_ddm for an example of DDM drift detector
+obj <- dummy()
+class(obj)
 }

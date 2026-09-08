@@ -1,4 +1,5 @@
 heimdall_path <- '//home/lucas/heimdall/'
+devtools::load_all(heimdall_path)
 
 detectors_list <- c('adwin', 'aedd', 'cusum', 'ddm', 'ecdd', 'eddm', 'hddm', 'kswin', 'lbdd', 'mcdd', 'page_hinkley')
 

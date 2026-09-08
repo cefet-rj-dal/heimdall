@@ -10,8 +10,12 @@ error_based()
 Drifter object
 }
 \description{
-Implements Error Based drift detectors
+Implements Error Based drift detectors. These detectors monitor
+the residuals of a predictive model, where \code{1} (or \code{TRUE}) means a wrong
+prediction and \code{0} (or \code{FALSE}) a correct one. Missing values are treated as
+correct predictions.
 }
 \examples{
-# See ?hcd_ddm for an example of DDM drift detector
+obj <- error_based()
+class(obj)
 }

@@ -16,5 +16,7 @@ updated Drifter object
 Reset Drifter State
 }
 \examples{
-# See ?hcd_ddm for an example of DDM drift detector
+model <- dfr_ddm()
+model <- reset_state(model)
+model$drifted
 }

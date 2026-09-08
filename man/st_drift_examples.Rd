@@ -5,26 +5,30 @@
 \alias{st_drift_examples}
 \title{Synthetic time series for concept drift detection}
 \format{
-A list of time series.
+A list of data frames.
 }
 \source{
-\href{https://github.com/cefet-rj-dal/heimdall}{Stealthy package}
+\href{https://github.com/cefet-rj-dal/heimdall}{heimdall package}
 }
 \usage{
 data(st_drift_examples)
 }
 \description{
-A list of multivariate time series for drift detection
+A list of univariate and multivariate time series for drift
+detection. Each element is a data frame:
 \itemize{
-\item example1: a bivariate dataset with one multivariate concept drift example
+\item \code{uv_virtual_drift}: univariate series with a change in the feature distribution
+\item \code{uv_vct_real_drift}: univariate series with a virtual change followed by a real drift
+\item \code{uv_vdp_real_drift}: univariate series with a real drift and no change in the feature distribution
+\item \code{mv_real_drift}: bivariate series with a real drift
+\item \code{mv_vct_real_drift}: bivariate series with a virtual change followed by a real drift
 }
-#'
 }
 \examples{
 data(st_drift_examples)
 dataset <- st_drift_examples$uv_virtual_drift
 }
 \references{
-\href{https://github.com/cefet-rj-dal/heimdall}{Stealthy package}
+\href{https://github.com/cefet-rj-dal/heimdall}{heimdall package}
 }
 \keyword{datasets}

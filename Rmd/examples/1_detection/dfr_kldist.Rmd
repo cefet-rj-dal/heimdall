@@ -19,7 +19,8 @@ This example is useful for users who want a distribution-comparison detector wit
 
 ```{r}
 # Load Heimdall and the example data stream.
-library(heimdall)
+devtools::load_all('/home/lucas/heimdall/')
+# library(heimdall)
 ```
 
 

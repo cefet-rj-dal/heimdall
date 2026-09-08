@@ -10,8 +10,12 @@ dfr_passive()
 Drifter object
 }
 \description{
-Implements Passive Dummy Detector
+Implements a dummy detector that always reports a drift. Useful
+as an upper baseline, since it forces the model to be retrained at every
+batch.
 }
 \examples{
-# See ?hcd_ddm for an example of DDM drift detector
+model <- dfr_passive()
+output <- update_state(model, 1)
+output$drift
 }
