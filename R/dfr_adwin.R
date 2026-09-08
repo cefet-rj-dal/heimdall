@@ -50,6 +50,7 @@ dfr_adwin <- function(target_feat = NULL, delta = 2e-05) {
   state <- list()
 
   state$delta <- delta
+  
   reticulate::source_python(system.file("python", "adwin.py", package="heimdall"))
   state$adwin <- ADWIN(delta = delta)
 
@@ -107,6 +108,7 @@ update_state.dfr_adwin <- function(obj, value, ...) {
   }
 
   state$adwin$add_element(value)
+  
   obj$last_drifter_output <- state$adwin$width
 
   obj$state <- state

@@ -141,6 +141,7 @@ update_state.dfr_hddm <- function(obj, value, ...) {
   obj$state <- state
 
   obj$last_drifter_output <- state$estimation
+
   return(list(obj = obj, drift = has_drift))
 }
 

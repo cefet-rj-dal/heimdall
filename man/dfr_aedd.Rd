@@ -7,8 +7,14 @@
 dfr_aedd(
   encoding_size,
   ae_class = NULL,
+<<<<<<< HEAD
   ae_params = list(batch_size = 32, num_epochs = 1000, learning_rate = 0.001,
     error_function = "mae"),
+=======
+  batch_size = 32,
+  num_epochs = 1000,
+  learning_rate = 0.001,
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
   window_size = 100,
   window_type = "sliding",
   monitoring_step = 1700,
@@ -19,7 +25,12 @@ dfr_aedd(
 \arguments{
 \item{encoding_size}{Encoding Size}
 
+<<<<<<< HEAD
 \item{ae_class}{Autoencoder constructor. When \code{NULL} (the default), \code{daltoolboxdp::autoenc_ed} is used.}
+=======
+\item{ae_class}{Autoencoder Class. When \code{NULL} (the default),
+\code{daltoolbox::autoenc_encode_decode} is used.}
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 
 \item{ae_params}{Named list of arguments forwarded to \code{ae_class}, plus \code{error_function}, which selects how the reconstruction error is summarised. One of \code{"mae"} (default) or \code{"rmse"}.}
 
@@ -29,7 +40,11 @@ dfr_aedd(
 
 \item{monitoring_step}{The number of rows that the drifter waits to be is updated}
 
+<<<<<<< HEAD
 \item{criteria}{The method used to check for a drift. One of \code{"mann_whitney"} (default), \code{"kolmogorov_smirnov"}, \code{"levene"}, \code{"psi"}, \code{"parametric_threshold"}, \code{"nonparametric_threshold"} or \code{"diff_threshold"}.}
+=======
+\item{criteria}{The method to be used to check if there is a drift. One of \code{'mann_whitney'} (default), \code{'kolmogorov_smirnov'}, \code{'levene'}, \code{'parametric_threshold'} or \code{'nonparametric_threshold'}}
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 
 \item{alpha}{Decision threshold for \code{criteria}. For the hypothesis tests it is a significance level; for \code{"psi"} and \code{"diff_threshold"} it is compared directly against the statistic, so it is a raw threshold rather than a probability.}
 }
@@ -45,9 +60,14 @@ combines the per-feature p-values with a Bonferroni correction, instead of
 looking at the first feature only.
 }
 \examples{
+<<<<<<< HEAD
 # Training an autoencoder is too slow for an inline example. A rendered
 # walkthrough is available at
 # https://github.com/cefet-rj-dal/heimdall/blob/main/examples/1_detection/dfr_aedd.md
+=======
+# A rendered walkthrough is available at
+# https://github.com/cefet-rj-dal/heimdall/blob/main/examples/dfr_aedd.md
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 }
 \references{
 Kaminskyi, D., Li, B., and Muller, E. (2022). Reconstruction-based unsupervised drift detection over multivariate streaming data. In \emph{2022 IEEE International Conference on Data Mining Workshops (ICDMW)}. \url{doi:10.1109/ICDMW58026.2022.00109}

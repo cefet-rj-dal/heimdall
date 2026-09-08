@@ -14,6 +14,7 @@ A list of data frames.
 data(st_drift_examples)
 }
 \description{
+<<<<<<< HEAD
 A list of univariate and multivariate time series for drift
 detection. Each element is a data frame:
 \itemize{
@@ -22,6 +23,13 @@ detection. Each element is a data frame:
 \item \code{uv_vdp_real_drift}: univariate series with a real drift and no change in the feature distribution
 \item \code{mv_real_drift}: bivariate series with a real drift
 \item \code{mv_vct_real_drift}: bivariate series with a virtual change followed by a real drift
+=======
+A list of time series for drift detection. It contains, among
+others:
+\itemize{
+\item \code{example1}: a bivariate dataset with one multivariate concept drift example
+\item \code{univariate}: a univariate series with four known change points
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 }
 }
 \examples{

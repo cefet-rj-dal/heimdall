@@ -29,6 +29,7 @@ dfr_kswin <- function(target_feat=NULL, window_size=1500, stat_size=500, alpha=1
   .check_positive_integer(stat_size, "stat_size", min_value = 1L)
   .check_positive_integer(monitoring_step, "monitoring_step", min_value = 1L)
   window_type <- .check_window_type(window_type)
+  
   if (window_size <= stat_size) {
     stop("stat_size must be smaller than window_size", call. = FALSE)
   }
@@ -52,6 +53,7 @@ dfr_kswin <- function(target_feat=NULL, window_size=1500, stat_size=500, alpha=1
   }
 
   obj$state <- state
+
   obj$last_drifter_output <- NULL
   obj$drifter_output <- NULL
 
@@ -84,6 +86,7 @@ update_state.dfr_kswin <- function(obj, value, ...) {
   }
 
   reference_window <- utils::head(state$window, length(state$window) - state$stat_size)
+  
   if (length(reference_window) > state$stat_size) {
     reference_window <- sample(reference_window, state$stat_size)
   }

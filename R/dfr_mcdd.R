@@ -30,6 +30,7 @@ dfr_mcdd <- function(target_feat=NULL, alpha=1e-08, normality_alpha=0.05, window
   obj <- dist_based(target_feat = target_feat)
 
   state <- list()
+  
   state$window_size <- window_size
   state$alpha <- alpha
   state$normality_alpha <- normality_alpha
@@ -45,6 +46,7 @@ dfr_mcdd <- function(target_feat=NULL, alpha=1e-08, normality_alpha=0.05, window
   }
 
   obj$state <- state
+
   obj$last_drifter_output <- NULL
   obj$drifter_output <- NULL
 
@@ -132,8 +134,7 @@ reset_state.dfr_mcdd <- function(obj) {
     normality_alpha = obj$state$normality_alpha,
     window_size = obj$state$window_size,
     window_type = obj$state$window_type,
-    monitoring_step = obj$state$monitoring_step,
-    data = obj$state$window
+    monitoring_step = obj$state$monitoring_step
   )$state
   return(obj)
 }

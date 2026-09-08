@@ -33,6 +33,7 @@ dfr_kldist <- function(window_size=100, p_th=0.25, window_type="sliding", breaks
   obj <- mv_dist_based()
 
   state <- list()
+  
   state$window_size <- window_size
   state$p_th <- p_th
   state$window_type <- window_type
@@ -96,6 +97,7 @@ update_state.dfr_kldist <- function(obj, value, ...) {
   obj$last_drifter_output <- NA_real_
 
   state$n <- state$n + 1
+  
   if (is.na(.as_scalar(value))) {
     obj$state <- state
     return(list(obj = obj, drift = FALSE))
@@ -114,6 +116,7 @@ update_state.dfr_kldist <- function(obj, value, ...) {
   }
 
   half <- floor(state$window_size / 2)
+
   history_window <- utils::head(state$window, half)
   recent_window <- utils::tail(state$window, half)
   
@@ -121,6 +124,7 @@ update_state.dfr_kldist <- function(obj, value, ...) {
   obj$last_drifter_output <- state$divergence
 
   if (!is.na(state$divergence) && (state$divergence >= state$p_th)) {
+
     state$window <- utils::tail(state$window, half)
 
     obj$drifted <- TRUE

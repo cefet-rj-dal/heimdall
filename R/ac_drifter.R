@@ -159,6 +159,7 @@ dfr_passive <- function() {
   obj$state <- list()
 
   obj$drifted <- FALSE
+  
   class(obj) <- append('dfr_passive', class(obj))
   return(obj)
 }

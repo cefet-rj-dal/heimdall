@@ -79,15 +79,18 @@ update_state.dfr_ecdd <- function(obj, value, ...) {
       obj$state <- state
       obj$drifted <- TRUE
       obj$last_drifter_output <- state$Z
+      
       return(list(obj = obj, drift = TRUE))
     } else {
       obj$state <- state
       obj$last_drifter_output <- state$Z
+      
       return(list(obj = obj, drift = FALSE))
     }
   } else {
     obj$state <- state
     obj$last_drifter_output <- state$Z
+
     return(list(obj = obj, drift = FALSE))
   }
 }

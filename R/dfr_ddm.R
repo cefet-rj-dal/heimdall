@@ -62,6 +62,7 @@ update_state.dfr_ddm <- function(obj, value, ...) {
   if (state$sample_count < state$min_instances) {
     obj$state <- state
     obj$last_drifter_output <- state$miss_prob
+    
     return(list(obj = obj, drift = FALSE))
   }
 
@@ -83,15 +84,18 @@ update_state.dfr_ddm <- function(obj, value, ...) {
     obj$drifted <- TRUE
     obj$state <- state
     obj$last_drifter_output <- state$miss_prob
+    
     return(list(obj = obj, drift = TRUE))
   } else if ((state$miss_prob + state$miss_std) > (state$miss_prob_min + state$warning_level * state$miss_sd_min)) {
     state$in_warning_zone <- TRUE
     obj$state <- state
     obj$last_drifter_output <- state$miss_prob
+    
     return(list(obj = obj, drift = FALSE))
   } else {
     obj$state <- state
     obj$last_drifter_output <- state$miss_prob
+    
     return(list(obj = obj, drift = FALSE))
   }
 }

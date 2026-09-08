@@ -19,9 +19,13 @@ Every detector in the package follows the same contract:
 \strong{in that call};
 \item \code{obj$drifted} is sticky: it stays \code{TRUE} after the first detection
 until \code{reset_state()} is called;
+<<<<<<< HEAD
 \item \code{reset_state(obj)} returns the detector to its initial state;
 \item \code{obj$drifter_output} holds the per-observation diagnostics produced by
 the last call to \code{fit()}.
+=======
+\item \code{reset_state(obj)} returns the detector to its initial state.
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 }
 }
 \examples{

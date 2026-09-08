@@ -2,11 +2,12 @@
 #'@description Ancestor class for metric calculation
 #'@return Metric object
 #'@examples
-#'# See ?metric for an example of DDM drift detector
+#'obj <- metric()
+#'class(obj)
 #'@import daltoolbox
 #'@importFrom Metrics precision recall
 #'@export
-metric <- function(){
+metric <- function() {
   obj <- dal_base()
   attr(obj, 'class') <- 'metric'
   return(obj)
@@ -16,33 +17,37 @@ metric <- function(){
 #'@description Class for accuracy calculation
 #'@return Metric object
 #'@examples
-#'# See ?mt_accuracy for an example of Accuracy Calculator
+#'library(daltoolbox)
+#'obj <- mt_accuracy()
+#'evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
 #'@export
-mt_accuracy <- function(){
+mt_accuracy <- function() {
   obj <- metric()
   class(obj) <- append("mt_accuracy", class(obj))
   return(obj)
 }
 
 #'@export
-evaluate.mt_accuracy <- function(obj, y_pred, y_true, ...){
-  return(mean(y_pred==y_true, na.rm=TRUE))
+evaluate.mt_accuracy <- function(obj, y_pred, y_true, ...) {
+  return(mean(y_pred == y_true, na.rm = TRUE))
 }
 
 #'@title Precision Calculator
 #'@description Class for precision calculation
 #'@return Metric object
 #'@examples
-#'# See ?mt_precision for an example of Precision Calculator
+#'library(daltoolbox)
+#'obj <- mt_precision()
+#'evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
 #'@export
-mt_precision <- function(){
+mt_precision <- function() {
   obj <- metric()
   class(obj) <- append("mt_precision", class(obj))
   return(obj)
 }
 
 #'@export
-evaluate.mt_precision <- function(obj, y_pred, y_true, ...){
+evaluate.mt_precision <- function(obj, y_pred, y_true, ...) {
   return(Metrics::precision(y_true, y_pred))
 }
 
@@ -50,7 +55,9 @@ evaluate.mt_precision <- function(obj, y_pred, y_true, ...){
 #'@description Class for recall calculation
 #'@return Metric object
 #'@examples
-#'# See ?mt_recall for an example of Recall Calculator
+#'library(daltoolbox)
+#'obj <- mt_recall()
+#'evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
 #'@export
 mt_recall <- function() {
   obj <- metric()
@@ -59,7 +66,7 @@ mt_recall <- function() {
 }
 
 #'@export
-evaluate.mt_recall <- function(obj, y_pred, y_true, ...){
+evaluate.mt_recall <- function(obj, y_pred, y_true, ...) {
   return(Metrics::recall(y_true, y_pred))
 }
 
@@ -68,7 +75,9 @@ evaluate.mt_recall <- function(obj, y_pred, y_true, ...){
 #'@param f The beta parameter of the F-beta score. `f = 1` (the default) gives the usual F1 score, values below 1 weight precision more heavily and values above 1 weight recall more heavily.
 #'@return Metric object
 #'@examples
-#'# See ?mt_fscore for an example of FScore Calculator
+#'library(daltoolbox)
+#'obj <- mt_fscore(f = 1)
+#'evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
 #'@export
 mt_fscore <- function(f=1) {
   if (!is.numeric(f) || (length(f) != 1L) || is.na(f) || (f <= 0)) {
@@ -101,10 +110,12 @@ evaluate.mt_fscore <- function(obj, y_pred, y_true, ...){
 }
 
 #'@title ROC AUC Calculator
-#'@description Class for QOC AUC calculation
+#'@description Class for ROC AUC calculation
 #'@return Metric object
 #'@examples
-#'# See ?mt_rocauc for an example of ROC AUC Calculator
+#'library(daltoolbox)
+#'obj <- mt_rocauc()
+#'evaluate(obj, c(0.9, 0.2, 0.8, 0.1), factor(c(TRUE, TRUE, FALSE, FALSE)))
 #'@export
 mt_rocauc <- function() {
   obj <- metric()
@@ -114,7 +125,7 @@ mt_rocauc <- function() {
 
 #'@importFrom pROC auc
 #'@export
-evaluate.mt_rocauc <- function(obj, y_pred, y_true, ...){
+evaluate.mt_rocauc <- function(obj, y_pred, y_true, ...) {
   y_pred[is.na(y_pred)] <- FALSE
 
   pred_values <- unlist(y_pred, use.names = FALSE)

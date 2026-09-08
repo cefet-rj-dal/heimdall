@@ -13,5 +13,7 @@ Metric object
 Class for recall calculation
 }
 \examples{
-# See ?mt_recall for an example of Recall Calculator
+library(daltoolbox)
+obj <- mt_recall()
+evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
 }

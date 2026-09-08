@@ -34,6 +34,7 @@ dfr_page_hinkley <- function(target_feat=NULL, min_instances=30, delta=0.005, th
   state$sample_count <- 1
 
   obj$state <- state
+
   obj$drifted <- FALSE
   obj$last_drifter_output <- NULL
   obj$drifter_output <- NULL

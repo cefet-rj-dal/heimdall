@@ -53,17 +53,20 @@ dfr_aedd <- function(encoding_size, ae_class=NULL, ae_params=list(batch_size = 3
   obj$window_type <- window_type
 
   state <- list()
+
   state$window_size <- window_size
   state$window_type <- window_type
   state$monitoring_step <- monitoring_step
   state$criteria <- criteria
   state$data <- NULL
   state$n <- 0
+
   state$autoencoder <- NULL
   state$is_fitted <- FALSE
 
   obj$last_drifter_output <- NULL
   obj$drifter_output <- NULL
+
   obj$drifted <- FALSE
   obj$state <- state
   class(obj) <- append("dfr_aedd", class(obj))
@@ -226,6 +229,11 @@ fit.dfr_aedd <- function(obj, data, ...) {
     if (length(missing_in_history) > 0L) {
       warning('dfr_aedd: Some categories present in most recent data are not on the history dataset. Creating zero columns.')
       state$data[missing_in_history] <- 0
+    }
+    missing_in_recent <- setdiff(names(state$data), names(data))
+    if (length(missing_in_recent) > 0L) {
+      warning('dfr_aedd: Some categories present in history data are not on the most recent dataset. Creating zero columns.')
+      data[missing_in_recent] <- 0
     }
     missing_in_recent <- setdiff(names(state$data), names(data))
     if (length(missing_in_recent) > 0L) {

@@ -33,24 +33,38 @@ The Page-Hinkley test is a sequential change-point detector that monitors the cu
 Missing observations are skipped instead of being imputed, so that a
 single \code{NA} cannot poison the running statistics.
 }
+\details{
+Missing observations are skipped instead of being imputed.
+}
 \examples{
 # Load Heimdall and the synthetic stream example.
 library(heimdall)
 
+<<<<<<< HEAD
 # Fix the seed for reproducibility.
 seed <- 1
 set.seed(seed)
+=======
+# This example assumes a model residual where 1 is an error and 0 is a
+# correct prediction.
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 
 # Load the univariate numeric stream monitored in this example.
 data(st_drift_examples)
+<<<<<<< HEAD
 serie <- st_drift_examples$uv_virtual_drift
 
 # Plot the monitored signal before detection.
 plot(x=seq_len(nrow(serie)), y=serie$serie)
+=======
+data <- st_drift_examples$univariate
+data$event <- NULL
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 
 # Instantiate the Page-Hinkley detector.
 model <- dfr_page_hinkley(target_feat='serie')
 
+<<<<<<< HEAD
 # Update the detector sequentially and record every drift alarm.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
@@ -66,6 +80,21 @@ for (i in seq_len(nrow(serie))){
 }
 
 # Print the detected drift points.
+=======
+detection <- NULL
+output <- list(obj=model, drift=FALSE)
+for (i in seq_along(data$serie)){
+ output <- update_state(output$obj, data$serie[i])
+ if (output$drift){
+   type <- 'drift'
+   output$obj <- reset_state(output$obj)
+ }else{
+   type <- ''
+ }
+ detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+}
+
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 detection[detection$type == 'drift',]
 
 # Overlay those alarms on the original numeric stream.

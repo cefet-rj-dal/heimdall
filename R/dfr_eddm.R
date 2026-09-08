@@ -60,6 +60,7 @@ update_state.dfr_eddm <- function(obj, value, ...) {
   if (value != 1) {
     obj$state <- state
     obj$last_drifter_output <- state$m_mean
+    
     return(list(obj = obj, drift = FALSE))
   }
 
@@ -78,6 +79,7 @@ update_state.dfr_eddm <- function(obj, value, ...) {
   if (state$m_n < state$min_instances) {
     obj$state <- state
     obj$last_drifter_output <- state$m_mean
+
     return(list(obj = obj, drift = FALSE))
   }
 
@@ -86,6 +88,7 @@ update_state.dfr_eddm <- function(obj, value, ...) {
 
     obj$state <- state
     obj$last_drifter_output <- state$m_mean
+
     return(list(obj = obj, drift = FALSE))
   }
 
@@ -105,6 +108,7 @@ update_state.dfr_eddm <- function(obj, value, ...) {
     obj$drifted <- TRUE
     obj$state <- state
     obj$last_drifter_output <- state$m_mean
+    
     return(list(obj = obj, drift = TRUE))
   }
 
@@ -112,12 +116,14 @@ update_state.dfr_eddm <- function(obj, value, ...) {
     state$in_warning_zone <- TRUE
     obj$state <- state
     obj$last_drifter_output <- state$m_mean
+
     return(list(obj = obj, drift = FALSE))
   }
 
   state$in_warning_zone <- FALSE
   obj$state <- state
   obj$last_drifter_output <- state$m_mean
+
   return(list(obj = obj, drift = FALSE))
 }
 
