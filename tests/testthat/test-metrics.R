@@ -20,7 +20,6 @@ test_that("mt_fscore honours the beta parameter", {
   expect_equal(evaluate(mt_fscore(f = 2), y_pred, y_true), fbeta(2))
   expect_equal(evaluate(mt_fscore(f = 0.5), y_pred, y_true), fbeta(0.5))
 
-  # and the three values must actually differ from one another
   values <- c(fbeta(0.5), fbeta(1), fbeta(2))
   expect_equal(length(unique(values)), 3)
 })

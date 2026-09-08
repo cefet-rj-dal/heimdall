@@ -1,94 +1,96 @@
-# heimdall 1.3.0
+# heimdall 1.4.0
 
 ## Breaking changes
 
-* `norm()` was renamed to `nrm_base()` and is no longer exported. The old name
-  masked `base::norm()` whenever the package was attached. Code that called
-  `heimdall::norm()` must be updated to `nrm_base()`; `nrm_memory()` is
-  unaffected.
 * `update_state()` now returns a `list(obj =, drift =)` for *every* detector,
-  including the base `drifter` method and the `dfr_inactive` / `dfr_passive`
-  baselines. Previously those returned the object itself, which broke the
-  streaming loop shown in every example.
-* `update_state.stealthy()` follows the same contract and now updates the
-  correct field (it referenced a non-existent `drift_technique` slot).
-* `reticulate` moved from `Imports` to `Suggests`. Only `dfr_adwin()` needs it,
-  and it now fails with an actionable message when Python or `numpy` is
-  missing. `Config/reticulate` no longer declares `torch`, `scipy`, `pandas`,
-  `matplotlib` and `scikit-learn`, which were never used.
-* `car` and `ggplot2` were dropped from `Imports`. Levene's test is now
-  computed internally (Brown-Forsythe variant, median-centred), and `ggplot2`
-  was never used in `R/`.
-* `dfr_mcdd()` and `dfr_lbdd()` now trim their window to its most recent half
-  when a drift is reported, and `reset_state()` preserves that window. This
-  matches what `dfr_kldist()` and `dfr_kswin()` already did.
+  including the base `drifter` method and `dfr_inactive()`. Previously those
+  returned the object itself, which broke the streaming loop shown in the
+  examples.
+* `dfr_kswin()`, `dfr_mcdd()`, `dfr_lbdd()`, `dfr_kldist()` and `dfr_aedd()`
+  gained a `window_type` argument. `"sliding"` (the new default) keeps at most
+  `window_size` observations; `"anchored"` keeps every observation, pinning the
+  reference half to the beginning of the stream. The 1.3.x behaviour of these
+  four detectors corresponds to `"anchored"`.
+* The `dfr_aedd()` values `window_type = "fixed"` and `"moving"` are deprecated
+  aliases for `"sliding"` and `"anchored"`. They still work and warn.
+* `dfr_mcdd()` gained `normality_alpha` (default `0.05`). The Shapiro-Wilk
+  threshold no longer reuses `alpha`, which at its default of `1e-08` made the
+  normality gate a no-op.
+* `stealthy()` gained back a `reporting` argument (default `FALSE`). The
+  accumulation of `drifter_input` and `drifter_output` across every batch is
+  now opt-in, since those frames grow with the whole stream.
+* `dfr_aedd()` no longer accepts an autoencoder class that is neither an
+  encoder nor an encoder-decoder; it fails with an explicit message instead of
+  reaching an undefined variable.
 
 ## Bug fixes
 
-* `fit()` no longer breaks on a stream with a single observation. `dfr_cusum`,
-  `dfr_ddm`, `dfr_ecdd`, `dfr_eddm` and `dfr_hddm` used `2:length(data)`, which
-  reversed to `c(2, 1)` and processed a non-existent element followed by a
-  duplicate of the first one.
-* `mt_fscore()` now uses its `f` argument as the beta of the F-beta score. It
-  previously stored the parameter and always computed F1.
-* `inverse_transform.nrm_memory()` now inverts the data it is given instead of
-  the internal history, which it ignored.
-* `fit.nrm_memory()` no longer emits a spurious warning and injects a row of
-  zeros into the history on its first call.
+### Adaptive model
+
+* `fit.stealthy()` computed the error-based residuals against `norm_x_oh`,
+  a variable that had been set to `NULL` a few lines earlier (or never
+  defined). Every error-based detector received a null input. The batch is now
+  projected once, through `.stealthy_project_batch()`, and used directly.
+* The drift check now runs *before* the model is updated, so error-based
+  detectors observe prequential residuals instead of training error.
+* The detector is fed the incoming batch exactly once per call. The previous
+  version fitted it with the new batch and then again with the whole
+  accumulated `x_train`, and finally cleared `drift_method$drifted`, discarding
+  the second signal.
+* `predict.stealthy()` with `obsolete_model = "majority"` referenced an
+  undefined `model` variable and a `norm_data_oh` that had not been computed
+  yet, and called an unimported `cla_majority`. `obsolete_model` is now
+  validated with `match.arg()`.
+* `stealthy()` initialised `train_model` only when `class_balance = "buffer"`.
+
+### Detectors
+
+* The sliding windows slide again. In 1.3.x `dfr_kswin()`, `dfr_mcdd()`,
+  `dfr_kldist()` and `dfr_lbdd()` appended every observation without ever
+  trimming, so memory grew without bound and the reference half stayed frozen
+  on the first observations of the stream.
+* `dfr_page_hinkley()` compares `sum - min_sum` against the threshold again.
+  1.3.x compared `sum` alone, which is not the Page-Hinkley test, and left
+  `min_sum` computed but unused.
+* `dfr_page_hinkley()` skips missing observations again. The `tryCatch` that
+  replaced the `NA` guard let `NA` into the running mean and returned `NULL`
+  from `update_state()` on any error, breaking the caller's loop.
+* `dfr_mcdd()` applies exactly one comparison test per evaluation. 1.3.x fell
+  through from the t-test to the Wilcoxon test, giving two uncorrected chances
+  to reject.
+* `dfr_kswin()` requires both a significant p-value and a KS statistic above
+  `sqrt(-log(alpha) / stat_size)`, as in Raab et al., and subsamples its
+  reference window again.
+* `dfr_kldist()` divided its score by the number of features *plus one*,
+  because the temporary `bin` column was counted as a feature.
+* `dfr_aedd()`, criterion `parametric_threshold`, compared the history mean
+  against itself and could never fire.
+* `dfr_aedd()`, criterion `psi`, trimmed a non-existent `state$window` field.
+* `dfr_aedd()`, criterion `levene`, tested only the first reconstructed
+  feature. It now tests every feature and combines the p-values with a
+  Bonferroni correction.
+* `dfr_aedd()` no longer builds a throwaway autoencoder with `input_size = 1`
+  in the constructor, and no longer keeps its whole history in `state$data`
+  under the sliding policy.
+* `dfr_aedd()` and `dfr_hddm()` no longer latch the per-call drift flag. The
+  `drift` element refers to the current call; `obj$drifted` stays sticky until
+  `reset_state()`.
+* `fit.dfr_passive()` iterated over `2:length(data)`, which is the column count
+  for a data frame. All `fit()` methods now walk the stream through shared
+  helpers.
+* `fit()` no longer breaks on a stream with a single observation, and rejects
+  an empty one with a clear message.
+* Missing values are handled consistently: error-based detectors treat `NA` as
+  a correct prediction, distribution-based detectors skip the observation.
 * `dfr_ecdd()` no longer fails with `object 'control_limit' not found` for
   average run lengths above 1000; the argument is validated up front.
-* `dfr_hddm()` and `dfr_aedd()` no longer latch the per-call drift flag. The
-  `drift` element returned by `update_state()` refers to the current call;
-  `obj$drifted` remains sticky until `reset_state()`.
-* `dfr_mcdd()` no longer stores the incoming observation twice when the window
-  is full and no drift is detected.
-* `dfr_lbdd()` no longer discards the incoming observation when a drift is
-  detected.
-* The `levene` criterion of `dfr_aedd()` no longer fails on multivariate input;
-  the previous implementation referenced a hard-coded `V1` column that was
-  never created.
-* `dfr_multi_criteria()` validates `drifter_list` and `combination` instead of
-  failing later with `object 'has_drift' not found` or silently reusing the
-  previous detector's output.
-* `dfr_mcdd()` falls back to the nonparametric test for windows larger than
-  5000 observations, where `shapiro.test()` is undefined.
-* Missing values are now handled consistently: error-based detectors treat `NA`
-  as a correct prediction, distribution-based detectors skip the observation.
-  `dfr_eddm()` and `dfr_hddm()` previously raised an error on `NA`.
 
-## Documentation
+### Metrics and normalization
 
-* The duplicated `update_state()` generic was removed. The remaining one keeps
-  `...`, matching every method and the documentation.
-* Cross-references to `?dd_ddm`, `?hcd_ddm` and `?nrm_mimax`, which are not
-  topics of this package, were replaced by runnable examples.
-* `dist_based()`, `mv_dist_based()`, `dfr_multi_criteria()`, `fit.drifter()`
-  and the dummy detectors gained examples.
-* The `dfr_adwin()` example is no longer commented out; it runs when a Python
-  runtime with `numpy` is available.
-* The `dfr_aedd()` example points at the walkthrough that actually exists in
-  the repository.
-* `dfr_kldist()` documents that `p_th` is a divergence threshold, not a
-  p-value, and `dfr_kswin()` documents that its reference window is randomly
-  subsampled.
-
-## New features
-
-* `dfr_kldist()`, `dfr_kswin()`, `dfr_lbdd()` and `dfr_mcdd()` gained a
-  `monitoring_step` argument (default `1`, i.e. unchanged behaviour) that runs
-  the statistical test every *k* observations, which is the main cost on long
-  streams.
-* `dfr_kswin()` gained an `exact` argument forwarded to `stats::ks.test()`.
-  Setting it to `NULL` is considerably faster for the default window sizes.
-* All constructors validate their arguments.
-
-## Infrastructure
-
-* Added a `testthat` suite covering the detector contract, argument validation,
-  missing-value handling, window management, metrics and normalizers.
-* Added GitHub Actions workflows for `R CMD check --as-cran` (Linux, macOS and
-  Windows) and for the `pkgdown` site, plus a versioned `_pkgdown.yml`.
-* Added a `BugReports` field and an explicit `Depends: R (>= 3.5.0)`.
-* Removed the `globalVariables()` workaround; the ADWIN Python module is loaded
-  into its own environment and cached, and `dfr_aedd()` resolves its default
-  autoencoder lazily.
+* `mt_fscore()` uses its `f` argument as the beta of the F-beta score. It
+  previously stored the parameter and always computed F1. The same formula was
+  wrong in the twelve online-prediction example scripts, which have been fixed.
+* `mt_rocauc()` returns `NA` with a warning when the metric is undefined,
+  instead of `0`.
+* `inverse_transform.nrm_memory()` inverts the data it is given instead of the
+  internal history.

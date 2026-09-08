@@ -5,21 +5,36 @@
 \title{KL Distance method}
 \usage{
 dfr_kldist(
+<<<<<<< HEAD
+  window_size = 100,
+  p_th = 0.25,
+  window_type = "sliding",
+  breaks = 20,
+=======
   target_feat = NULL,
   window_size = 100,
   p_th = 0.05,
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
   monitoring_step = 1,
   data = NULL
 )
 }
 \arguments{
-\item{target_feat}{Feature to be monitored.}
+\item{window_size}{Size of the window}
 
-\item{window_size}{Size of the sliding window}
+\item{p_th}{Drift threshold applied to the divergence. Despite the name, this is not a p-value.}
 
+<<<<<<< HEAD
+\item{window_type}{Window policy. \code{"sliding"} (default) keeps at most \code{window_size} rows, so both halves move with the stream. \code{"anchored"} keeps every row, which pins the reference half to the beginning of the stream and makes memory grow with the stream length.}
+
+\item{breaks}{Number of bins used to discretise each feature before the divergence is computed.}
+
+\item{monitoring_step}{Number of rows between two consecutive evaluations. The default (\code{1}) evaluates at every row; larger values reduce the computational cost on long streams.}
+=======
 \item{p_th}{Drift threshold applied to the KL divergence. Despite the name, this is not a p-value.}
 
 \item{monitoring_step}{Number of observations between two consecutive tests. The default (\code{1}) tests at every observation; larger values reduce the computational cost on long streams.}
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 
 \item{data}{Already collected data to avoid cold start.}
 }
@@ -27,7 +42,18 @@ dfr_kldist(
 \code{dfr_kldist} object
 }
 \description{
-This detector compares consecutive reference and recent windows through the Kullback-Leibler divergence estimated from their empirical distributions. In this package, it is primarily used for \strong{virtual concept drift}, since it monitors changes in the distribution of a numeric feature stream rather than predictive error. The statistical foundation is the Kullback-Leibler divergence introduced by Kullback and Leibler (1951).
+This detector compares a reference and a recent window through the symmetrised Kullback-Leibler divergence of their binned empirical distributions, \code{sum((p - q) * log(p / q))}, which is the quantity also known as the Jeffreys divergence or, in the credit-risk literature, the Population Stability Index. It is multivariate: every numeric column of the monitored stream contributes to the score. Because it monitors the distribution of the observed features rather than predictive error, it is primarily used for \strong{virtual concept drift}. The statistical foundation is the divergence introduced by Kullback and Leibler (1951).
+}
+\details{
+Bins are built over the reference and recent halves together, so the
+two histograms are always comparable. Empty bins are smoothed before the
+logarithm is taken, and the score is averaged over bins and over features.
+
+Rows whose first value is missing are skipped instead of being imputed.
+
+This detector consumes a data frame, one row at a time, and no longer takes a
+\code{target_feat} argument. Select the columns to monitor before passing the data
+in.
 }
 \details{
 Missing observations are skipped instead of being imputed. When a
@@ -35,20 +61,42 @@ drift is reported the window is trimmed to its most recent half, and
 \code{reset_state()} preserves that window so the detector does not restart cold.
 }
 \examples{
-library(daltoolbox)
+# Load Heimdall and the example data stream.
 library(heimdall)
 
+<<<<<<< HEAD
+# Fix the seed to keep the example reproducible.
+seed <- 1
+set.seed(seed)
+=======
 # This example assumes a model residual where 1 is an error and 0 is a
 # correct prediction.
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 
+# Load the univariate stream monitored in this walkthrough.
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
+serie <- st_drift_examples$uv_virtual_drift
 
-model <- dfr_kldist(target_feat='serie')
+# Plot the monitored numeric signal before detection.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
 
+# Instantiate the KL-divergence-based detector.
+model <- dfr_kldist(window_size=100, p_th=0.10)
+
+# Update the detector sequentially and store drift alarms.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
+<<<<<<< HEAD
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie[i, 'serie', drop=FALSE])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+=======
 for (i in seq_along(data$serie)){
  output <- update_state(output$obj, data$serie[i])
  if (output$drift){
@@ -58,9 +106,16 @@ for (i in seq_along(data$serie)){
    type <- ''
  }
  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 }
 
+# Print the points where KLDIST detected drift.
 detection[detection$type == 'drift',]
+# Overlay the detected drifts on the original numeric stream.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
 }
 \references{
 Kullback, S., and Leibler, R. A. (1951). On information and sufficiency. \emph{The Annals of Mathematical Statistics}, 22(1), 79-86. \url{doi:10.1214/aoms/1177729694}

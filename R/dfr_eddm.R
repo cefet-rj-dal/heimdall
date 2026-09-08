@@ -9,34 +9,7 @@
 #EDDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/eddm.py
 #'@references Baena-Garcia, M., del Campo-Avila, J., Fidalgo, R., Bifet, A., Gavalda, R., and Morales-Bueno, R. (2006). Early drift detection method. In *Fourth International Workshop on Knowledge Discovery from Data Streams*.
 #'@return `dfr_eddm` object
-#'@examples
-#'library(daltoolbox)
-#'library(heimdall)
-#'
-#'# This example uses an error-based drift detector with a synthetic
-#'# model residual where 1 is an error and 0 is a correct prediction.
-#'
-#'data(st_drift_examples)
-#'data <- st_drift_examples$univariate
-#'data$event <- NULL
-#'data$prediction <- st_drift_examples$univariate$serie > 4
-#'
-#'model <- dfr_eddm()
-#'
-#'detection <- NULL
-#'output <- list(obj=model, drift=FALSE)
-#'for (i in seq_along(data$prediction)){
-#'  output <- update_state(output$obj, data$prediction[i])
-#'  if (output$drift){
-#'    type <- 'drift'
-#'    output$obj <- reset_state(output$obj)
-#'  }else{
-#'    type <- ''
-#'  }
-#'  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
-#'}
-#'
-#'detection[detection$type == 'drift',]
+#'@example examples/1_detection/r/dfr_eddm.R
 #'@export
 dfr_eddm <- function(min_instances = 30, min_num_errors = 30, warning_level = 0.95, out_control_level = 0.9) {
   .check_positive_integer(min_instances, "min_instances", min_value = 1L)
@@ -86,6 +59,8 @@ update_state.dfr_eddm <- function(obj, value, ...) {
 
   if (value != 1) {
     obj$state <- state
+    obj$last_drifter_output <- state$m_mean
+    
     return(list(obj = obj, drift = FALSE))
   }
 
@@ -103,6 +78,8 @@ update_state.dfr_eddm <- function(obj, value, ...) {
 
   if (state$m_n < state$min_instances) {
     obj$state <- state
+    obj$last_drifter_output <- state$m_mean
+
     return(list(obj = obj, drift = FALSE))
   }
 
@@ -110,6 +87,8 @@ update_state.dfr_eddm <- function(obj, value, ...) {
     state$m_m2s_max <- m2s
 
     obj$state <- state
+    obj$last_drifter_output <- state$m_mean
+
     return(list(obj = obj, drift = FALSE))
   }
 
@@ -128,23 +107,29 @@ update_state.dfr_eddm <- function(obj, value, ...) {
 
     obj$drifted <- TRUE
     obj$state <- state
+    obj$last_drifter_output <- state$m_mean
+    
     return(list(obj = obj, drift = TRUE))
   }
 
   if ((state$m_num_errors > state$m_min_num_errors) && (p < state$warning_level)) {
     state$in_warning_zone <- TRUE
     obj$state <- state
+    obj$last_drifter_output <- state$m_mean
+
     return(list(obj = obj, drift = FALSE))
   }
 
   state$in_warning_zone <- FALSE
   obj$state <- state
+  obj$last_drifter_output <- state$m_mean
+
   return(list(obj = obj, drift = FALSE))
 }
 
 #'@export
 fit.dfr_eddm <- function(obj, data, ...) {
-  return(.fit_vector_stream(obj, data))
+  return(.fit_vector_stream(obj, data, output_names = "mean_distance"))
 }
 
 #'@export

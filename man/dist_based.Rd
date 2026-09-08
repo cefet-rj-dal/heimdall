@@ -14,8 +14,13 @@ Drifter object
 }
 \description{
 Implements univariate Distribution Based drift detectors. These
+<<<<<<< HEAD
+detectors monitor a single numeric feature; missing observations are skipped
+instead of being imputed.
+=======
 detectors monitor a single numeric feature; observations that are missing are
 skipped instead of being imputed.
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 }
 \examples{
 obj <- dist_based(target_feat = 'serie')

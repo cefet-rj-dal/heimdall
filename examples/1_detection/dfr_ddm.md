@@ -1,0 +1,101 @@
+---
+title: "dfr_ddm Example"
+output:
+  html_document: 
+    self_contained: true
+---
+# DDM Example
+
+DDM monitors the online error rate of a predictive process under the assumption that a stable model should keep its error under control over time. Because it operates on model errors, it is a detector of **real concept drift**.
+
+Reference: Gama, J., Medas, P., Castillo, G., and Rodrigues, P. P. (2004). *Learning with drift detection*. SBIA. <doi:10.1007/978-3-540-28645-5_29>
+
+## Learning goal
+
+This example is a compact template for error-based drift monitoring with Heimdall.
+
+
+
+``` r
+# Load Heimdall and the built-in synthetic data stream.
+library(heimdall)
+```
+
+
+
+``` r
+# Fix the seed to make the example reproducible.
+seed <- 1
+set.seed(seed)
+```
+
+
+
+``` r
+# Load the univariate stream and derive the binary monitored signal.
+data(st_drift_examples)
+data <- st_drift_examples$uv_virtual_drift
+data$prediction <- st_drift_examples$uv_virtual_drift$serie > 4
+```
+
+
+
+``` r
+# Plot the binary stream monitored by DDM.
+plot(x=seq_len(nrow(data)), y=data$prediction)
+```
+
+![plot of chunk unnamed-chunk-4](fig/dfr_ddm/unnamed-chunk-4-1.png)
+
+
+``` r
+# Instantiate the DDM detector.
+model <- dfr_ddm()
+```
+
+
+
+``` r
+# Process the stream sequentially and store the drift alarms.
+detection <- NULL
+output <- list(obj=model, drift=FALSE)
+for (i in seq_len(nrow(data))){
+  output <- update_state(output$obj, data$prediction[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+}
+```
+
+
+
+``` r
+# Print the positions where DDM detected drift.
+detection[detection$type == 'drift',]
+```
+
+```
+##     idx event  type
+## 201 201  TRUE drift
+```
+
+```
+##     idx event  type
+## 201 201  TRUE drift
+```
+
+
+
+``` r
+# Show the detected drifts over the original numeric signal.
+plot(x=seq_len(nrow(data)), y=data$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
+```
+
+![plot of chunk unnamed-chunk-8](fig/dfr_ddm/unnamed-chunk-8-1.png)

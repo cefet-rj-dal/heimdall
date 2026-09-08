@@ -11,7 +11,11 @@ Drifter object
 }
 \description{
 Implements a dummy detector that never reports a drift. Useful
+<<<<<<< HEAD
+as a lower baseline when evaluating adaptation strategies.
+=======
 as a baseline when evaluating adaptation strategies.
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 }
 \examples{
 model <- dfr_inactive()

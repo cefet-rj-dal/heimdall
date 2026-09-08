@@ -5,35 +5,7 @@
 #CUMSUM: S. Muthukrishnan, Eric Berg, Yihua Wu: Sequential Change Detection on Data Streams. Seventh IEEE International Conference on Data Mining Workshops (ICDMW 2007), DOI:10.1109/ICDMW.2007.89
 #'@references Muthukrishnan, S., Berg, E., and Wu, Y. (2007). Sequential change detection on data streams. In *Seventh IEEE International Conference on Data Mining Workshops (ICDMW 2007)*. <doi:10.1109/ICDMW.2007.89>
 #'@return `dfr_cusum` object
-#'@importFrom daltoolbox cla_nb
-#'@examples
-#'library(daltoolbox)
-#'library(heimdall)
-#'
-#'# This example uses an error-based drift detector with a synthetic
-#'# model residual where 1 is an error and 0 is a correct prediction.
-#'
-#'data(st_drift_examples)
-#'data <- st_drift_examples$univariate
-#'data$event <- NULL
-#'data$prediction <- st_drift_examples$univariate$serie > 4
-#'
-#'model <- dfr_cusum()
-#'
-#'detection <- NULL
-#'output <- list(obj=model, drift=FALSE)
-#'for (i in seq_along(data$prediction)){
-#'  output <- update_state(output$obj, data$prediction[i])
-#'  if (output$drift){
-#'    type <- 'drift'
-#'    output$obj <- reset_state(output$obj)
-#'  }else{
-#'    type <- ''
-#'  }
-#'  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
-#'}
-#'
-#'detection[detection$type == 'drift',]
+#'@example examples/1_detection/r/dfr_cusum.R
 #'@export
 dfr_cusum <- function(lambda = 100) {
   .check_positive_integer(lambda, "lambda", min_value = 1L)
@@ -75,15 +47,17 @@ update_state.dfr_cusum <- function(obj, value, ...) {
   obj$state <- state
   if (state$g > state$lambda) {
     obj$drifted <- TRUE
+    obj$last_drifter_output <- state$g
     return(list(obj = obj, drift = TRUE))
   } else {
+    obj$last_drifter_output <- state$g
     return(list(obj = obj, drift = FALSE))
   }
 }
 
 #'@export
 fit.dfr_cusum <- function(obj, data, ...) {
-  return(.fit_vector_stream(obj, data))
+  return(.fit_vector_stream(obj, data, output_names = "g"))
 }
 
 #'@export

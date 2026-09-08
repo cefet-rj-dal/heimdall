@@ -50,10 +50,14 @@ dfr_adwin <- function(target_feat = NULL, delta = 2e-05) {
   state <- list()
 
   state$delta <- delta
-  state$adwin <- .adwin_module()$ADWIN(delta = delta)
+  
+  reticulate::source_python(system.file("python", "adwin.py", package="heimdall"))
+  state$adwin <- ADWIN(delta = delta)
 
   obj$drifted <- FALSE
   obj$state <- state
+  obj$last_drifter_output <- NULL
+  obj$drifter_output <- NULL
   class(obj) <- append("dfr_adwin", class(obj))
   return(obj)
 }
@@ -104,6 +108,8 @@ update_state.dfr_adwin <- function(obj, value, ...) {
   }
 
   state$adwin$add_element(value)
+  
+  obj$last_drifter_output <- state$adwin$width
 
   obj$state <- state
   has_drift <- isTRUE(state$adwin$detected_change())
@@ -115,7 +121,7 @@ update_state.dfr_adwin <- function(obj, value, ...) {
 
 #'@export
 fit.dfr_adwin <- function(obj, data, ...) {
-  return(.fit_vector_stream(obj, data))
+  return(.fit_vector_stream(obj, data, output_names = "width"))
 }
 
 #'@export

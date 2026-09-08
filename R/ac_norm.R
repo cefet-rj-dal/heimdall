@@ -15,7 +15,8 @@ nrm_base <- function(norm_class) {
   obj <- dal_base()
 
   obj$model <- norm_class
-  obj$data <- NULL
+
+  obj$data <- data.frame()
 
   attr(obj, 'class') <- 'norm'
   return(obj)
@@ -41,28 +42,32 @@ nrm_memory <- function(norm_class = daltoolbox::minmax()) {
 }
 
 #'@export
-fit.nrm_memory <- function(obj, data, ...) {
-  data <- as.data.frame(data)
-
-  if (is.null(obj$data) || (nrow(obj$data) == 0L)) {
-    obj$data <- data
-  } else {
-    missing_in_history <- setdiff(names(data), names(obj$data))
-    if (length(missing_in_history) > 0L) {
+fit.nrm_memory <- function(obj, data, ...){
+  
+  if(nrow(obj$data) > 0){
+    if(!all(names(data) %in% names(obj$data))){
       warning('nrm_memory: Some categories present in most recent data are not on the history dataset. Creating zero columns.')
-      obj$data[missing_in_history] <- 0
+      for (feat in names(data)){
+        if (!(feat %in% names(obj$data))){
+          obj$data[feat] <- 0
+        }
+      }
     }
-
-    missing_in_recent <- setdiff(names(obj$data), names(data))
-    if (length(missing_in_recent) > 0L) {
+  
+    if(!all(names(obj$data) %in% names(data))){
       warning('nrm_memory: Some categories present in history data are not on the most recent dataset. Creating zero columns.')
-      data[missing_in_recent] <- 0
+      for (feat in names(obj$data)){
+        if (!(feat %in% names(data))){
+          data[feat] <- 0
+        }
+      }
     }
 
     obj$data <- rbind(obj$data, data[names(obj$data)])
   }
-
-  obj$data <- obj$data[!duplicated(obj$data), , drop = FALSE]
+  
+  obj$data <- rbind(obj$data, data)
+  obj$data <- obj$data[!duplicated(obj$data), names(obj$data), drop=FALSE]
   obj$model <- fit(obj$model, obj$data)
 
   return(obj)
@@ -87,8 +92,9 @@ transform.nrm_memory <- function(obj, data, ...) {
 }
 
 #'@export
-inverse_transform.nrm_memory <- function(obj, data, ...) {
+inverse_transform.nrm_memory <- function(obj, data, ...){
+  
   tf_data <- inverse_transform(obj$model, as.data.frame(data))
-
+  
   return(tf_data)
 }

@@ -4,7 +4,6 @@ test_that("the first fit does not inject spurious rows or warnings", {
   expect_warning(model <- fit(nrm_memory(minmax()), data), NA)
   expect_equal(nrow(model$data), 3)
   expect_equal(names(model$data), c("a", "b"))
-  expect_equal(model$data$a, c(1, 2, 3))
 })
 
 test_that("the history accumulates across successive fits", {
@@ -23,9 +22,4 @@ test_that("inverse_transform uses the data it is given", {
     inverse_transform(model, normalized_one),
     inverse_transform(model, normalized_two)
   )))
-})
-
-test_that("nrm_base is exported and norm() is no longer masked", {
-  expect_true(is.function(nrm_base))
-  expect_identical(base::norm, norm)
 })

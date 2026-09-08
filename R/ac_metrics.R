@@ -71,18 +71,15 @@ evaluate.mt_recall <- function(obj, y_pred, y_true, ...) {
 }
 
 #'@title FScore Calculator
-#'@description Class for F-Score calculation. The `f` parameter is the beta of
-#'the F-beta score, so `f = 1` (the default) gives the usual F1 score, values
-#'below 1 weight precision more heavily and values above 1 weight recall more
-#'heavily.
-#'@param f The beta parameter for the F-Score metric
+#'@description Class for FScore calculation
+#'@param f The beta parameter of the F-beta score. `f = 1` (the default) gives the usual F1 score, values below 1 weight precision more heavily and values above 1 weight recall more heavily.
 #'@return Metric object
 #'@examples
 #'library(daltoolbox)
 #'obj <- mt_fscore(f = 1)
 #'evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
 #'@export
-mt_fscore <- function(f = 1) {
+mt_fscore <- function(f=1) {
   if (!is.numeric(f) || (length(f) != 1L) || is.na(f) || (f <= 0)) {
     stop("f must be a single positive numeric value", call. = FALSE)
   }
@@ -93,7 +90,7 @@ mt_fscore <- function(f = 1) {
 }
 
 #'@export
-evaluate.mt_fscore <- function(obj, y_pred, y_true, ...) {
+evaluate.mt_fscore <- function(obj, y_pred, y_true, ...){
   beta <- obj$f
   if (is.null(beta)) {
     beta <- 1

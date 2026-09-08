@@ -10,34 +10,7 @@
 #ECDD implementation: Frouros, https://github.com/IFCA-Advanced-Computing/frouros/blob/acde82386da735ca8e15f85112f48d5cfb10cc9a/frouros/detectors/concept_drift/streaming/statistical_process_control/ecdd.py
 #'@references Ross, G. J., Adams, N. M., Tasoulis, D. K., and Hand, D. J. (2012). Exponentially weighted moving average charts for detecting concept drift. *Pattern Recognition Letters*, 33(2), 191-198. <doi:10.1016/j.patrec.2011.08.019>
 #'@return `dfr_ecdd` object
-#'@examples
-#'library(daltoolbox)
-#'library(heimdall)
-#'
-#'# This example uses an error-based drift detector with a synthetic
-#'# model residual where 1 is an error and 0 is a correct prediction.
-#'
-#'data(st_drift_examples)
-#'data <- st_drift_examples$univariate
-#'data$event <- NULL
-#'data$prediction <- st_drift_examples$univariate$serie > 4
-#'
-#'model <- dfr_ecdd()
-#'
-#'detection <- NULL
-#'output <- list(obj=model, drift=FALSE)
-#'for (i in seq_along(data$prediction)){
-#'  output <- update_state(output$obj, data$prediction[i])
-#'  if (output$drift){
-#'    type <- 'drift'
-#'    output$obj <- reset_state(output$obj)
-#'  }else{
-#'    type <- ''
-#'  }
-#'  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
-#'}
-#'
-#'detection[detection$type == 'drift',]
+#'@example examples/1_detection/r/dfr_ecdd.R
 #'@export
 dfr_ecdd <- function(lambda = 0.2, min_run_instances = 30, average_run_length = 100) {
   .check_probability(lambda, "lambda")
@@ -105,20 +78,26 @@ update_state.dfr_ecdd <- function(obj, value, ...) {
     if (state$Z > (state$p + control_limit * z_variance)) {
       obj$state <- state
       obj$drifted <- TRUE
+      obj$last_drifter_output <- state$Z
+      
       return(list(obj = obj, drift = TRUE))
     } else {
       obj$state <- state
+      obj$last_drifter_output <- state$Z
+      
       return(list(obj = obj, drift = FALSE))
     }
   } else {
     obj$state <- state
+    obj$last_drifter_output <- state$Z
+
     return(list(obj = obj, drift = FALSE))
   }
 }
 
 #'@export
 fit.dfr_ecdd <- function(obj, data, ...) {
-  return(.fit_vector_stream(obj, data))
+  return(.fit_vector_stream(obj, data, output_names = "Z"))
 }
 
 #'@export

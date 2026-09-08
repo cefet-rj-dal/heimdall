@@ -1,6 +1,6 @@
 Package: heimdall
 Title: Drift Adaptable Models
-Version: 1.3.0
+Version: 1.4.0
 Authors@R: 
   c(
     person(given = "Lucas", family = "Tavares", role = c("aut"), email = "lucas.giusti@eic.cefet-rj.br"),
@@ -27,12 +27,12 @@ Roxygen: list(markdown = TRUE)
 Imports: 
   stats,
   utils,
-  graphics,
   caret,
   daltoolbox,
   Metrics,
   pROC
 Suggests:
+  daltoolboxdp,
   reticulate,
   testthat (>= 3.0.0),
   knitr,

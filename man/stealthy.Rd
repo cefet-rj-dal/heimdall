@@ -7,22 +7,22 @@
 stealthy(
   model,
   drift_method,
-  monitored_features = NULL,
   norm_class = daltoolbox::zscore(),
   warmup_size = 100,
   th = 0.5,
   target_uni_drifter = FALSE,
-  incremental_memory = TRUE,
-  verbose = FALSE,
-  reporting = FALSE
+  incremental_memory = FALSE,
+  active_warmup = FALSE,
+  class_balance = "inactive",
+  obsolete_model = "null",
+  reporting = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
 \item{model}{The algorithm object to be used for predictions}
 
 \item{drift_method}{The algorithm object to detect drifts}
-
-\item{monitored_features}{List of features that will be monitored by the drifter}
 
 \item{norm_class}{Class used to perform normalization}
 
@@ -34,9 +34,15 @@ stealthy(
 
 \item{incremental_memory}{If true, the model will retrain with all available data whenever the fit is called. If false, it only retrains when a drift is detected.}
 
-\item{verbose}{if TRUE shows drift messages}
+\item{active_warmup}{If true, the models will be retrained for each batch while the number of rows for the warmup_size is not met.}
 
-\item{reporting}{If TRUE, some data are returned as norm_x_oh, drift_input, hist_proj, and recent_proj.}
+\item{class_balance}{Class balancing strategy. \code{"buffer"} sets a buffer with the last \code{warmup_size/2} rows for each class. \code{"inactive"} does nothing.}
+
+\item{obsolete_model}{Strategy used by \code{predict()} while no model is fitted. One of \code{"null"} (default, returns all \code{FALSE}), \code{"majority"} (majority class classifier) or \code{"last_model"} (keeps using the previous model).}
+
+\item{reporting}{If TRUE, the per-batch drifter inputs and outputs are accumulated in \code{drifter_input} and \code{drifter_output}. Keep it FALSE on long streams, since the accumulated frames grow with the whole history.}
+
+\item{verbose}{if TRUE shows drift messages}
 }
 \value{
 Stealthy object
@@ -45,7 +51,21 @@ Stealthy object
 Ancestor class for drift adaptive models. It wraps a predictive
 model and a drift detector, retraining the model whenever a drift is
 reported.
+<<<<<<< HEAD
+}
+\details{
+The batch is evaluated before the model is updated: error-based
+detectors see prequential residuals, computed with the model as it was at the
+beginning of the call, and the detector is fed the incoming batch exactly
+once per call.
+}
+\examples{
+# See ?dfr_ddm for a drift detector that can be plugged here, and the
+# online prediction walkthroughs at
+# https://github.com/cefet-rj-dal/heimdall/tree/main/examples/2_online_prediction
+=======
 }
 \examples{
 # See ?dfr_ddm for an example of a drift detector that can be plugged here.
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 }

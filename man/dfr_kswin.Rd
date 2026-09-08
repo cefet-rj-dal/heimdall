@@ -9,6 +9,10 @@ dfr_kswin(
   window_size = 1500,
   stat_size = 500,
   alpha = 1e-07,
+<<<<<<< HEAD
+  window_type = "sliding",
+=======
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
   monitoring_step = 1,
   exact = TRUE,
   data = NULL
@@ -17,17 +21,25 @@ dfr_kswin(
 \arguments{
 \item{target_feat}{Feature to be monitored.}
 
-\item{window_size}{Size of the sliding window (must be > 2*stat_size)}
+\item{window_size}{Size of the window (must be greater than stat_size)}
 
 \item{stat_size}{Size of the statistic window}
 
 \item{alpha}{Probability for the test statistic of the Kolmogorov-Smirnov-Test The alpha parameter is very sensitive, therefore should be set below 0.01.}
 
+<<<<<<< HEAD
+\item{window_type}{Window policy. \code{"sliding"} (default) keeps at most \code{window_size} observations, so both the reference and the statistic halves move with the stream. \code{"anchored"} keeps every observation, which pins the reference sample to the beginning of the stream and makes memory grow with the stream length.}
+
+\item{monitoring_step}{Number of observations between two consecutive tests. The default (\code{1}) tests at every observation; larger values reduce the computational cost on long streams.}
+
+\item{exact}{Passed to \code{\link[stats:ks.test]{stats::ks.test()}}. The default (\code{TRUE}) preserves the behaviour of previous versions; setting it to \code{NULL} lets R choose, which is considerably faster for the default window sizes.}
+=======
 \item{monitoring_step}{Number of observations between two consecutive tests. The default (\code{1}) tests at every observation; larger values reduce the computational cost on long streams.}
 
 \item{exact}{Passed to \code{\link[stats:ks.test]{stats::ks.test()}}. The default (\code{TRUE}) preserves the
 behaviour of previous versions; setting it to \code{NULL} lets R choose, which is
 considerably faster for the default window sizes.}
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 
 \item{data}{Already collected data to avoid cold start.}
 }
@@ -38,6 +50,15 @@ considerably faster for the default window sizes.}
 KSWIN applies a Kolmogorov-Smirnov test between a recent window and a reference sample drawn from older observations. In this package, the method is primarily used for \strong{virtual concept drift}, because it monitors distributional changes in a numeric feature stream. The method follows Raab et al. (2020) \url{doi:10.1016/j.neucom.2019.11.111}.
 }
 \details{
+<<<<<<< HEAD
+The reference window is randomly subsampled to \code{stat_size}
+observations, so results depend on the state of the random number generator.
+Call \code{\link[base:set.seed]{base::set.seed()}} before the stream loop if reproducibility is required.
+
+A drift requires both a significant p-value and a KS statistic above
+\code{sqrt(-log(alpha) / stat_size)}, as defined by Raab et al. Missing
+observations are skipped instead of being imputed.
+=======
 The reference window is randomly subsampled, so results depend on the
 state of the random number generator. Call \code{\link[base:set.seed]{base::set.seed()}} before the stream loop
 if reproducibility is required.
@@ -46,22 +67,45 @@ Missing observations are skipped instead of being imputed. When a drift is
 reported the window is trimmed to its most recent \code{stat_size} observations,
 and \code{reset_state()} preserves that window so the detector does not restart
 cold.
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 }
 \examples{
-library(daltoolbox)
+# Load Heimdall and the synthetic univariate stream.
 library(heimdall)
 
+<<<<<<< HEAD
+# Fix the seed for reproducibility.
+seed <- 1
+set.seed(seed)
+=======
 # This example assumes a model residual where 1 is an error and 0 is a
 # correct prediction.
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 
+# Load the numeric stream used by the detector.
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
+serie <- st_drift_examples$uv_virtual_drift
 
-model <- dfr_kswin(target_feat='serie')
+# Plot the monitored variable before detection.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
 
+# Instantiate KSWIN with explicit window parameters.
+model <- dfr_kswin(target_feat='serie', window_size=100, stat_size=50)
+
+# Update the detector sequentially and store the alarm positions.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
+<<<<<<< HEAD
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie$serie[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+=======
 for (i in seq_along(data$serie)){
  output <- update_state(output$obj, data$serie[i])
  if (output$drift){
@@ -71,9 +115,17 @@ for (i in seq_along(data$serie)){
    type <- ''
  }
  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 }
 
+# Print the points where KSWIN raised drift alarms.
 detection[detection$type == 'drift',]
+
+# Overlay the detected drifts on the original stream.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
 }
 \references{
 Raab, C., Heusinger, M., and Schleif, F.-M. (2020). Reactive soft prototype computing for concept drift streams. \emph{Neurocomputing}, 416, 340-351. \url{doi:10.1016/j.neucom.2019.11.111}

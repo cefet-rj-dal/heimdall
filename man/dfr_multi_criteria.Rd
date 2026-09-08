@@ -10,11 +10,19 @@ dfr_multi_criteria(drifter_list, combination = "or", fuzzy_window = 10)
 \item{drifter_list}{Named list of drifters to combine. Every element must
 inherit from either \code{dist_based} or \code{mv_dist_based}.}
 
+<<<<<<< HEAD
+\item{combination}{How the drifters will be combined. One of \code{"or"}
+(default), \code{"and"} or \code{"fuzzy"}.}
+
+\item{fuzzy_window}{Sets the fuzzy window size. Only used when
+\code{combination = "fuzzy"}.}
+=======
 \item{combination}{How the drifters will be combined. One of \code{'or'}
 (default), \code{'and'} or \code{'fuzzy'}.}
 
 \item{fuzzy_window}{Sets the fuzzy window size. Only used when
 \code{combination = 'fuzzy'}.}
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 }
 \value{
 Drifter object
@@ -24,9 +32,15 @@ Combines the output of several drift detectors into a single
 decision.
 }
 \note{
+<<<<<<< HEAD
+The \code{"fuzzy"} combination rebuilds the whole membership matrix on every
+update, so its cost grows quadratically with the length of the stream. Prefer
+\code{"or"} or \code{"and"} for long streams.
+=======
 The \code{'fuzzy'} combination rebuilds the whole membership matrix on every
 update, so its cost grows quadratically with the length of the stream. Prefer
 \code{'or'} or \code{'and'} for long streams.
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 }
 \examples{
 library(daltoolbox)
@@ -40,7 +54,11 @@ model <- dfr_multi_criteria(
    ph = dfr_page_hinkley(),
    ph_sensitive = dfr_page_hinkley(threshold = 10)
  ),
+<<<<<<< HEAD
+ combination = "or"
+=======
  combination = 'or'
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 )
 
 model <- fit(model, data)

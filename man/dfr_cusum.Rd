@@ -19,21 +19,43 @@ CUSUM is a sequential analysis procedure that accumulates deviations in a monito
 Missing values are treated as correct predictions (\code{0}).
 }
 \examples{
-library(daltoolbox)
+# Load Heimdall and the synthetic benchmark stream.
 library(heimdall)
 
+<<<<<<< HEAD
+# Fix the seed for reproducibility.
+seed <- 1
+set.seed(seed)
+=======
 # This example uses an error-based drift detector with a synthetic
 # model residual where 1 is an error and 0 is a correct prediction.
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 
+# Load the stream and derive a simple binary error-like signal.
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
-data$prediction <- st_drift_examples$univariate$serie > 4
+data <- st_drift_examples$uv_virtual_drift
+data$prediction <- st_drift_examples$uv_virtual_drift$serie > 4
 
+# Plot the binary monitored stream used by CUSUM.
+plot(x=seq_len(nrow(data)), y=data$prediction)
+
+# Instantiate the CUSUM detector.
 model <- dfr_cusum()
 
+# Update the detector sequentially over the binary stream.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
+<<<<<<< HEAD
+for (i in seq_len(nrow(data))){
+  output <- update_state(output$obj, data$prediction[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+=======
 for (i in seq_along(data$prediction)){
  output <- update_state(output$obj, data$prediction[i])
  if (output$drift){
@@ -43,9 +65,17 @@ for (i in seq_along(data$prediction)){
    type <- ''
  }
  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+>>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 }
 
+# Print the drift alarms produced by the detector.
 detection[detection$type == 'drift',]
+
+# Map the drift alarms back onto the original numeric series.
+plot(x=seq_len(nrow(data)), y=data$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
 }
 \references{
 Muthukrishnan, S., Berg, E., and Wu, Y. (2007). Sequential change detection on data streams. In \emph{Seventh IEEE International Conference on Data Mining Workshops (ICDMW 2007)}. \url{doi:10.1109/ICDMW.2007.89}

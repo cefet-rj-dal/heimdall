@@ -8,7 +8,9 @@
 #'**in that call**;
 #'\item `obj$drifted` is sticky: it stays `TRUE` after the first detection
 #'until `reset_state()` is called;
-#'\item `reset_state(obj)` returns the detector to its initial state.
+#'\item `reset_state(obj)` returns the detector to its initial state;
+#'\item `obj$drifter_output` holds the per-observation diagnostics produced by
+#'the last call to `fit()`.
 #'}
 #'@return Drifter object
 #'@examples
@@ -20,10 +22,11 @@ drifter <- function() {
   obj <- dal_base()
   obj$drifted <- FALSE
   obj$state <- list()
+  obj$last_drifter_output <- NULL
+  obj$drifter_output <- NULL
   class(obj) <- append("drifter", class(obj))
   return(obj)
 }
-
 
 #'@title Reset State
 #'@description Reset Drifter State
@@ -58,6 +61,8 @@ update_state <- function(obj, value, ...) {
 reset_state.drifter <- function(obj) {
   obj$drifted <- FALSE
   obj$state <- list()
+  obj$last_drifter_output <- NULL
+  obj$drifter_output <- NULL
   return(obj)
 }
 
@@ -70,7 +75,7 @@ update_state.drifter <- function(obj, value, ...) {
 #'@description Process Batch
 #'@param obj Drifter object
 #'@param data data batch in data frame format
-#'@param prediction prediction batch as vector format. Optional, and unused by
+#'@param prediction prediction batch as vector format. Optional and unused by
 #'the default method; it is kept for compatibility with detectors that need the
 #'model output.
 #'@param ... optional arguments
@@ -85,11 +90,23 @@ fit.drifter <- function(obj, data, prediction = NULL, ...) {
   return(obj)
 }
 
-# Basic dummy detectors
+#'@title Dummy Drifter sub-class
+#'@description Ancestor class for the baseline detectors that ignore the
+#'monitored signal, `dfr_inactive()` and `dfr_passive()`.
+#'@return Drifter object
+#'@examples
+#'obj <- dummy()
+#'class(obj)
+#'@export
+dummy <- function() {
+  obj <- drifter()
+  class(obj) <- append('dummy', class(obj))
+  return(obj)
+}
 
 #'@title Inactive dummy detector
 #'@description Implements a dummy detector that never reports a drift. Useful
-#'as a baseline when evaluating adaptation strategies.
+#'as a lower baseline when evaluating adaptation strategies.
 #'@return Drifter object
 #'@examples
 #'model <- dfr_inactive()
@@ -97,7 +114,7 @@ fit.drifter <- function(obj, data, prediction = NULL, ...) {
 #'output$drift
 #'@export
 dfr_inactive <- function() {
-  obj <- drifter()
+  obj <- dummy()
   obj$state <- list()
 
   obj$drifted <- FALSE
@@ -106,8 +123,24 @@ dfr_inactive <- function() {
 }
 
 #'@export
+update_state.dfr_inactive <- function(obj, value, ...) {
+  obj$last_drifter_output <- NA
+  return(list(obj = obj, drift = FALSE))
+}
+
+#'@export
+fit.dfr_inactive <- function(obj, data, ...) {
+  if (is.data.frame(data) || is.matrix(data)) {
+    return(.fit_row_stream(obj, data))
+  }
+  return(.fit_vector_stream(obj, data))
+}
+
+#'@export
 reset_state.dfr_inactive <- function(obj) {
   obj$drifted <- FALSE
+  obj$last_drifter_output <- NULL
+  obj$drifter_output <- NULL
   return(obj)
 }
 
@@ -122,17 +155,35 @@ reset_state.dfr_inactive <- function(obj) {
 #'output$drift
 #'@export
 dfr_passive <- function() {
-  obj <- drifter()
+  obj <- dummy()
   obj$state <- list()
 
-  obj$drifted <- TRUE
+  obj$drifted <- FALSE
+  
   class(obj) <- append('dfr_passive', class(obj))
   return(obj)
 }
 
 #'@export
-reset_state.dfr_passive <- function(obj) {
+update_state.dfr_passive <- function(obj, value, ...) {
+  obj$last_drifter_output <- NA
   obj$drifted <- TRUE
+  return(list(obj = obj, drift = TRUE))
+}
+
+#'@export
+fit.dfr_passive <- function(obj, data, ...) {
+  if (is.data.frame(data) || is.matrix(data)) {
+    return(.fit_row_stream(obj, data))
+  }
+  return(.fit_vector_stream(obj, data))
+}
+
+#'@export
+reset_state.dfr_passive <- function(obj) {
+  obj$drifted <- FALSE
+  obj$last_drifter_output <- NULL
+  obj$drifter_output <- NULL
   return(obj)
 }
 
@@ -154,8 +205,8 @@ error_based <- function() {
 
 #'@title Distribution Based Drifter sub-class
 #'@description Implements univariate Distribution Based drift detectors. These
-#'detectors monitor a single numeric feature; observations that are missing are
-#'skipped instead of being imputed.
+#'detectors monitor a single numeric feature; missing observations are skipped
+#'instead of being imputed.
 #'@param target_feat Feature to be monitored.
 #'@return Drifter object
 #'@examples
@@ -187,14 +238,14 @@ mv_dist_based <- function() {
 #'decision.
 #'@param drifter_list Named list of drifters to combine. Every element must
 #'inherit from either `dist_based` or `mv_dist_based`.
-#'@param combination How the drifters will be combined. One of `'or'`
-#'(default), `'and'` or `'fuzzy'`.
+#'@param combination How the drifters will be combined. One of `"or"`
+#'(default), `"and"` or `"fuzzy"`.
 #'@param fuzzy_window Sets the fuzzy window size. Only used when
-#'`combination = 'fuzzy'`.
+#'`combination = "fuzzy"`.
 #'@return Drifter object
-#'@note The `'fuzzy'` combination rebuilds the whole membership matrix on every
+#'@note The `"fuzzy"` combination rebuilds the whole membership matrix on every
 #'update, so its cost grows quadratically with the length of the stream. Prefer
-#'`'or'` or `'and'` for long streams.
+#'`"or"` or `"and"` for long streams.
 #'@examples
 #'library(daltoolbox)
 #'library(heimdall)
@@ -207,7 +258,7 @@ mv_dist_based <- function() {
 #'    ph = dfr_page_hinkley(),
 #'    ph_sensitive = dfr_page_hinkley(threshold = 10)
 #'  ),
-#'  combination = 'or'
+#'  combination = "or"
 #')
 #'
 #'model <- fit(model, data)
@@ -283,6 +334,7 @@ update_state.multi_criteria <- function(obj, value, ...) {
     state$row_data <- cbind(state$row_data, drifter_output$drift)
   }
   obj$drifts <- rbind(obj$drifts, state$row_data)
+  obj$last_drifter_output <- state$row_data
 
   has_drift <- FALSE
   if (obj$combination == 'or') {
@@ -313,7 +365,7 @@ update_state.multi_criteria <- function(obj, value, ...) {
 
 #'@export
 fit.multi_criteria <- function(obj, data, ...) {
-  return(.fit_row_stream(obj, data))
+  return(.fit_row_stream(obj, data, output_names = names(obj$drifter_list)))
 }
 
 #'@export
