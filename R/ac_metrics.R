@@ -5,7 +5,6 @@
 #'obj <- metric()
 #'class(obj)
 #'@import daltoolbox
-#'@importFrom Metrics precision recall
 #'@export
 metric <- function() {
   obj <- dal_base()
@@ -14,7 +13,9 @@ metric <- function() {
 }
 
 #'@title Accuracy Calculator
-#'@description Class for accuracy calculation
+#'@description Class for accuracy calculation. Binary labels (logical, 0/1 or
+#'factors with those labels) are compared by value; other labels are compared
+#'as text.
 #'@return Metric object
 #'@examples
 #'library(daltoolbox)
@@ -29,7 +30,15 @@ mt_accuracy <- function() {
 
 #'@export
 evaluate.mt_accuracy <- function(obj, y_pred, y_true, ...) {
-  return(mean(y_pred == y_true, na.rm = TRUE))
+  .check_same_length(y_pred, y_true)
+  labels <- tryCatch(
+    list(pred = .as_binary(y_pred, "y_pred"), true = .as_binary(y_true, "y_true")),
+    error = function(e) NULL
+  )
+  if (is.null(labels)) {
+    labels <- list(pred = as.character(unlist(y_pred)), true = as.character(unlist(y_true)))
+  }
+  return(mean(labels$pred == labels$true, na.rm = TRUE))
 }
 
 #'@title Precision Calculator
@@ -48,7 +57,8 @@ mt_precision <- function() {
 
 #'@export
 evaluate.mt_precision <- function(obj, y_pred, y_true, ...) {
-  return(Metrics::precision(y_true, y_pred))
+  .check_same_length(y_pred, y_true)
+  return(.precision(y_true, y_pred))
 }
 
 #'@title Recall Calculator
@@ -67,7 +77,8 @@ mt_recall <- function() {
 
 #'@export
 evaluate.mt_recall <- function(obj, y_pred, y_true, ...) {
-  return(Metrics::recall(y_true, y_pred))
+  .check_same_length(y_pred, y_true)
+  return(.recall(y_true, y_pred))
 }
 
 #'@title FScore Calculator
@@ -129,22 +140,29 @@ mt_rocauc <- function() {
 #'@importFrom pROC auc
 #'@export
 evaluate.mt_rocauc <- function(obj, y_pred, y_true, ...) {
-  y_pred[is.na(y_pred)] <- FALSE
+  .check_same_length(y_pred, y_true)
 
-  pred_values <- unlist(y_pred, use.names = FALSE)
+  pred_values <- as.numeric(unlist(y_pred, use.names = FALSE))
   true_values <- unlist(y_true, use.names = FALSE)
+
+  missing <- is.na(pred_values) | is.na(true_values)
+  if (any(missing)) {
+    warning(sprintf('mt_rocauc: %d observations with missing values were removed.', sum(missing)))
+    pred_values <- pred_values[!missing]
+    true_values <- true_values[!missing]
+  }
 
   if ((length(unique(true_values)) < 2) || (length(unique(pred_values)) < 2)) {
     warning('mt_rocauc: ROC AUC is undefined when the observed or the predicted values are constant. Returning NA.')
     return(NA_real_)
   }
 
-  lv <- levels(y_true)
+  lv <- levels(true_values)
   if (is.null(lv)) {
     lv <- levels(as.factor(true_values))
   }
 
-  rocauc <- pROC::auc(pROC::roc(y_true, y_pred, levels = lv, direction = '<', quiet = TRUE))
+  rocauc <- pROC::auc(pROC::roc(true_values, pred_values, levels = lv, direction = '<', quiet = TRUE))
 
   return(as.numeric(rocauc))
 }

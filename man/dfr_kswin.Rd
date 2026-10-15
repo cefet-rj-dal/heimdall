@@ -6,18 +6,20 @@
 \usage{
 dfr_kswin(
   target_feat = NULL,
-  window_size = 1500,
-  stat_size = 500,
-  alpha = 1e-07,
+  window_size = 300,
+  stat_size = 100,
+  alpha = 1e-04,
   monitoring_step = 1,
-  exact = TRUE,
+  exact = NULL,
   data = NULL
 )
 }
 \arguments{
 \item{target_feat}{Feature to be monitored.}
 
-\item{window_size}{Size of the sliding window (must be > 2*stat_size)}
+\item{window_size}{Size of the sliding window. It must be greater than
+\code{stat_size}, and at least \code{2 * stat_size} is recommended so that the
+reference sample is as large as the recent one.}
 
 \item{stat_size}{Size of the statistic window}
 
@@ -25,9 +27,9 @@ dfr_kswin(
 
 \item{monitoring_step}{Number of observations between two consecutive tests. The default (\code{1}) tests at every observation; larger values reduce the computational cost on long streams.}
 
-\item{exact}{Passed to \code{\link[stats:ks.test]{stats::ks.test()}}. The default (\code{TRUE}) preserves the
-behaviour of previous versions; setting it to \code{NULL} lets R choose, which is
-considerably faster for the default window sizes.}
+\item{exact}{Passed to \code{\link[stats:ks.test]{stats::ks.test()}}. The default (\code{NULL}) lets R choose
+between the exact and the asymptotic test, which is much faster for windows of
+this size. Up to version 1.3.0 the default was \code{TRUE}.}
 
 \item{data}{Already collected data to avoid cold start.}
 }

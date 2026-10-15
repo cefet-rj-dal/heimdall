@@ -17,7 +17,7 @@ nrm_base <- function(norm_class) {
   obj$model <- norm_class
   obj$data <- NULL
 
-  attr(obj, 'class') <- 'norm'
+  class(obj) <- append("norm", class(obj))
   return(obj)
 }
 
@@ -62,7 +62,6 @@ fit.nrm_memory <- function(obj, data, ...) {
     obj$data <- rbind(obj$data, data[names(obj$data)])
   }
 
-  obj$data <- obj$data[!duplicated(obj$data), , drop = FALSE]
   obj$model <- fit(obj$model, obj$data)
 
   return(obj)

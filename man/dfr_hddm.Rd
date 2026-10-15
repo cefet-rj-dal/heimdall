@@ -24,7 +24,10 @@ dfr_hddm(
 HDDM_A is a sequential detector based on Hoeffding's inequality that tests whether the mean of the monitored error stream has increased beyond statistically expected fluctuations. Because this implementation is error-based, it is primarily targeted at \strong{real concept drift}. The theoretical basis follows Frias-Blanco et al. (2015) \url{doi:10.1109/TKDE.2014.2345382}.
 }
 \details{
-Missing values are treated as correct predictions (\code{0}).
+The detector reports increases of the error rate. With
+\code{two_side_option = TRUE}, a significant decrease restarts the statistics but
+is not reported as a drift. Values must be \code{1} (error) or \code{0} (correct
+prediction), and missing values are treated as correct predictions (\code{0}).
 }
 \examples{
 library(daltoolbox)

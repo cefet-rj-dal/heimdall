@@ -6,8 +6,8 @@
 \usage{
 dfr_mcdd(
   target_feat = NULL,
-  alpha = 1e-08,
-  window_size = 1500,
+  alpha = 1e-04,
+  window_size = 300,
   monitoring_step = 1,
   data = NULL
 )
@@ -30,6 +30,10 @@ dfr_mcdd(
 MCDD is a window-based detector that compares the location of reference and recent samples by means of hypothesis tests on their central tendency. Because it monitors the distribution of observed features rather than predictive errors, it is primarily intended for \strong{virtual concept drift}. In this package, the detector follows the statistical-testing perspective adopted by Giusti et al. (2021) for drift analysis.
 }
 \details{
+MCDD only reacts to changes of location (mean or median); a change of
+spread with the same centre is not detected, so combine it with \code{\link[=dfr_lbdd]{dfr_lbdd()}}
+when both kinds of change matter.
+
 Normality of both halves of the window is checked with
 \code{\link[stats:shapiro.test]{stats::shapiro.test()}}; when it holds, a t-test is applied, otherwise a
 Wilcoxon rank-sum test is used. Shapiro-Wilk is only defined for samples of at

@@ -28,20 +28,13 @@ Imports:
   stats,
   utils,
   graphics,
-  caret,
   daltoolbox,
-  Metrics,
   pROC
 Suggests:
-  reticulate,
+  daltoolboxdp,
   testthat (>= 3.0.0),
   knitr,
   rmarkdown
+VignetteBuilder: knitr
 Config/testthat/edition: 3
-Config/reticulate:
-  list(
-    packages = list(
-      list(package = "numpy")
-    )
-  )
 Config/roxygen2/version: 8.1.0

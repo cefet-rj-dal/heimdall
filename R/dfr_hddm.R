@@ -3,7 +3,10 @@
 #'@param drift_confidence Confidence to the drift
 #'@param warning_confidence Confidence to the warning
 #'@param two_side_option Option to monitor error increments and decrements (two-sided) or only increments (one-sided)
-#'@details Missing values are treated as correct predictions (`0`).
+#'@details The detector reports increases of the error rate. With
+#'`two_side_option = TRUE`, a significant decrease restarts the statistics but
+#'is not reported as a drift. Values must be `1` (error) or `0` (correct
+#'prediction), and missing values are treated as correct predictions (`0`).
 #HDDM: Frias-Blanco I, del Campo-Avila J, Ramos-Jimenez G, et al. Online and non-parametric drift detection methods based on Hoeffding's bounds. IEEE Transactions on Knowledge and Data Engineering, 2014, 27(3): 810-823.
 #HDDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/hddm_a.py#L6
 #'@references Frias-Blanco, I., del Campo-Avila, J., Ramos-Jimenez, G., Morales-Bueno, R., Ortiz-Diaz, A., and Caballero-Mota, Y. (2015). Online and nonparametric drift detection methods based on Hoeffding's bounds. *IEEE Transactions on Knowledge and Data Engineering*, 27(3), 810-823. <doi:10.1109/TKDE.2014.2345382>
@@ -96,10 +99,7 @@ dfr_hddm <- function(drift_confidence = 0.001, warning_confidence = 0.005, two_s
 
 #'@export
 update_state.dfr_hddm <- function(obj, value, ...) {
-  value <- .as_scalar(value)
-  if (is.na(value)) {
-    value <- 0
-  }
+  value <- .as_error(value)
 
   state <- obj$state
   has_drift <- FALSE
@@ -118,7 +118,7 @@ update_state.dfr_hddm <- function(obj, value, ...) {
   cota <- sqrt(1.0 / (2 * state$n_min) * log(1.0 / state$drift_confidence))
   cota1 <- sqrt(1.0 / (2 * state$total_n) * log(1.0 / state$drift_confidence))
 
-  if ((state$c_min / (state$n_min + cota)) >= (state$total_c / (state$total_n + cota1))) {
+  if (((state$c_min / state$n_min) + cota) >= ((state$total_c / state$total_n) + cota1)) {
     state$c_min <- state$total_c
     state$n_min <- state$total_n
   }

@@ -5,7 +5,11 @@
 #'@param window_size Size of the sliding window
 #'@param monitoring_step Number of observations between two consecutive tests. The default (`1`) tests at every observation; larger values reduce the computational cost on long streams.
 #'@param data Already collected data to avoid cold start.
-#'@details Normality of both halves of the window is checked with
+#'@details MCDD only reacts to changes of location (mean or median); a change of
+#'spread with the same centre is not detected, so combine it with [dfr_lbdd()]
+#'when both kinds of change matter.
+#'
+#'Normality of both halves of the window is checked with
 #'[stats::shapiro.test()]; when it holds, a t-test is applied, otherwise a
 #'Wilcoxon rank-sum test is used. Shapiro-Wilk is only defined for samples of at
 #'most 5000 observations, so larger windows always fall back to the
@@ -47,7 +51,7 @@
 #'
 #'detection[detection$type == 'drift',]
 #'@export
-dfr_mcdd <- function(target_feat = NULL, alpha = 1e-08, window_size = 1500, monitoring_step = 1, data = NULL) {
+dfr_mcdd <- function(target_feat = NULL, alpha = 1e-04, window_size = 300, monitoring_step = 1, data = NULL) {
   .check_probability(alpha, "alpha")
   .check_positive_integer(window_size, "window_size", min_value = 2L)
   .check_positive_integer(monitoring_step, "monitoring_step", min_value = 1L)
@@ -61,11 +65,7 @@ dfr_mcdd <- function(target_feat = NULL, alpha = 1e-08, window_size = 1500, moni
   state$n <- 0
   state$p_value <- NA_real_
 
-  if (is.null(data)) {
-    state$window <- numeric(0)
-  } else {
-    state$window <- as.numeric(data)
-  }
+  state$window <- .initial_window(data, window_size)
 
   obj$state <- state
 
@@ -78,7 +78,7 @@ update_state.dfr_mcdd <- function(obj, value, ...) {
   state <- obj$state
 
   state$n <- state$n + 1
-  value <- .as_scalar(value)
+  value <- .as_scalar(value, obj$target_feat)
   if (is.na(value)) {
     obj$state <- state
     return(list(obj = obj, drift = FALSE))

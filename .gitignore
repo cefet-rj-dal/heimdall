@@ -6,3 +6,7 @@
 docs
 inst/doc
 ./develop/data/xrays
+/doc/
+/Meta/
+vignettes/*.html
+vignettes/*.R

@@ -5,6 +5,8 @@
 #'@param delta The delta factor for the Page Hinkley test
 #'@param threshold The change detection threshold (lambda)
 #'@param alpha The forgetting factor, used to weight the observed value and the mean
+#'@param direction Which changes of the mean are detected: `"increase"` (the
+#'default, as in the reference implementation), `"decrease"` or `"both"`.
 #'@details Missing observations are skipped instead of being imputed.
 #Page Hinkley detection: E. S. Page. (1954) Continuous Inspection Schemes, Biometrika 41(1/2), 100-115.
 #Page Hinkley detection implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/page_hinkley.py#L4
@@ -38,47 +40,55 @@
 #'
 #'detection[detection$type == 'drift',]
 #'@export
-dfr_page_hinkley <- function(target_feat = NULL, min_instances = 30, delta = 0.005, threshold = 50, alpha = 1 - 1e-04) {
+dfr_page_hinkley <- function(target_feat = NULL, min_instances = 30, delta = 0.005, threshold = 50, alpha = 1 - 1e-04, direction = "increase") {
   .check_positive_integer(min_instances, "min_instances", min_value = 1L)
-  .check_positive_integer(threshold, "threshold", min_value = 0L)
+  .check_number(threshold, "threshold", min_value = 0)
   .check_probability(alpha, "alpha")
-  if (!is.numeric(delta) || (length(delta) != 1L) || is.na(delta)) {
-    stop("delta must be a single numeric value", call. = FALSE)
-  }
+  .check_number(delta, "delta")
+  direction <- match.arg(direction, c("increase", "decrease", "both"))
 
   obj <- dist_based(target_feat = target_feat)
 
-  state <- list()
-  state$min_instances <- min_instances
-  state$delta <- delta
-  state$threshold <- threshold
-  state$alpha <- alpha
-  state$x_mean <- 0
-  state$sum <- 0
-  state$min_sum <- 0
-  state$sample_count <- 1
-
-  obj$state <- state
-
+  obj$state <- .page_hinkley_state(min_instances, delta, threshold, alpha, direction)
   obj$drifted <- FALSE
 
   class(obj) <- append("dfr_page_hinkley", class(obj))
   return(obj)
 }
 
+# `sum_up` accumulates deviations above the running mean and `sum_down`
+# deviations below it; each one is compared with its own running minimum.
+#' @noRd
+.page_hinkley_state <- function(min_instances, delta, threshold, alpha, direction) {
+  list(
+    min_instances = min_instances,
+    delta = delta,
+    threshold = threshold,
+    alpha = alpha,
+    direction = direction,
+    x_mean = 0,
+    sum_up = 0,
+    min_sum_up = 0,
+    sum_down = 0,
+    min_sum_down = 0,
+    sample_count = 1
+  )
+}
+
 #'@export
 update_state.dfr_page_hinkley <- function(obj, value, ...) {
   state <- obj$state
 
-  value <- .as_scalar(value)
+  value <- .as_scalar(value, obj$target_feat)
   if (is.na(value)) {
-    obj$state <- state
     return(list(obj = obj, drift = FALSE))
   }
 
   state$x_mean <- state$x_mean + (value - state$x_mean) / state$sample_count
-  state$sum <- state$alpha * state$sum + (value - state$x_mean - state$delta)
-  state$min_sum <- min(state$min_sum, state$sum)
+  state$sum_up <- state$alpha * state$sum_up + (value - state$x_mean - state$delta)
+  state$min_sum_up <- min(state$min_sum_up, state$sum_up)
+  state$sum_down <- state$alpha * state$sum_down + (state$x_mean - value - state$delta)
+  state$min_sum_down <- min(state$min_sum_down, state$sum_down)
   state$sample_count <- state$sample_count + 1
 
   if (state$sample_count < state$min_instances) {
@@ -86,14 +96,13 @@ update_state.dfr_page_hinkley <- function(obj, value, ...) {
     return(list(obj = obj, drift = FALSE))
   }
 
-  if ((state$sum - state$min_sum) > state$threshold) {
-    state$x_mean <- 0
-    state$sum <- 0
-    state$min_sum <- 0
-    state$sample_count <- 1
+  up <- (state$sum_up - state$min_sum_up) > state$threshold
+  down <- (state$sum_down - state$min_sum_down) > state$threshold
+  has_drift <- switch(state$direction, increase = up, decrease = down, both = up || down)
 
+  if (has_drift) {
+    obj$state <- .page_hinkley_state(state$min_instances, state$delta, state$threshold, state$alpha, state$direction)
     obj$drifted <- TRUE
-    obj$state <- state
     return(list(obj = obj, drift = TRUE))
   }
 
@@ -109,12 +118,7 @@ fit.dfr_page_hinkley <- function(obj, data, ...) {
 #'@export
 reset_state.dfr_page_hinkley <- function(obj) {
   obj$drifted <- FALSE
-  obj$state <- dfr_page_hinkley(
-    target_feat = obj$target_feat,
-    min_instances = obj$state$min_instances,
-    delta = obj$state$delta,
-    threshold = obj$state$threshold,
-    alpha = obj$state$alpha
-  )$state
+  state <- obj$state
+  obj$state <- .page_hinkley_state(state$min_instances, state$delta, state$threshold, state$alpha, state$direction)
   return(obj)
 }

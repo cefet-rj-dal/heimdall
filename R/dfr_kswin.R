@@ -2,12 +2,14 @@
 #'@description KSWIN applies a Kolmogorov-Smirnov test between a recent window and a reference sample drawn from older observations. In this package, the method is primarily used for **virtual concept drift**, because it monitors distributional changes in a numeric feature stream. The method follows Raab et al. (2020) <doi:10.1016/j.neucom.2019.11.111>.
 #'@param target_feat Feature to be monitored.
 #'@param alpha Probability for the test statistic of the Kolmogorov-Smirnov-Test The alpha parameter is very sensitive, therefore should be set below 0.01.
-#'@param window_size Size of the sliding window (must be > 2*stat_size)
+#'@param window_size Size of the sliding window. It must be greater than
+#'`stat_size`, and at least `2 * stat_size` is recommended so that the
+#'reference sample is as large as the recent one.
 #'@param stat_size Size of the statistic window
 #'@param monitoring_step Number of observations between two consecutive tests. The default (`1`) tests at every observation; larger values reduce the computational cost on long streams.
-#'@param exact Passed to [stats::ks.test()]. The default (`TRUE`) preserves the
-#'behaviour of previous versions; setting it to `NULL` lets R choose, which is
-#'considerably faster for the default window sizes.
+#'@param exact Passed to [stats::ks.test()]. The default (`NULL`) lets R choose
+#'between the exact and the asymptotic test, which is much faster for windows of
+#'this size. Up to version 1.3.0 the default was `TRUE`.
 #'@param data Already collected data to avoid cold start.
 #'@details The reference window is randomly subsampled, so results depend on the
 #'state of the random number generator. Call [base::set.seed()] before the stream loop
@@ -51,12 +53,12 @@
 #'
 #'detection[detection$type == 'drift',]
 #'@export
-dfr_kswin <- function(target_feat = NULL, window_size = 1500, stat_size = 500, alpha = 1e-07, monitoring_step = 1, exact = TRUE, data = NULL) {
+dfr_kswin <- function(target_feat = NULL, window_size = 300, stat_size = 100, alpha = 1e-04, monitoring_step = 1, exact = NULL, data = NULL) {
   .check_probability(alpha, "alpha")
   .check_positive_integer(window_size, "window_size", min_value = 2L)
   .check_positive_integer(stat_size, "stat_size", min_value = 1L)
   .check_positive_integer(monitoring_step, "monitoring_step", min_value = 1L)
-  if (window_size < stat_size) {
+  if (window_size <= stat_size) {
     stop("stat_size must be smaller than window_size", call. = FALSE)
   }
 
@@ -71,11 +73,7 @@ dfr_kswin <- function(target_feat = NULL, window_size = 1500, stat_size = 500, a
   state$p_value <- NA_real_
   state$n <- 0
 
-  if (is.null(data)) {
-    state$window <- numeric(0)
-  } else {
-    state$window <- as.numeric(data)
-  }
+  state$window <- .initial_window(data, window_size)
 
   obj$state <- state
 
@@ -88,7 +86,7 @@ update_state.dfr_kswin <- function(obj, value, ...) {
   state <- obj$state
 
   state$n <- state$n + 1
-  value <- .as_scalar(value)
+  value <- .as_scalar(value, obj$target_feat)
   if (is.na(value)) {
     obj$state <- state
     return(list(obj = obj, drift = FALSE))

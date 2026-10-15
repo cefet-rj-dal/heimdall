@@ -22,7 +22,11 @@ stealthy(
 
 \item{drift_method}{The algorithm object to detect drifts}
 
-\item{monitored_features}{List of features that will be monitored by the drifter}
+\item{monitored_features}{Names of the columns of \code{x} given to the drifter
+when it is a multivariate drifter, a multi-criteria drifter or a univariate
+distribution-based drifter without \code{target_feat} (which receives the row mean
+of the monitored columns). \code{NULL} (the default) monitors every feature.
+Error-based drifters and drifters with a \code{target_feat} are not affected.}
 
 \item{norm_class}{Class used to perform normalization}
 
@@ -30,7 +34,7 @@ stealthy(
 
 \item{th}{The threshold to be used with classification algorithms}
 
-\item{target_uni_drifter}{Passes the prediction target to the drifts as the target feat when the drifter is univariate and dist_based.}
+\item{target_uni_drifter}{Passes the prediction target to the drifts as the target feat when the drifter is univariate and dist_based. The target must be binary (logical, 0/1 or a factor with those labels).}
 
 \item{incremental_memory}{If true, the model will retrain with all available data whenever the fit is called. If false, it only retrains when a drift is detected.}
 

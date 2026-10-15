@@ -11,7 +11,7 @@ dfr_aedd(
   num_epochs = 1000,
   learning_rate = 0.001,
   window_size = 100,
-  monitoring_step = 1700,
+  monitoring_step = floor(window_size/2),
   criteria = "mann_whitney",
   alpha = 0.01,
   reporting = FALSE
@@ -21,7 +21,8 @@ dfr_aedd(
 \item{encoding_size}{Encoding Size}
 
 \item{ae_class}{Autoencoder Class. When \code{NULL} (the default),
-\code{daltoolbox::autoenc_encode_decode} is used.}
+\code{daltoolboxdp::autoenc_ed} is used, which requires the suggested package
+\code{daltoolboxdp} and its Python backend.}
 
 \item{batch_size}{Batch Size for batch learning}
 
@@ -29,9 +30,11 @@ dfr_aedd(
 
 \item{learning_rate}{Learning Rate}
 
-\item{window_size}{Size of the most recent data to be used}
+\item{window_size}{Number of most recent rows kept by the detector. The
+oldest half is the reference window and the newest half the recent window.}
 
-\item{monitoring_step}{The number of rows that the drifter waits to be is updated}
+\item{monitoring_step}{Number of rows between two consecutive checks. The
+default checks twice per window.}
 
 \item{criteria}{The method to be used to check if there is a drift. One of \code{'mann_whitney'} (default), \code{'kolmogorov_smirnov'}, \code{'levene'}, \code{'parametric_threshold'} or \code{'nonparametric_threshold'}}
 
@@ -44,6 +47,17 @@ dfr_aedd(
 }
 \description{
 AEDD is an unsupervised multivariate detector that compares reconstruction errors produced by an autoencoder on reference and recent windows. Because it monitors changes in the input distribution rather than classifier performance, this implementation is primarily aimed at \strong{virtual concept drift}. The method follows Kaminskyi, Li, and Muller (2022) \url{doi:10.1109/ICDMW58026.2022.00109}.
+}
+\details{
+The autoencoder expects inputs in the \verb{[0, 1]} range. Values
+outside that range are clipped to it, and the detector warns the first time
+this happens, so the data should be normalized beforehand (for example with
+\code{daltoolbox::minmax()}). \code{ae_class} must be a constructor accepting the
+arguments \code{input_size}, \code{encoding_size}, \code{batch_size}, \code{num_epochs} and
+\code{learning_rate}, whose objects implement \code{fit()} and \code{transform()}.
+
+The autoencoder is trained on the reference window the first time the
+window is full, and again after every drift or whenever new columns appear.
 }
 \examples{
 # A rendered walkthrough is available at

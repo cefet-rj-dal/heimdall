@@ -3,7 +3,10 @@
 #'@param min_instances The minimum number of instances before detecting change
 #'@param warning_level Necessary level for warning zone (2 standard deviation)
 #'@param out_control_level Necessary level for a positive drift detection
-#'@details Missing values are treated as correct predictions (`0`).
+#'@details The detector only reacts to an increase of the error rate (a
+#'degradation of the model); improvements are not reported. Values must be `1`
+#'(error) or `0` (correct prediction), and missing values are treated as
+#'correct predictions (`0`).
 #DDM: Joao Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning with Drift Detection. SBIA 2004: 286-295.
 #DDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/ddm.py
 #'@references Gama, J., Medas, P., Castillo, G., and Rodrigues, P. P. (2004). Learning with drift detection. In *Advances in Artificial Intelligence - SBIA 2004*, 286-295. <doi:10.1007/978-3-540-28645-5_29>
@@ -39,8 +42,8 @@
 #'@export
 dfr_ddm <- function(min_instances = 30, warning_level = 2, out_control_level = 3) {
   .check_positive_integer(min_instances, "min_instances", min_value = 1L)
-  .check_positive_integer(warning_level, "warning_level", min_value = 0L)
-  .check_positive_integer(out_control_level, "out_control_level", min_value = 0L)
+  .check_number(warning_level, "warning_level", min_value = 0)
+  .check_number(out_control_level, "out_control_level", min_value = 0)
   if (out_control_level < warning_level) {
     stop("out_control_level must be greater than or equal to warning_level", call. = FALSE)
   }
@@ -71,10 +74,7 @@ dfr_ddm <- function(min_instances = 30, warning_level = 2, out_control_level = 3
 
 #'@export
 update_state.dfr_ddm <- function(obj, value, ...) {
-  value <- .as_scalar(value)
-  if (is.na(value)) {
-    value <- 0
-  }
+  value <- .as_error(value)
 
   state <- obj$state
   state$miss_prob <- state$miss_prob + (value - state$miss_prob) / state$sample_count

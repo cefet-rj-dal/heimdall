@@ -29,3 +29,17 @@ test_that("nrm_base is exported and norm() is no longer masked", {
   expect_true(is.function(nrm_base))
   expect_identical(base::norm, norm)
 })
+
+test_that("nrm_memory keeps repeated rows when estimating the scale", {
+  data <- data.frame(a = c(0, 0, 0, 0, 10))
+  memory <- fit(nrm_memory(zscore()), data)
+  plain <- fit(zscore(), data)
+
+  expect_equal(nrow(memory$data), 5)
+  expect_equal(transform(memory, data.frame(a = 10))$a, transform(plain, data.frame(a = 10))$a)
+})
+
+test_that("normalizers keep the dal_base class", {
+  expect_true("dal_base" %in% class(nrm_base(minmax())))
+  expect_true("dal_base" %in% class(nrm_memory()))
+})

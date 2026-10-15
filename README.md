@@ -5,9 +5,13 @@
 
 <!-- badges: start -->
 
-![GitHub
+[![R-CMD-check](https://github.com/cefet-rj-dal/heimdall/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/cefet-rj-dal/heimdall/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/cefet-rj-dal/heimdall/graph/badge.svg)](https://app.codecov.io/gh/cefet-rj-dal/heimdall)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/heimdall)](https://CRAN.R-project.org/package=heimdall)
+![CRAN Downloads](https://cranlogs.r-pkg.org/badges/heimdall) ![GitHub
 Stars](https://img.shields.io/github/stars/cefet-rj-dal/heimdall?logo=Github)
-![CRAN Downloads](https://cranlogs.r-pkg.org/badges/heimdall)
 <!-- badges: end -->
 
 Heimdall is a tool designed for concept drift detection in continuous
@@ -28,6 +32,19 @@ package includes detectors for both **real concept drift** and
 **virtual concept drift**, and the repository examples are designed to
 help users understand that distinction through small, reproducible
 workflows.
+
+------------------------------------------------------------------------
+
+## Getting started
+
+The package ships with two vignettes, also available on the [package
+website](https://cefet-rj-dal.github.io/heimdall/):
+
+- `vignette("heimdall")` introduces the streaming workflow shared by
+  every detector and shows how to monitor real and virtual concept
+  drift;
+- `vignette("adaptive-models")` shows how `stealthy()` retrains a model
+  automatically when a drift is detected.
 
 ------------------------------------------------------------------------
 

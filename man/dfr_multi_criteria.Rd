@@ -13,8 +13,8 @@ inherit from either \code{dist_based} or \code{mv_dist_based}.}
 \item{combination}{How the drifters will be combined. One of \code{'or'}
 (default), \code{'and'} or \code{'fuzzy'}.}
 
-\item{fuzzy_window}{Sets the fuzzy window size. Only used when
-\code{combination = 'fuzzy'}.}
+\item{fuzzy_window}{Number of observations during which a detection is
+still taken into account by the \code{'and'} and \code{'fuzzy'} combinations.}
 }
 \value{
 Drifter object
@@ -23,10 +23,21 @@ Drifter object
 Combines the output of several drift detectors into a single
 decision.
 }
-\note{
-The \code{'fuzzy'} combination rebuilds the whole membership matrix on every
-update, so its cost grows quadratically with the length of the stream. Prefer
-\code{'or'} or \code{'and'} for long streams.
+\details{
+\itemize{
+\item \code{'or'} reports a drift as soon as any detector does;
+\item \code{'and'} reports a drift when every detector has reported one within
+the last \code{fuzzy_window} observations;
+\item \code{'fuzzy'} gives each detection a weight that decays linearly from 1 to
+0 over \code{fuzzy_window} observations, and reports a drift when the sum of the
+weights exceeds half the number of detectors.
+}
+After a combined drift is reported, the past detections are forgotten, so a
+single change is reported once. Detectors with a \code{target_feat} receive that
+column of each row; the other univariate detectors receive the row mean.
+
+\code{obj$detections} counts the drifts reported by each detector and
+\code{obj$last_drifts} holds their decisions on the last observation.
 }
 \examples{
 library(daltoolbox)
@@ -45,4 +56,5 @@ model <- dfr_multi_criteria(
 
 model <- fit(model, data)
 model$drifted
+model$detections
 }

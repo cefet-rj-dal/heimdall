@@ -4,10 +4,17 @@
 \alias{dfr_cusum}
 \title{Cumulative Sum for Concept Drift Detection (CUSUM) method}
 \usage{
-dfr_cusum(lambda = 100)
+dfr_cusum(lambda = 50, delta = 0.005, min_instances = 30)
 }
 \arguments{
-\item{lambda}{Necessary level for warning zone (2 standard deviation)}
+\item{lambda}{Detection threshold: a drift is reported when the cumulative
+sum exceeds it. Lower values react faster at the cost of more false alarms.}
+
+\item{delta}{Tolerance subtracted at every step, i.e. the increase of the
+error rate that is still considered acceptable.}
+
+\item{min_instances}{Minimum number of observations before a drift can be
+reported.}
 }
 \value{
 \code{dfr_cusum} object
@@ -16,7 +23,14 @@ dfr_cusum(lambda = 100)
 CUSUM is a sequential analysis procedure that accumulates deviations in a monitored signal and raises an alarm when the cumulative evidence exceeds a threshold. In this package, the detector is implemented as an error-based monitor, so it is primarily intended for \strong{real concept drift} affecting predictive performance. The concept-drift adaptation follows the sequential change-detection literature discussed by Muthukrishnan, Berg, and Wu (2007) \url{doi:10.1109/ICDMW.2007.89}.
 }
 \details{
-Missing values are treated as correct predictions (\code{0}).
+The detector follows the \code{CusumDM} detector of MOA: it accumulates
+\code{max(0, sum + x - mean - delta)}, where \code{mean} is the running error rate, so
+it reacts to an increase of the error rate whatever its level. After a drift
+is reported the statistics restart from scratch. Missing values are treated
+as correct predictions (\code{0}).
+
+Up to version 1.3.0, \code{dfr_cusum()} accumulated \code{+1} for every error and \code{-1}
+for every correct prediction, so it could only detect error rates above 50\%.
 }
 \examples{
 library(daltoolbox)

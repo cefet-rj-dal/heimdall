@@ -7,7 +7,7 @@
 dfr_kldist(
   target_feat = NULL,
   window_size = 100,
-  p_th = 0.05,
+  p_th = 0.5,
   monitoring_step = 1,
   data = NULL
 )
@@ -17,7 +17,10 @@ dfr_kldist(
 
 \item{window_size}{Size of the sliding window}
 
-\item{p_th}{Drift threshold applied to the KL divergence. Despite the name, this is not a p-value.}
+\item{p_th}{Drift threshold applied to the KL divergence, in bits. Despite the
+name, this is not a p-value. The default (0.5) was calibrated for the default
+window size; larger windows estimate the divergence more precisely and can
+use lower thresholds.}
 
 \item{monitoring_step}{Number of observations between two consecutive tests. The default (\code{1}) tests at every observation; larger values reduce the computational cost on long streams.}
 

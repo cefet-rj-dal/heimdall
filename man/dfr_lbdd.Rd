@@ -6,8 +6,8 @@
 \usage{
 dfr_lbdd(
   target_feat = NULL,
-  alpha = 0.01,
-  window_size = 1500,
+  alpha = 0.001,
+  window_size = 300,
   monitoring_step = 1,
   data = NULL
 )
@@ -30,6 +30,11 @@ dfr_lbdd(
 LBDD is a window-based detector that compares the variability of reference and recent samples using Levene's test. Because it monitors changes in the distribution of an observed feature rather than model performance, it is primarily aimed at \strong{virtual concept drift}. In this package, the detector follows the statistical-testing approach discussed by Giusti et al. (2021) for drift analysis, using Levene's variance test as its core mechanism.
 }
 \details{
+LBDD only reacts to changes of spread (variance); a shift of the mean
+with the same spread is not detected, so combine it with \code{\link[=dfr_mcdd]{dfr_mcdd()}} when
+both kinds of change matter. The test runs at every observation, so \code{alpha}
+should be small to keep false alarms rare.
+
 Levene's test is computed with the group spread centred on the
 median (the Brown-Forsythe variant).
 

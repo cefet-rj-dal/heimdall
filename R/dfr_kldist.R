@@ -1,7 +1,10 @@
 #'@title KL Distance method
 #'@description This detector compares consecutive reference and recent windows through the Kullback-Leibler divergence estimated from their empirical distributions. In this package, it is primarily used for **virtual concept drift**, since it monitors changes in the distribution of a numeric feature stream rather than predictive error. The statistical foundation is the Kullback-Leibler divergence introduced by Kullback and Leibler (1951).
 #'@param target_feat Feature to be monitored.
-#'@param p_th Drift threshold applied to the KL divergence. Despite the name, this is not a p-value.
+#'@param p_th Drift threshold applied to the KL divergence, in bits. Despite the
+#'name, this is not a p-value. The default (0.5) was calibrated for the default
+#'window size; larger windows estimate the divergence more precisely and can
+#'use lower thresholds.
 #'@param window_size Size of the sliding window
 #'@param monitoring_step Number of observations between two consecutive tests. The default (`1`) tests at every observation; larger values reduce the computational cost on long streams.
 #'@param data Already collected data to avoid cold start.
@@ -41,8 +44,8 @@
 #'
 #'detection[detection$type == 'drift',]
 #'@export
-dfr_kldist <- function(target_feat = NULL, window_size = 100, p_th = 0.05, monitoring_step = 1, data = NULL) {
-  if (p_th < 0) stop("p_th must be non-negative", call. = FALSE)
+dfr_kldist <- function(target_feat = NULL, window_size = 100, p_th = 0.5, monitoring_step = 1, data = NULL) {
+  .check_number(p_th, "p_th", min_value = 0)
   .check_positive_integer(window_size, "window_size", min_value = 2L)
   .check_positive_integer(monitoring_step, "monitoring_step", min_value = 1L)
 
@@ -55,11 +58,7 @@ dfr_kldist <- function(target_feat = NULL, window_size = 100, p_th = 0.05, monit
   state$n <- 0
   state$kl <- NA_real_
 
-  if (is.null(data)) {
-    state$window <- numeric(0)
-  } else {
-    state$window <- as.numeric(data)
-  }
+  state$window <- .initial_window(data, window_size)
 
   obj$state <- state
 
@@ -72,7 +71,7 @@ update_state.dfr_kldist <- function(obj, value, ...) {
   state <- obj$state
 
   state$n <- state$n + 1
-  value <- .as_scalar(value)
+  value <- .as_scalar(value, obj$target_feat)
   if (is.na(value)) {
     obj$state <- state
     return(list(obj = obj, drift = FALSE))
@@ -101,11 +100,10 @@ update_state.dfr_kldist <- function(obj, value, ...) {
     return(list(obj = obj, drift = FALSE))
   }
 
-  p_hist <- graphics::hist(p_window, breaks = bins, plot = FALSE)$density
-  q_hist <- graphics::hist(q_window, breaks = bins, plot = FALSE)$density
-  eps <- 1e-12
-  p <- p_hist + eps
-  q <- q_hist + eps
+  # Laplace smoothing (one pseudo-count per bin) keeps empty bins from
+  # dominating the divergence.
+  p <- graphics::hist(p_window, breaks = bins, plot = FALSE)$counts + 1
+  q <- graphics::hist(q_window, breaks = bins, plot = FALSE)$counts + 1
   p <- p / sum(p)
   q <- q / sum(q)
 

@@ -69,9 +69,10 @@ detection[detection$type == 'drift',]
 
 ```
 ##     idx event  type
-## 219 219  TRUE drift
-## 328 328  TRUE drift
-## 428 428  TRUE drift
+## 225 225  TRUE drift
+## 332 332  TRUE drift
+## 383 383  TRUE drift
+## 434 434  TRUE drift
 ```
 
 

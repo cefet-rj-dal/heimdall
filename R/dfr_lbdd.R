@@ -5,7 +5,12 @@
 #'@param window_size Size of the sliding window
 #'@param monitoring_step Number of observations between two consecutive tests. The default (`1`) tests at every observation; larger values reduce the computational cost on long streams.
 #'@param data Already collected data to avoid cold start.
-#'@details Levene's test is computed with the group spread centred on the
+#'@details LBDD only reacts to changes of spread (variance); a shift of the mean
+#'with the same spread is not detected, so combine it with [dfr_mcdd()] when
+#'both kinds of change matter. The test runs at every observation, so `alpha`
+#'should be small to keep false alarms rare.
+#'
+#'Levene's test is computed with the group spread centred on the
 #'median (the Brown-Forsythe variant).
 #'
 #'Missing observations are skipped instead of being imputed. When a drift is
@@ -43,7 +48,7 @@
 #'
 #'detection[detection$type == 'drift',]
 #'@export
-dfr_lbdd <- function(target_feat = NULL, alpha = 0.01, window_size = 1500, monitoring_step = 1, data = NULL) {
+dfr_lbdd <- function(target_feat = NULL, alpha = 0.001, window_size = 300, monitoring_step = 1, data = NULL) {
   .check_probability(alpha, "alpha")
   .check_positive_integer(window_size, "window_size", min_value = 2L)
   .check_positive_integer(monitoring_step, "monitoring_step", min_value = 1L)
@@ -59,11 +64,7 @@ dfr_lbdd <- function(target_feat = NULL, alpha = 0.01, window_size = 1500, monit
   state$n <- 0
   state$p_value <- NA_real_
 
-  if (is.null(data)) {
-    state$window <- numeric(0)
-  } else {
-    state$window <- as.numeric(data)
-  }
+  state$window <- .initial_window(data, window_size)
 
   obj$state <- state
 
@@ -76,7 +77,7 @@ update_state.dfr_lbdd <- function(obj, value, ...) {
   state <- obj$state
 
   state$n <- state$n + 1
-  value <- .as_scalar(value)
+  value <- .as_scalar(value, obj$target_feat)
   if (is.na(value)) {
     obj$state <- state
     return(list(obj = obj, drift = FALSE))

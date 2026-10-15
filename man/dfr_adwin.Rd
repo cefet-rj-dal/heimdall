@@ -18,42 +18,38 @@ dfr_adwin(target_feat = NULL, delta = 2e-05)
 ADWIN (Adaptive Windowing) is a sequential change detector that maintains a variable-length window and tests whether the means of two subwindows differ significantly. In this package, the implementation is primarily used for \strong{virtual concept drift} when it monitors a numeric feature stream, although the same mechanism can also detect \strong{real concept drift} if applied to an error or loss stream. The theoretical basis follows Bifet and Gavalda (2007) \url{doi:10.1137/1.9781611972771.42}.
 }
 \details{
-This detector is a thin wrapper around a Python implementation and
-therefore needs the suggested package \code{reticulate} together with a Python
-installation providing \code{numpy}. The Python module is loaded once per session
-and cached. Because the state lives in a Python object, a \code{dfr_adwin} object
-cannot be serialized with \code{\link[base:saveRDS]{base::saveRDS()}} and restored in another session.
+The implementation is written in pure R and follows the
+exponential-histogram version of ADWIN distributed with scikit-multiflow.
+The window is compressed into buckets of exponentially growing size (at most
+five buckets per size), and the cut points are checked every 32 observations,
+once the window holds more than 10 observations. All the state lives in the
+object itself, so a \code{dfr_adwin} object can be serialized with
+\code{\link[base:saveRDS]{base::saveRDS()}}.
 }
 \examples{
 library(daltoolbox)
 library(heimdall)
 
-\donttest{
-if (requireNamespace("reticulate", quietly = TRUE) &&
-   reticulate::py_module_available("numpy")) {
+data(st_drift_examples)
+data <- st_drift_examples$univariate
+data$event <- NULL
 
- data(st_drift_examples)
- data <- st_drift_examples$univariate
- data$event <- NULL
+model <- dfr_adwin(target_feat='serie')
 
- model <- dfr_adwin(target_feat='serie')
-
- detection <- NULL
- output <- list(obj=model, drift=FALSE)
- for (i in seq_along(data$serie)){
-   output <- update_state(output$obj, data$serie[i])
-   if (output$drift){
-     type <- 'drift'
-     output$obj <- reset_state(output$obj)
-   }else{
-     type <- ''
-   }
-   detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+detection <- NULL
+output <- list(obj=model, drift=FALSE)
+for (i in seq_along(data$serie)){
+ output <- update_state(output$obj, data$serie[i])
+ if (output$drift){
+   type <- 'drift'
+   output$obj <- reset_state(output$obj)
+ }else{
+   type <- ''
  }
+ detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+}
 
- print(detection[detection$type == 'drift',])
-}
-}
+print(detection[detection$type == 'drift',])
 }
 \references{
 Bifet, A., and Gavalda, R. (2007). Learning from time-changing data with adaptive windowing. In \emph{Proceedings of the 2007 SIAM International Conference on Data Mining}, 443-448. \url{doi:10.1137/1.9781611972771.42}

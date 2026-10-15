@@ -87,11 +87,6 @@ export(stealthy)
 export(update_state)
 import(daltoolbox)
 import(stats)
-importFrom(Metrics,
-  precision,
-  recall
-)
-importFrom(caret,dummyVars)
 importFrom(daltoolbox,cla_nb)
 importFrom(graphics,hist)
 importFrom(pROC,auc)

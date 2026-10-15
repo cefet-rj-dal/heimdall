@@ -18,8 +18,12 @@ This example introduces the multivariate and autoencoder-based workflow in Heimd
 
 ``` r
 # Load the autoencoder backend and Heimdall.
+library(daltoolbox, warn.conflicts = FALSE)
 library(daltoolboxdp)
 library(heimdall)
+
+# Ask reticulate for the Python modules used by the daltoolboxdp autoencoders.
+reticulate::py_require(c("numpy", "pandas", "scipy", "torch"))
 ```
 
 
@@ -52,6 +56,16 @@ plot(x=serie$i, y=serie$serie2)
 
 
 ``` r
+# The autoencoder expects values in [0, 1], so rescale the monitored features.
+# For simplicity the scale is learned on the whole stream; in production, learn
+# it on a reference period and apply it to the incoming data.
+monitored_features <- c('serie1', 'serie2')
+normalizer <- fit(minmax(), serie[, monitored_features])
+serie[, monitored_features] <- transform(normalizer, serie[, monitored_features])
+```
+
+
+``` r
 # Instantiate AEDD with a compact latent representation.
 model <- dfr_aedd(
   encoding_size=1,
@@ -60,7 +74,6 @@ model <- dfr_aedd(
   monitoring_step=10,
   window_size=256
 )
-monitored_features <- c('serie1', 'serie2')
 ```
 
 
@@ -88,7 +101,7 @@ detection[detection$type == 'drift',]
 
 ```
 ##     idx event  type
-## 270 270  TRUE drift
+## 276 276  TRUE drift
 ```
 
 
@@ -100,4 +113,4 @@ for (drift_index in detection[detection$type == 'drift', 'idx']) {
 }
 ```
 
-![plot of chunk unnamed-chunk-8](fig/dfr_aedd/unnamed-chunk-8-1.png)
+![plot of chunk unnamed-chunk-9](fig/dfr_aedd/unnamed-chunk-9-1.png)

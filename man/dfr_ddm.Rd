@@ -20,7 +20,10 @@ dfr_ddm(min_instances = 30, warning_level = 2, out_control_level = 3)
 DDM monitors the online error rate of a predictive model under the PAC-learning assumption that, in a stationary environment, the error should decrease or remain stable as more samples are observed. Because it operates on the classifier error stream, it is primarily a detector of \strong{real concept drift}. The method follows Gama et al. (2004) \url{doi:10.1007/978-3-540-28645-5_29}.
 }
 \details{
-Missing values are treated as correct predictions (\code{0}).
+The detector only reacts to an increase of the error rate (a
+degradation of the model); improvements are not reported. Values must be \code{1}
+(error) or \code{0} (correct prediction), and missing values are treated as
+correct predictions (\code{0}).
 }
 \examples{
 library(daltoolbox)

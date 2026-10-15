@@ -11,5 +11,5 @@
 ^_pkgdown\.yml$
 ^docs$
 ^\.lintr$
-package.R
-jupyter.R
+^package\.R$
+^jupyter\.R$

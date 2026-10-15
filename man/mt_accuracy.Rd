@@ -10,7 +10,9 @@ mt_accuracy()
 Metric object
 }
 \description{
-Class for accuracy calculation
+Class for accuracy calculation. Binary labels (logical, 0/1 or
+factors with those labels) are compared by value; other labels are compared
+as text.
 }
 \examples{
 library(daltoolbox)

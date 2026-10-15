@@ -1,6 +1,10 @@
 # Load the autoencoder backend and Heimdall.
+library(daltoolbox, warn.conflicts = FALSE)
 library(daltoolboxdp)
 library(heimdall)
+
+# Ask reticulate for the Python modules used by the daltoolboxdp autoencoders.
+reticulate::py_require(c("numpy", "pandas", "scipy", "torch"))
 
 # Fix the seed so the example can be reproduced consistently.
 seed <- 1
@@ -14,6 +18,13 @@ serie <- st_drift_examples$dataset2
 plot(x=serie$i, y=serie$serie1)
 plot(x=serie$i, y=serie$serie2)
 
+# The autoencoder expects values in [0, 1], so rescale the monitored features.
+# For simplicity the scale is learned on the whole stream; in production, learn
+# it on a reference period and apply it to the incoming data.
+monitored_features <- c('serie1', 'serie2')
+normalizer <- fit(minmax(), serie[, monitored_features])
+serie[, monitored_features] <- transform(normalizer, serie[, monitored_features])
+
 # Instantiate AEDD with a compact latent representation.
 model <- dfr_aedd(
   encoding_size=1,
@@ -22,7 +33,6 @@ model <- dfr_aedd(
   monitoring_step=10,
   window_size=256
 )
-monitored_features <- c('serie1', 'serie2')
 
 # Update AEDD row by row using only the selected monitored features.
 detection <- NULL

@@ -9,7 +9,8 @@ dfr_page_hinkley(
   min_instances = 30,
   delta = 0.005,
   threshold = 50,
-  alpha = 1 - 1e-04
+  alpha = 1 - 1e-04,
+  direction = "increase"
 )
 }
 \arguments{
@@ -22,6 +23,9 @@ dfr_page_hinkley(
 \item{threshold}{The change detection threshold (lambda)}
 
 \item{alpha}{The forgetting factor, used to weight the observed value and the mean}
+
+\item{direction}{Which changes of the mean are detected: \code{"increase"} (the
+default, as in the reference implementation), \code{"decrease"} or \code{"both"}.}
 }
 \value{
 \code{dfr_page_hinkley} object

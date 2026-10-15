@@ -4,11 +4,15 @@
 #'reported.
 #'@param model The algorithm object to be used for predictions
 #'@param drift_method The algorithm object to detect drifts
-#'@param monitored_features List of features that will be monitored by the drifter
+#'@param monitored_features Names of the columns of `x` given to the drifter
+#'when it is a multivariate drifter, a multi-criteria drifter or a univariate
+#'distribution-based drifter without `target_feat` (which receives the row mean
+#'of the monitored columns). `NULL` (the default) monitors every feature.
+#'Error-based drifters and drifters with a `target_feat` are not affected.
 #'@param norm_class Class used to perform normalization
 #'@param warmup_size Number of rows used to warmup the drifter. No drift will be detected during this phase
 #'@param th The threshold to be used with classification algorithms
-#'@param target_uni_drifter Passes the prediction target to the drifts as the target feat when the drifter is univariate and dist_based.
+#'@param target_uni_drifter Passes the prediction target to the drifts as the target feat when the drifter is univariate and dist_based. The target must be binary (logical, 0/1 or a factor with those labels).
 #'@param incremental_memory If true, the model will retrain with all available data whenever the fit is called. If false, it only retrains when a drift is detected.
 #'@param verbose if TRUE shows drift messages
 #'@param reporting If TRUE, some data are returned as norm_x_oh, drift_input, hist_proj, and recent_proj.
@@ -17,7 +21,6 @@
 #'# See ?dfr_ddm for an example of a drift detector that can be plugged here.
 #'@import daltoolbox
 #'@import stats
-#'@importFrom caret dummyVars
 #'@export
 stealthy <- function(model, drift_method, monitored_features = NULL, norm_class = daltoolbox::zscore(), warmup_size = 100, th = 0.5, target_uni_drifter = FALSE, incremental_memory = TRUE, verbose = FALSE, reporting = FALSE) {
   obj <- dal_base()
@@ -55,27 +58,28 @@ fit.stealthy <- function(obj, x, y, ...) {
   if (obj$reporting) {
     drift_input <- c()
   }
-  if (is.null(obj$monitored_features)) {
-    monitored_features <- names(x)
-  } else {
-    monitored_features <- obj$monitored_features
+  unknown_features <- setdiff(obj$monitored_features, names(x))
+  if (length(unknown_features) > 0L) {
+    stop(
+      sprintf("stealthy: monitored_features not found in x: %s", paste(unknown_features, collapse = ", ")),
+      call. = FALSE
+    )
   }
 
   # Check Drift
   obj$drifted <- FALSE
   if (obj$fitted && (nrow(obj$x_train) >= obj$warmup_size)) {
-    x_oh <- data.frame(predict(obj$dummy, newdata = x))
-    if (!all(obj$dummy$feat_names %in% names(x_oh))) {
-      warning('stealthy: Some categories present on train are not on the most recent dataset. Creating zero columns.')
-      for (feat in obj$dummy$feat_names) {
-        if (!(feat %in% names(x_oh))) {
-          x_oh[feat] <- 0
-        }
-      }
-    }
+    x_oh <- .one_hot_apply(obj$dummy, x)
     norm_x_oh <- transform(obj$norm_model, x_oh)
     if (obj$reporting) {
       obj$norm_x_oh <- norm_x_oh
+    }
+
+    # Encoded columns derived from the monitored features.
+    drift_x <- norm_x_oh
+    if (!is.null(obj$monitored_features)) {
+      monitored_columns <- obj$dummy$feat_names[obj$dummy$origin %in% obj$monitored_features]
+      drift_x <- norm_x_oh[, monitored_columns, drop = FALSE]
     }
 
     if ('error_based' %in% class(obj$drift_method)) {
@@ -93,16 +97,17 @@ fit.stealthy <- function(obj, x, y, ...) {
 
     if ('dist_based' %in% class(obj$drift_method)) {
       if (is.null(obj$drift_method$target_feat)) {
-        norm_x_oh[, 'mean'] <- rowMeans(norm_x_oh)
+        row_mean <- rowMeans(drift_x)
         if (obj$reporting) {
-          drift_input <- norm_x_oh[, 'mean']
+          drift_input <- row_mean
         }
-        obj$drift_method <- fit(obj$drift_method, norm_x_oh[, 'mean'])
+        obj$drift_method <- fit(obj$drift_method, row_mean)
       } else if (obj$target_uni_drifter) {
+        target <- as.numeric(.as_binary(y[, 1], "y"))
         if (obj$reporting) {
-          drift_input <- y[, 1] * 1
+          drift_input <- target
         }
-        obj$drift_method <- fit(obj$drift_method, y[, 1] * 1)
+        obj$drift_method <- fit(obj$drift_method, target)
       } else {
         if (obj$reporting) {
           drift_input <- x_oh[, obj$drift_method$target_feat]
@@ -113,16 +118,16 @@ fit.stealthy <- function(obj, x, y, ...) {
 
     if ('mv_dist_based' %in% class(obj$drift_method)) {
       if (obj$reporting) {
-        drift_input <- norm_x_oh
+        drift_input <- drift_x
       }
-      obj$drift_method <- fit(obj$drift_method, norm_x_oh)
+      obj$drift_method <- fit(obj$drift_method, drift_x)
     }
 
     if ('multi_criteria' %in% class(obj$drift_method)) {
       if (obj$reporting) {
-        drift_input <- norm_x_oh
+        drift_input <- drift_x
       }
-      obj$drift_method <- fit(obj$drift_method, norm_x_oh)
+      obj$drift_method <- fit(obj$drift_method, drift_x)
     }
 
     if (obj$drift_method$drifted) {
@@ -145,9 +150,8 @@ fit.stealthy <- function(obj, x, y, ...) {
 
     if (nrow(obj$x_train) >= obj$warmup_size) {
       # One Hot Encoding
-      obj$dummy <- caret::dummyVars(" ~ .", data = obj$x_train)
-      x_train_dummy <- data.frame(predict(obj$dummy, newdata = obj$x_train))
-      obj$dummy$feat_names <- names(x_train_dummy)
+      obj$dummy <- .one_hot_fit(obj$x_train)
+      x_train_dummy <- .one_hot_apply(obj$dummy, obj$x_train)
 
       # Normalize
       obj$norm_model <- fit(obj$norm_model, x_train_dummy)
@@ -182,7 +186,7 @@ predict.stealthy <- function(object, data, ...) {
   }
 
   # Prediction if fitted
-  data_oh <- data.frame(predict(object$dummy, newdata = data))
+  data_oh <- .one_hot_apply(object$dummy, data)
   for (feat in object$model$feat_names) {
     if (!(feat %in% names(data_oh))) {
       data_oh[feat] <- 0

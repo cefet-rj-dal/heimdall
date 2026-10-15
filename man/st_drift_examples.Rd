@@ -5,7 +5,7 @@
 \alias{st_drift_examples}
 \title{Synthetic time series for concept drift detection}
 \format{
-A list of time series.
+A list of three data frames with 500 rows each.
 }
 \source{
 \href{https://github.com/cefet-rj-dal/heimdall}{heimdall package}
@@ -14,16 +14,19 @@ A list of time series.
 data(st_drift_examples)
 }
 \description{
-A list of time series for drift detection. It contains, among
-others:
+A list of time series for drift detection:
 \itemize{
-\item \code{example1}: a bivariate dataset with one multivariate concept drift example
-\item \code{univariate}: a univariate series with four known change points
+\item \code{dataset1}: two numeric series (\code{serie1}, \code{serie2}), a logical
+\code{target}, the index \code{i} and a \code{drift} column flagging the change point;
+\item \code{dataset2}: the same series without the target;
+\item \code{univariate}: a univariate series (\code{serie}) with four known change
+points flagged in \code{event}.
 }
 }
 \examples{
 data(st_drift_examples)
-dataset <- st_drift_examples$example1
+dataset <- st_drift_examples$dataset1
+which(dataset$drift == 1)
 }
 \references{
 \href{https://github.com/cefet-rj-dal/heimdall}{heimdall package}

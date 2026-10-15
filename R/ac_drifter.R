@@ -163,6 +163,7 @@ error_based <- function() {
 #'obj$target_feat
 #'@export
 dist_based <- function(target_feat) {
+  .check_target_feat(target_feat)
   obj <- drifter()
   obj$target_feat <- target_feat
   class(obj) <- append('dist_based', class(obj))
@@ -189,12 +190,24 @@ mv_dist_based <- function() {
 #'inherit from either `dist_based` or `mv_dist_based`.
 #'@param combination How the drifters will be combined. One of `'or'`
 #'(default), `'and'` or `'fuzzy'`.
-#'@param fuzzy_window Sets the fuzzy window size. Only used when
-#'`combination = 'fuzzy'`.
+#'@param fuzzy_window Number of observations during which a detection is
+#'still taken into account by the `'and'` and `'fuzzy'` combinations.
+#'@details
+#'\itemize{
+#'\item `'or'` reports a drift as soon as any detector does;
+#'\item `'and'` reports a drift when every detector has reported one within
+#'the last `fuzzy_window` observations;
+#'\item `'fuzzy'` gives each detection a weight that decays linearly from 1 to
+#'0 over `fuzzy_window` observations, and reports a drift when the sum of the
+#'weights exceeds half the number of detectors.
+#'}
+#'After a combined drift is reported, the past detections are forgotten, so a
+#'single change is reported once. Detectors with a `target_feat` receive that
+#'column of each row; the other univariate detectors receive the row mean.
+#'
+#'`obj$detections` counts the drifts reported by each detector and
+#'`obj$last_drifts` holds their decisions on the last observation.
 #'@return Drifter object
-#'@note The `'fuzzy'` combination rebuilds the whole membership matrix on every
-#'update, so its cost grows quadratically with the length of the stream. Prefer
-#'`'or'` or `'and'` for long streams.
 #'@examples
 #'library(daltoolbox)
 #'library(heimdall)
@@ -212,6 +225,7 @@ mv_dist_based <- function() {
 #'
 #'model <- fit(model, data)
 #'model$drifted
+#'model$detections
 #'@export
 dfr_multi_criteria <- function(drifter_list, combination = "or", fuzzy_window = 10) {
   combination <- match.arg(combination, c('or', 'and', 'fuzzy'))
@@ -242,11 +256,13 @@ dfr_multi_criteria <- function(drifter_list, combination = "or", fuzzy_window = 
   obj$drifter_list <- drifter_list
   obj$combination <- combination
   obj$fuzzy_window <- fuzzy_window
-  obj$drifts_fuzzy <- c()
-  obj$drifts <- c()
+  obj$detections <- stats::setNames(integer(length(drifter_list)), names(drifter_list))
+  obj$last_drifts <- stats::setNames(logical(length(drifter_list)), names(drifter_list))
 
   state <- list()
   state$drifter_list <- drifter_list
+  # Number of observations since the last detection of each drifter.
+  state$age <- stats::setNames(rep(Inf, length(drifter_list)), names(drifter_list))
 
   obj$state <- state
 
@@ -259,55 +275,37 @@ dfr_multi_criteria <- function(drifter_list, combination = "or", fuzzy_window = 
 update_state.multi_criteria <- function(obj, value, ...) {
   state <- obj$state
 
-  state$row_data <- c()
+  drifts <- obj$last_drifts
   for (dft in names(state$drifter_list)) {
     detector <- state$drifter_list[[dft]]
 
-    if ('dist_based' %in% class(detector)) {
-      if (is.null(detector$target_feat)) {
-        value_mean <- mean(as.numeric(unlist(value)), na.rm = TRUE)
-        drifter_output <- update_state(detector, value_mean)
-      } else {
-        drifter_output <- update_state(detector, value[[detector$target_feat]])
-      }
-    } else if ('mv_dist_based' %in% class(detector)) {
-      drifter_output <- update_state(detector, value)
+    if (('dist_based' %in% class(detector)) && is.null(detector$target_feat)) {
+      drifter_output <- update_state(detector, mean(as.numeric(unlist(value)), na.rm = TRUE))
     } else {
-      stop(
-        sprintf("multi_criteria: '%s' is neither dist_based nor mv_dist_based", dft),
-        call. = FALSE
-      )
+      drifter_output <- update_state(detector, value)
     }
 
     state$drifter_list[[dft]] <- drifter_output$obj
-    state$row_data <- cbind(state$row_data, drifter_output$drift)
+    drifts[[dft]] <- drifter_output$drift
   }
-  obj$drifts <- rbind(obj$drifts, state$row_data)
+  obj$last_drifts <- drifts
+  obj$detections <- obj$detections + drifts
 
-  has_drift <- FALSE
-  if (obj$combination == 'or') {
-    has_drift <- mean(state$row_data) > 0
-  } else if (obj$combination == 'and') {
-    has_drift <- mean(state$row_data) == 1
-  } else if (obj$combination == 'fuzzy') {
-    obj$drifts_fuzzy <- c()
-    for (drifter_col in seq_len(ncol(obj$drifts))) {
-      drifter_fuzzy <- rep(0, nrow(obj$drifts))
-      drifts_index <- which(obj$drifts[, drifter_col] == TRUE)
-      for (i in drifts_index) {
-        umbrella_vector <- max(1, i - obj$fuzzy_window + 1):min(i + (obj$fuzzy_window - 1), nrow(obj$drifts))
-        drifter_fuzzy[min(umbrella_vector):i] <- ((obj$fuzzy_window - length(min(umbrella_vector):i)) + 1):(obj$fuzzy_window) / obj$fuzzy_window
-        drifter_fuzzy[i:max(umbrella_vector)] <- obj$fuzzy_window:(obj$fuzzy_window - length(i:max(umbrella_vector)) + 1) / obj$fuzzy_window
-      }
-      obj$drifts_fuzzy <- cbind(obj$drifts_fuzzy, drifter_fuzzy)
-    }
-    has_drift <- utils::tail(rowSums(obj$drifts_fuzzy), 1) > (ncol(obj$drifts) / 2)
-  }
+  state$age <- state$age + 1
+  state$age[drifts] <- 0
 
-  obj$state <- state
+  has_drift <- switch(
+    obj$combination,
+    or = any(drifts),
+    and = all(state$age < obj$fuzzy_window),
+    fuzzy = sum(pmax(0, (obj$fuzzy_window - state$age) / obj$fuzzy_window)) > (length(drifts) / 2)
+  )
+
   if (has_drift) {
+    state$age[] <- Inf
     obj$drifted <- TRUE
   }
+  obj$state <- state
   return(list(obj = obj, drift = has_drift))
 }
 

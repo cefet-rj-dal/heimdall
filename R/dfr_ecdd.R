@@ -2,9 +2,11 @@
 #'@description ECDD applies an exponentially weighted moving average (EWMA) control chart to the online classification error stream. Since it monitors predictive errors directly, it is primarily designed to detect **real concept drift**. The method follows Ross et al. (2012), who adapted EWMA charts for concept-drift detection in streaming classifiers <doi:10.1016/j.patrec.2011.08.019>.
 #'@param lambda EWMA smoothing parameter
 #'@param min_run_instances The minimum number of instances before detecting change
-#'@param average_run_length Desired Average Run Length (ARL). The published
-#'control-limit coefficients are only defined for target run lengths up to
-#'1000, so larger values are rejected.
+#'@param average_run_length Desired Average Run Length (ARL), i.e. the expected
+#'number of observations between two false alarms. The published control-limit
+#'polynomials exist for 100, 400 and 1000; other values use the next one up,
+#'and values above 1000 are rejected. The default changed from 100 to 400 in
+#'the development version, which reduced false alarms about sevenfold.
 #'@details Missing values are treated as correct predictions (`0`).
 #ECDD: Gordon Ross, Niall Adams, Dimitris Tasoulis, David Hand: Exponentially weighted moving average charts for detecting concept drift. Pattern Recognition Letters 2012, Volume 33, Issue 2: 191-198, DOI:10.1016/j.patrec.2011.08.019
 #ECDD implementation: Frouros, https://github.com/IFCA-Advanced-Computing/frouros/blob/acde82386da735ca8e15f85112f48d5cfb10cc9a/frouros/detectors/concept_drift/streaming/statistical_process_control/ecdd.py
@@ -39,7 +41,7 @@
 #'
 #'detection[detection$type == 'drift',]
 #'@export
-dfr_ecdd <- function(lambda = 0.2, min_run_instances = 30, average_run_length = 100) {
+dfr_ecdd <- function(lambda = 0.2, min_run_instances = 30, average_run_length = 400) {
   .check_probability(lambda, "lambda")
   .check_positive_integer(min_run_instances, "min_run_instances", min_value = 1L)
   .check_positive_integer(average_run_length, "average_run_length", min_value = 1L)
@@ -73,10 +75,7 @@ dfr_ecdd <- function(lambda = 0.2, min_run_instances = 30, average_run_length = 
 
 #'@export
 update_state.dfr_ecdd <- function(obj, value, ...) {
-  value <- .as_scalar(value)
-  if (is.na(value)) {
-    value <- 0
-  }
+  value <- .as_error(value)
 
   state <- obj$state
 
@@ -97,13 +96,18 @@ update_state.dfr_ecdd <- function(obj, value, ...) {
     if (state$average_run_length <= 100) {
       control_limit <- 2.76 - (6.23 * state$p) + (18.12 * (state$p^3)) - (312.45 * (state$p^5)) + (1002.18 * (state$p^7))
     } else if (state$average_run_length <= 400) {
-      control_limit <- 3.97 - (6.56 * state$p) + (48.73 * (state$p^3)) - (330.13 * (state$p^5)) + (987.23 * (state$p^7))
+      control_limit <- 3.97 - (6.56 * state$p) + (48.73 * (state$p^3)) - (330.13 * (state$p^5)) + (848.18 * (state$p^7))
     } else {
       control_limit <- 1.17 + (7.56 * state$p) - (21.24 * (state$p^3)) + (112.12 * (state$p^5)) - (987.23 * (state$p^7))
     }
 
     if (state$Z > (state$p + control_limit * z_variance)) {
-      obj$state <- state
+      # Restart the chart so the alarm is reported once per drift.
+      obj$state <- dfr_ecdd(
+        lambda = state$lambda,
+        min_run_instances = state$min_run_instances,
+        average_run_length = state$average_run_length
+      )$state
       obj$drifted <- TRUE
       return(list(obj = obj, drift = TRUE))
     } else {

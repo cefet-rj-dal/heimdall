@@ -4,7 +4,11 @@
 #'@param min_num_errors The minimum number of errors before detecting change
 #'@param warning_level Necessary level for warning zone
 #'@param out_control_level Necessary level for a positive drift detection
-#'@details Missing values are treated as correct predictions (`0`).
+#'@details EDDM monitors the distance between consecutive errors, which makes
+#'it sensitive to gradual drifts but also prone to false alarms when the error
+#'rate is high. `warning_level` must not be lower than `out_control_level`.
+#'Values must be `1` (error) or `0` (correct prediction), and missing values
+#'are treated as correct predictions (`0`).
 #EDDM: Manuel Baena-Garcia, Jose Del Campo-Avila, Raul Fidalgo, Albert Bifet, Ricard Gavalda, Rafael Morales-Bueno. Early Drift Detection Method. In Fourth International Workshop on Knowledge Discovery from Data Streams, 2006.
 #EDDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/eddm.py
 #'@references Baena-Garcia, M., del Campo-Avila, J., Fidalgo, R., Bifet, A., Gavalda, R., and Morales-Bueno, R. (2006). Early drift detection method. In *Fourth International Workshop on Knowledge Discovery from Data Streams*.
@@ -43,6 +47,9 @@ dfr_eddm <- function(min_instances = 30, min_num_errors = 30, warning_level = 0.
   .check_positive_integer(min_num_errors, "min_num_errors", min_value = 1L)
   .check_probability(warning_level, "warning_level")
   .check_probability(out_control_level, "out_control_level")
+  if (warning_level < out_control_level) {
+    stop("warning_level must be greater than or equal to out_control_level", call. = FALSE)
+  }
 
   obj <- error_based()
 
@@ -75,10 +82,7 @@ dfr_eddm <- function(min_instances = 30, min_num_errors = 30, warning_level = 0.
 
 #'@export
 update_state.dfr_eddm <- function(obj, value, ...) {
-  value <- .as_scalar(value)
-  if (is.na(value)) {
-    value <- 0
-  }
+  value <- .as_error(value)
 
   state <- obj$state
 

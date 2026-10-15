@@ -1,5 +1,5 @@
-# Constructors that can be exercised without a Python runtime.
-# dfr_adwin (reticulate) and dfr_aedd (autoencoder) are covered separately.
+# Constructors that can be exercised without extra runtimes.
+# dfr_aedd needs an autoencoder and is covered in test-aedd.R.
 error_based_detectors <- function() {
   list(
     dfr_cusum = dfr_cusum(),
@@ -12,6 +12,7 @@ error_based_detectors <- function() {
 
 dist_based_detectors <- function() {
   list(
+    dfr_adwin = dfr_adwin(),
     dfr_kldist = dfr_kldist(window_size = 20),
     dfr_kswin = dfr_kswin(window_size = 40, stat_size = 10, alpha = 0.01, exact = NULL),
     dfr_lbdd = dfr_lbdd(window_size = 20, alpha = 0.05),
@@ -32,4 +33,25 @@ drifting_error_stream <- function() {
 drifting_numeric_stream <- function() {
   set.seed(42)
   c(stats::rnorm(200, mean = 0), stats::rnorm(200, mean = 20))
+}
+
+# Runs the documented streaming loop (reset after every alarm) and returns the
+# positions where a drift was reported.
+detect_indices <- function(model, stream) {
+  output <- list(obj = model, drift = FALSE)
+  indices <- integer(0)
+  for (i in seq_along(stream)) {
+    output <- update_state(output$obj, stream[i])
+    if (output$drift) {
+      indices <- c(indices, i)
+      output$obj <- reset_state(output$obj)
+    }
+  }
+  indices
+}
+
+# Error stream whose error rate jumps from 10% to 60% at observation 501.
+regression_error_stream <- function() {
+  set.seed(123)
+  c(stats::rbinom(500, 1, 0.1), stats::rbinom(500, 1, 0.6))
 }
