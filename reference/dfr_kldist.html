@@ -15,7 +15,12 @@
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/heimdall.html">Get started</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/adaptive-models.html">Adapting models to concept drift</a></li>
+  </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -42,7 +47,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dfr_kldist</span><span class="op">(</span></span>
 <span>  target_feat <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  window_size <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>  p_th <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  p_th <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  monitoring_step <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  data <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -61,7 +66,10 @@
 
 
 <dt id="arg-p-th">p_th<a class="anchor" aria-label="anchor" href="#arg-p-th"></a></dt>
-<dd><p>Drift threshold applied to the KL divergence. Despite the name, this is not a p-value.</p></dd>
+<dd><p>Drift threshold applied to the KL divergence, in bits. Despite the
+name, this is not a p-value. The default (0.5) was calibrated for the default
+window size; larger windows estimate the divergence more precisely and can
+use lower thresholds.</p></dd>
 
 
 <dt id="arg-monitoring-step">monitoring_step<a class="anchor" aria-label="anchor" href="#arg-monitoring-step"></a></dt>
@@ -116,14 +124,12 @@ drift is reported the window is trimmed to its most recent half, and
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">detection</span><span class="op">[</span><span class="va">detection</span><span class="op">$</span><span class="va">type</span> <span class="op">==</span> <span class="st">'drift'</span>,<span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     idx event  type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 101 101  TRUE drift</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 152 152  TRUE drift</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 203 203  TRUE drift</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 254 254  TRUE drift</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 305 305  TRUE drift</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 356 356  TRUE drift</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 407 407  TRUE drift</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 458 458  TRUE drift</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 127 127  TRUE drift</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 219 219  TRUE drift</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 270 270  TRUE drift</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 329 329  TRUE drift</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 380 380  TRUE drift</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 431 431  TRUE drift</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

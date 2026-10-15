@@ -32,7 +32,12 @@ stealthy(
 
 - monitored_features:
 
-  List of features that will be monitored by the drifter
+  Names of the columns of `x` given to the drifter when it is a
+  multivariate drifter, a multi-criteria drifter or a univariate
+  distribution-based drifter without `target_feat` (which receives the
+  row mean of the monitored columns). `NULL` (the default) monitors
+  every feature. Error-based drifters and drifters with a `target_feat`
+  are not affected.
 
 - norm_class:
 
@@ -50,7 +55,8 @@ stealthy(
 - target_uni_drifter:
 
   Passes the prediction target to the drifts as the target feat when the
-  drifter is univariate and dist_based.
+  drifter is univariate and dist_based. The target must be binary
+  (logical, 0/1 or a factor with those labels).
 
 - incremental_memory:
 

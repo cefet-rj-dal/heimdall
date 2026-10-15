@@ -42,7 +42,12 @@ dfr_eddm(
 
 ## Details
 
-Missing values are treated as correct predictions (`0`).
+EDDM monitors the distance between consecutive errors, which makes it
+sensitive to gradual drifts but also prone to false alarms when the
+error rate is high. `warning_level` must not be lower than
+`out_control_level`. Values must be `1` (error) or `0` (correct
+prediction), and missing values are treated as correct predictions
+(`0`).
 
 ## References
 

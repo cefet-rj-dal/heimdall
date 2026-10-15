@@ -17,7 +17,8 @@ dfr_page_hinkley(
   min_instances = 30,
   delta = 0.005,
   threshold = 50,
-  alpha = 1 - 1e-04
+  alpha = 1 - 1e-04,
+  direction = "increase"
 )
 ```
 
@@ -42,6 +43,11 @@ dfr_page_hinkley(
 - alpha:
 
   The forgetting factor, used to weight the observed value and the mean
+
+- direction:
+
+  Which changes of the mean are detected: `"increase"` (the default, as
+  in the reference implementation), `"decrease"` or `"both"`.
 
 ## Value
 

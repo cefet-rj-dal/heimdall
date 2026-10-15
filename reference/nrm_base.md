@@ -32,5 +32,5 @@ attached.
 library(daltoolbox)
 obj <- nrm_base(norm_class = minmax())
 class(obj)
-#> [1] "norm"
+#> [1] "norm"     "dal_base"
 ```

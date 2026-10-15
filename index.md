@@ -1,9 +1,5 @@
 # ![Logo do pacote heimdall](https://raw.githubusercontent.com/cefet-rj-dal/heimdall/main/inst/logo.png) Heimdall
 
-![GitHub
-Stars](https://img.shields.io/github/stars/cefet-rj-dal/heimdall?logo=Github)![CRAN
-Downloads](https://cranlogs.r-pkg.org/badges/heimdall)
-
 Heimdall is a tool designed for concept drift detection in continuous
 data streams. When analyzing time series data, it is possible to observe
 significant changes in the data distribution or in the accuracy of
@@ -21,6 +17,21 @@ theory of concept drift to a working streaming implementation. The
 package includes detectors for both **real concept drift** and **virtual
 concept drift**, and the repository examples are designed to help users
 understand that distinction through small, reproducible workflows.
+
+------------------------------------------------------------------------
+
+## Getting started
+
+The package ships with two vignettes, also available on the [package
+website](https://cefet-rj-dal.github.io/heimdall/):
+
+- [`vignette("heimdall")`](https://cefet-rj-dal.github.io/heimdall/articles/heimdall.md)
+  introduces the streaming workflow shared by every detector and shows
+  how to monitor real and virtual concept drift;
+- [`vignette("adaptive-models")`](https://cefet-rj-dal.github.io/heimdall/articles/adaptive-models.md)
+  shows how
+  [`stealthy()`](https://cefet-rj-dal.github.io/heimdall/reference/stealthy.md)
+  retrains a model automatically when a drift is detected.
 
 ------------------------------------------------------------------------
 

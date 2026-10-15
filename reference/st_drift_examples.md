@@ -1,11 +1,15 @@
 # Synthetic time series for concept drift detection
 
-A list of time series for drift detection. It contains, among others:
+A list of time series for drift detection:
 
-- `example1`: a bivariate dataset with one multivariate concept drift
-  example
+- `dataset1`: two numeric series (`serie1`, `serie2`), a logical
+  `target`, the index `i` and a `drift` column flagging the change
+  point;
 
-- `univariate`: a univariate series with four known change points
+- `dataset2`: the same series without the target;
+
+- `univariate`: a univariate series (`serie`) with four known change
+  points flagged in `event`.
 
 ## Usage
 
@@ -15,7 +19,7 @@ data(st_drift_examples)
 
 ## Format
 
-A list of time series.
+A list of three data frames with 500 rows each.
 
 ## Source
 
@@ -29,5 +33,7 @@ A list of time series.
 
 ``` r
 data(st_drift_examples)
-dataset <- st_drift_examples$example1
+dataset <- st_drift_examples$dataset1
+which(dataset$drift == 1)
+#> [1] 250
 ```

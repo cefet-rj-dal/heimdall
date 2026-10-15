@@ -1,5 +1,154 @@
 # Changelog
 
+## heimdall (development version)
+
+### Breaking changes
+
+- [`fit()`](https://rdrr.io/pkg/daltoolbox/man/fit.html) on a univariate
+  detector now monitors only `target_feat` when it is given a data
+  frame. It used to concatenate every column into a single stream. A
+  data frame with several columns and no `target_feat` is now an error
+  instead of being silently concatenated.
+- [`update_state()`](https://cefet-rj-dal.github.io/heimdall/reference/update_state.md)
+  rejects ambiguous input instead of guessing: vectors with more than
+  one value, text that is not a number, and, for error-based detectors,
+  values other than `0`, `1`, `TRUE` or `FALSE`. Factors are read
+  through their labels (previously through their internal codes), and
+  infinite values are treated as missing, with a warning.
+- [`dfr_cusum()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_cusum.md)
+  was reimplemented after MOA’s `CusumDM`, with the arguments `lambda`
+  (now 50), `delta` and `min_instances`. The previous version added `+1`
+  per error and `-1` per correct prediction, so it could only detect
+  error rates above 50%.
+- [`dfr_multi_criteria()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_multi_criteria.md)
+  no longer keeps `obj$drifts`, which grew with every observation. Use
+  `obj$detections` (alarms per detector) and `obj$last_drifts`
+  (decisions on the last observation) instead. `"and"` now accepts
+  detections up to `fuzzy_window` observations apart (it used to require
+  them on the same observation, which almost never happens), and both
+  `"and"` and `"fuzzy"` report a change once instead of on several
+  consecutive observations. The `"fuzzy"` combination now costs the same
+  per observation regardless of the length of the stream.
+- New defaults, calibrated by simulation to keep false alarms rare:
+  `dfr_kldist(p_th = 0.5)`,
+  `dfr_kswin(window_size = 300, stat_size = 100, alpha = 1e-4, exact = NULL)`,
+  `dfr_lbdd(window_size = 300, alpha = 0.001)`,
+  `dfr_mcdd(window_size = 300, alpha = 1e-4)`,
+  `dfr_ecdd(average_run_length = 400)` and
+  `dfr_aedd(monitoring_step = window_size / 2)`. The previous windows of
+  1500 observations were three times longer than the bundled example
+  data.
+- [`dfr_aedd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_aedd.md)
+  now uses
+  [`daltoolboxdp::autoenc_ed`](https://rdrr.io/pkg/daltoolboxdp/man/autoenc_ed.html)
+  as its default autoencoder; the previous default no longer exists in
+  `daltoolbox`.
+
+### Bug fixes
+
+- [`dfr_hddm()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_hddm.md)
+  now detects increases of the error rate. A misplaced parenthesis in
+  the bound that tracks the minimum error rate made the detector update
+  that minimum on almost every observation, so it practically never
+  reported a drift.
+- [`dfr_kldist()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_kldist.md)
+  smooths the histograms with one pseudo-count per bin. With the
+  previous smoothing (`1e-12`), any empty bin made the divergence
+  explode, so the detector raised about 190 false alarms per 10,000
+  stationary observations whatever the threshold.
+- [`dfr_ecdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_ecdd.md)
+  used the last coefficient of the ARL 1000 polynomial (987.23) in the
+  ARL 400 control limit; it now uses 848.18, as in the reference
+  implementation.
+- [`dfr_cusum()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_cusum.md)
+  and
+  [`dfr_ecdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_ecdd.md)
+  restart after a drift, so they report each change once instead of on
+  every following observation when
+  [`reset_state()`](https://cefet-rj-dal.github.io/heimdall/reference/reset_state.md)
+  is not called.
+- [`dfr_aedd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_aedd.md)
+  no longer grows its window without bound (with the default
+  `monitoring_step`, 4000 rows left 3998 stored for a window of 100),
+  its reference and recent windows no longer share a row, and it
+  retrains the autoencoder when new columns appear. It warns the first
+  time it has to clip values outside `[0, 1]` and no longer fails on
+  missing values.
+- Precision, recall, F-score and accuracy accept factor and character
+  labels. With a factor `y_true`, precision returned 1.5 and recall
+  `NaN`. The metrics now also refuse vectors of different lengths
+  instead of recycling them.
+- [`mt_rocauc()`](https://cefet-rj-dal.github.io/heimdall/reference/mt_rocauc.md)
+  drops observations with missing scores, with a warning, instead of
+  scoring them as zero.
+- [`nrm_memory()`](https://cefet-rj-dal.github.io/heimdall/reference/nrm_memory.md)
+  no longer drops repeated rows from its history, which distorted the
+  normalization (a z-score of 1.79 came out as 0.71).
+- `stealthy(target_uni_drifter = TRUE)` works with factor targets; it
+  used to feed `NA` to the detector, which then never detected anything.
+- [`stealthy()`](https://cefet-rj-dal.github.io/heimdall/reference/stealthy.md)
+  now honours `monitored_features`, which was ignored.
+- Warm-start data (`data =`) longer than `window_size` is truncated to
+  the most recent observations; it used to make the window permanently
+  longer.
+- [`dfr_kswin()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_kswin.md)
+  rejects `window_size == stat_size`, which crashed at the first test.
+- [`dfr_multi_criteria()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_multi_criteria.md)
+  fails with a clear message when a detector’s `target_feat` is missing
+  from the data, instead of never detecting.
+
+### New features
+
+- [`dfr_page_hinkley()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_page_hinkley.md)
+  gains `direction = c("increase", "decrease", "both")`. The default
+  keeps the previous one-sided behaviour.
+
+### Validation and documentation
+
+- Count parameters must be whole numbers,
+  [`dfr_eddm()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_eddm.md)
+  requires `warning_level >= out_control_level`, `target_feat` must be a
+  single column name, and `dfr_kldist(p_th)` must be numeric.
+- [`nrm_base()`](https://cefet-rj-dal.github.io/heimdall/reference/nrm_base.md)
+  objects keep the `dal_base` class.
+- The help pages state which changes each detector cannot see: DDM and
+  HDDM only report increases of the error rate, LBDD only changes of
+  spread, MCDD only changes of location.
+- [`?st_drift_examples`](https://cefet-rj-dal.github.io/heimdall/reference/st_drift_examples.md)
+  documents the actual datasets (`dataset1`, `dataset2`, `univariate`)
+  instead of a non-existent `example1`.
+- [`dfr_adwin()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_adwin.md)
+  is now implemented in pure R. It no longer needs `reticulate`, Python
+  or `numpy`, and a `dfr_adwin` object can now be saved with
+  [`saveRDS()`](https://rdrr.io/r/base/readRDS.html). The port follows
+  the scikit-multiflow implementation the previous version wrapped, so
+  detections are expected to be the same.
+
+### Dependencies
+
+- `caret` and `Metrics` were dropped from `Imports`. One-hot encoding in
+  [`stealthy()`](https://cefet-rj-dal.github.io/heimdall/reference/stealthy.md)
+  is now done internally with the same column names produced by
+  [`caret::dummyVars()`](https://rdrr.io/pkg/caret/man/dummyVars.html),
+  and precision and recall are computed internally.
+- `reticulate` was dropped from `Suggests`, together with the bundled
+  `adwin.py` module. `daltoolboxdp` was added to `Suggests` for the
+  default autoencoder of
+  [`dfr_aedd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_aedd.md).
+
+### Documentation and infrastructure
+
+- New vignettes:
+  [`vignette("heimdall")`](https://cefet-rj-dal.github.io/heimdall/articles/heimdall.md)
+  and
+  [`vignette("adaptive-models")`](https://cefet-rj-dal.github.io/heimdall/articles/adaptive-models.md).
+- New tests cover every detector,
+  [`stealthy()`](https://cefet-rj-dal.github.io/heimdall/reference/stealthy.md),
+  [`dfr_multi_criteria()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_multi_criteria.md),
+  the metrics and the internal helpers, plus regression tests that pin
+  the detection positions of every detector on fixed streams.
+- New GitHub Actions workflows for test coverage and linting.
+
 ## heimdall 1.3.0
 
 ### Breaking changes

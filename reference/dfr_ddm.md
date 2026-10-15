@@ -33,7 +33,10 @@ dfr_ddm(min_instances = 30, warning_level = 2, out_control_level = 3)
 
 ## Details
 
-Missing values are treated as correct predictions (`0`).
+The detector only reacts to an increase of the error rate (a degradation
+of the model); improvements are not reported. Values must be `1` (error)
+or `0` (correct prediction), and missing values are treated as correct
+predictions (`0`).
 
 ## References
 

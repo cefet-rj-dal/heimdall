@@ -38,7 +38,11 @@ dfr_hddm(
 
 ## Details
 
-Missing values are treated as correct predictions (`0`).
+The detector reports increases of the error rate. With
+`two_side_option = TRUE`, a significant decrease restarts the statistics
+but is not reported as a drift. Values must be `1` (error) or `0`
+(correct prediction), and missing values are treated as correct
+predictions (`0`).
 
 ## References
 

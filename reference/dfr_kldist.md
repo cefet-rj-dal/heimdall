@@ -14,7 +14,7 @@ Leibler (1951).
 dfr_kldist(
   target_feat = NULL,
   window_size = 100,
-  p_th = 0.05,
+  p_th = 0.5,
   monitoring_step = 1,
   data = NULL
 )
@@ -32,8 +32,10 @@ dfr_kldist(
 
 - p_th:
 
-  Drift threshold applied to the KL divergence. Despite the name, this
-  is not a p-value.
+  Drift threshold applied to the KL divergence, in bits. Despite the
+  name, this is not a p-value. The default (0.5) was calibrated for the
+  default window size; larger windows estimate the divergence more
+  precisely and can use lower thresholds.
 
 - monitoring_step:
 
@@ -92,12 +94,10 @@ for (i in seq_along(data$serie)){
 
 detection[detection$type == 'drift',]
 #>     idx event  type
-#> 101 101  TRUE drift
-#> 152 152  TRUE drift
-#> 203 203  TRUE drift
-#> 254 254  TRUE drift
-#> 305 305  TRUE drift
-#> 356 356  TRUE drift
-#> 407 407  TRUE drift
-#> 458 458  TRUE drift
+#> 127 127  TRUE drift
+#> 219 219  TRUE drift
+#> 270 270  TRUE drift
+#> 329 329  TRUE drift
+#> 380 380  TRUE drift
+#> 431 431  TRUE drift
 ```

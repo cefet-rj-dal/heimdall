@@ -30,13 +30,14 @@ dfr_adwin(target_feat = NULL, delta = 2e-05)
 
 ## Details
 
-This detector is a thin wrapper around a Python implementation and
-therefore needs the suggested package `reticulate` together with a
-Python installation providing `numpy`. The Python module is loaded once
-per session and cached. Because the state lives in a Python object, a
-`dfr_adwin` object cannot be serialized with
-[`base::saveRDS()`](https://rdrr.io/r/base/readRDS.html) and restored in
-another session.
+The implementation is written in pure R and follows the
+exponential-histogram version of ADWIN distributed with
+scikit-multiflow. The window is compressed into buckets of exponentially
+growing size (at most five buckets per size), and the cut points are
+checked every 32 observations, once the window holds more than 10
+observations. All the state lives in the object itself, so a `dfr_adwin`
+object can be serialized with
+[`base::saveRDS()`](https://rdrr.io/r/base/readRDS.html).
 
 ## References
 
@@ -55,36 +56,28 @@ library(daltoolbox)
 #>     transform
 library(heimdall)
 
-# \donttest{
-if (requireNamespace("reticulate", quietly = TRUE) &&
-   reticulate::py_module_available("numpy")) {
+data(st_drift_examples)
+data <- st_drift_examples$univariate
+data$event <- NULL
 
- data(st_drift_examples)
- data <- st_drift_examples$univariate
- data$event <- NULL
+model <- dfr_adwin(target_feat='serie')
 
- model <- dfr_adwin(target_feat='serie')
-
- detection <- NULL
- output <- list(obj=model, drift=FALSE)
- for (i in seq_along(data$serie)){
-   output <- update_state(output$obj, data$serie[i])
-   if (output$drift){
-     type <- 'drift'
-     output$obj <- reset_state(output$obj)
-   }else{
-     type <- ''
-   }
-   detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+detection <- NULL
+output <- list(obj=model, drift=FALSE)
+for (i in seq_along(data$serie)){
+ output <- update_state(output$obj, data$serie[i])
+ if (output$drift){
+   type <- 'drift'
+   output$obj <- reset_state(output$obj)
+ }else{
+   type <- ''
  }
-
- print(detection[detection$type == 'drift',])
+ detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
-#> Downloading uv...
-#> Done!
+
+print(detection[detection$type == 'drift',])
 #>     idx event  type
 #> 224 224  TRUE drift
 #> 352 352  TRUE drift
 #> 448 448  TRUE drift
-# }
 ```

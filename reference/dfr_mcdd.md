@@ -13,8 +13,8 @@ drift analysis.
 ``` r
 dfr_mcdd(
   target_feat = NULL,
-  alpha = 1e-08,
-  window_size = 1500,
+  alpha = 1e-04,
+  window_size = 300,
   monitoring_step = 1,
   data = NULL
 )
@@ -49,6 +49,11 @@ dfr_mcdd(
 `dfr_mcdd` object
 
 ## Details
+
+MCDD only reacts to changes of location (mean or median); a change of
+spread with the same centre is not detected, so combine it with
+[`dfr_lbdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_lbdd.md)
+when both kinds of change matter.
 
 Normality of both halves of the window is checked with
 [`stats::shapiro.test()`](https://rdrr.io/r/stats/shapiro.test.html);

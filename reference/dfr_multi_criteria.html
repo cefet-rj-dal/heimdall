@@ -17,7 +17,12 @@ decision."></head><body>
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/heimdall.html">Get started</a></li>
+<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/adaptive-models.html">Adapting models to concept drift</a></li>
+  </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -60,8 +65,8 @@ inherit from either <code>dist_based</code> or <code>mv_dist_based</code>.</p></
 
 
 <dt id="arg-fuzzy-window">fuzzy_window<a class="anchor" aria-label="anchor" href="#arg-fuzzy-window"></a></dt>
-<dd><p>Sets the fuzzy window size. Only used when
-<code>combination = 'fuzzy'</code>.</p></dd>
+<dd><p>Number of observations during which a detection is
+still taken into account by the <code>'and'</code> and <code>'fuzzy'</code> combinations.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -69,10 +74,19 @@ inherit from either <code>dist_based</code> or <code>mv_dist_based</code>.</p></
     <p>Drifter object</p>
     </div>
     <div class="section level2">
-    <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
-    <p>The <code>'fuzzy'</code> combination rebuilds the whole membership matrix on every
-update, so its cost grows quadratically with the length of the stream. Prefer
-<code>'or'</code> or <code>'and'</code> for long streams.</p>
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+
+<ul><li><p><code>'or'</code> reports a drift as soon as any detector does;</p></li>
+<li><p><code>'and'</code> reports a drift when every detector has reported one within
+the last <code>fuzzy_window</code> observations;</p></li>
+<li><p><code>'fuzzy'</code> gives each detection a weight that decays linearly from 1 to
+0 over <code>fuzzy_window</code> observations, and reports a drift when the sum of the
+weights exceeds half the number of detectors.</p></li>
+</ul><p>After a combined drift is reported, the past detections are forgotten, so a
+single change is reported once. Detectors with a <code>target_feat</code> receive that
+column of each row; the other univariate detectors receive the row mean.</p>
+<p><code>obj$detections</code> counts the drifts reported by each detector and
+<code>obj$last_drifts</code> holds their decisions on the last observation.</p>
     </div>
 
     <div class="section level2">
@@ -94,6 +108,9 @@ update, so its cost grows quadratically with the length of the stream. Prefer
 <span class="r-in"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/daltoolbox/man/fit.html" class="external-link">fit</a></span><span class="op">(</span><span class="va">model</span>, <span class="va">data</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">model</span><span class="op">$</span><span class="va">drifted</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-in"><span><span class="va">model</span><span class="op">$</span><span class="va">detections</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           ph ph_sensitive </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            1            2 </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

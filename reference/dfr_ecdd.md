@@ -10,7 +10,7 @@ charts for concept-drift detection in streaming classifiers
 ## Usage
 
 ``` r
-dfr_ecdd(lambda = 0.2, min_run_instances = 30, average_run_length = 100)
+dfr_ecdd(lambda = 0.2, min_run_instances = 30, average_run_length = 400)
 ```
 
 ## Arguments
@@ -25,9 +25,12 @@ dfr_ecdd(lambda = 0.2, min_run_instances = 30, average_run_length = 100)
 
 - average_run_length:
 
-  Desired Average Run Length (ARL). The published control-limit
-  coefficients are only defined for target run lengths up to 1000, so
-  larger values are rejected.
+  Desired Average Run Length (ARL), i.e. the expected number of
+  observations between two false alarms. The published control-limit
+  polynomials exist for 100, 400 and 1000; other values use the next one
+  up, and values above 1000 are rejected. The default changed from 100
+  to 400 in the development version, which reduced false alarms about
+  sevenfold.
 
 ## Value
 

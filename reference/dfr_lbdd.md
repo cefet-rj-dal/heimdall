@@ -13,8 +13,8 @@ as its core mechanism.
 ``` r
 dfr_lbdd(
   target_feat = NULL,
-  alpha = 0.01,
-  window_size = 1500,
+  alpha = 0.001,
+  window_size = 300,
   monitoring_step = 1,
   data = NULL
 )
@@ -49,6 +49,12 @@ dfr_lbdd(
 `dfr_lbdd` object
 
 ## Details
+
+LBDD only reacts to changes of spread (variance); a shift of the mean
+with the same spread is not detected, so combine it with
+[`dfr_mcdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_mcdd.md)
+when both kinds of change matter. The test runs at every observation, so
+`alpha` should be small to keep false alarms rare.
 
 Levene's test is computed with the group spread centred on the median
 (the Brown-Forsythe variant).

@@ -11,11 +11,11 @@ follows Raab et al. (2020) <doi:10.1016/j.neucom.2019.11.111>.
 ``` r
 dfr_kswin(
   target_feat = NULL,
-  window_size = 1500,
-  stat_size = 500,
-  alpha = 1e-07,
+  window_size = 300,
+  stat_size = 100,
+  alpha = 1e-04,
   monitoring_step = 1,
-  exact = TRUE,
+  exact = NULL,
   data = NULL
 )
 ```
@@ -28,7 +28,9 @@ dfr_kswin(
 
 - window_size:
 
-  Size of the sliding window (must be \> 2\*stat_size)
+  Size of the sliding window. It must be greater than `stat_size`, and
+  at least `2 * stat_size` is recommended so that the reference sample
+  is as large as the recent one.
 
 - stat_size:
 
@@ -48,9 +50,9 @@ dfr_kswin(
 - exact:
 
   Passed to [`stats::ks.test()`](https://rdrr.io/r/stats/ks.test.html).
-  The default (`TRUE`) preserves the behaviour of previous versions;
-  setting it to `NULL` lets R choose, which is considerably faster for
-  the default window sizes.
+  The default (`NULL`) lets R choose between the exact and the
+  asymptotic test, which is much faster for windows of this size. Up to
+  version 1.3.0 the default was `TRUE`.
 
 - data:
 
@@ -108,6 +110,6 @@ for (i in seq_along(data$serie)){
 }
 
 detection[detection$type == 'drift',]
-#> [1] idx   event type 
-#> <0 rows> (or 0-length row.names)
+#>     idx event  type
+#> 301 301  TRUE drift
 ```

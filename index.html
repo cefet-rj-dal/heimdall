@@ -31,7 +31,14 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
+<li class="nav-item"><a class="nav-link" href="articles/heimdall.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/adaptive-models.html">Adapting models to concept drift</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -51,11 +58,23 @@
 <img src="https://raw.githubusercontent.com/cefet-rj-dal/heimdall/main/inst/logo.png" alt="Logo do pacote heimdall" align="centre" height="150" width="129"> Heimdall<a class="anchor" aria-label="anchor" href="#id_-heimdall"></a>
 </h1></div>
 <!-- badges: start -->
-<p><img src="https://img.shields.io/github/stars/cefet-rj-dal/heimdall?logo=Github" alt="GitHub Stars"><img src="https://cranlogs.r-pkg.org/badges/heimdall" alt="CRAN Downloads"><!-- badges: end --></p>
+
 <p>Heimdall is a tool designed for concept drift detection in continuous data streams. When analyzing time series data, it is possible to observe significant changes in the data distribution or in the accuracy of predictive models during the forecasting process. These changes are known as concept drift.</p>
 <p>The goal of the Heimdall package is to detect when concept drift occurs, enabling the detection and adaptation of models in non-stationary contexts. The package offers several state-of-the-art methods to identify and handle concept drift, as well as techniques for efficient model adaptation.</p>
 <p>Heimdall is particularly useful when you need to move quickly from the theory of concept drift to a working streaming implementation. The package includes detectors for both <strong>real concept drift</strong> and <strong>virtual concept drift</strong>, and the repository examples are designed to help users understand that distinction through small, reproducible workflows.</p>
 <hr>
+<div class="section level2">
+<h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h2>
+<p>The package ships with two vignettes, also available on the <a href="https://cefet-rj-dal.github.io/heimdall/">package website</a>:</p>
+<ul>
+<li>
+<code><a href="articles/heimdall.html">vignette("heimdall")</a></code> introduces the streaming workflow shared by every detector and shows how to monitor real and virtual concept drift;</li>
+<li>
+<code><a href="articles/adaptive-models.html">vignette("adaptive-models")</a></code> shows how <code><a href="reference/stealthy.html">stealthy()</a></code> retrains a model automatically when a drift is detected.</li>
+</ul>
+<hr>
+</div>
 <div class="section level2">
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h2>
@@ -140,7 +159,14 @@
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/cefet-rj-dal/heimdall/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/cefet-rj-dal/heimdall/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/cefet-rj-dal/heimdall" class="external-link"><img src="https://codecov.io/gh/cefet-rj-dal/heimdall/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://CRAN.R-project.org/package=heimdall" class="external-link"><img src="https://www.r-pkg.org/badges/version/heimdall" alt="CRAN status"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>

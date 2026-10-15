@@ -11,14 +11,25 @@ Muthukrishnan, Berg, and Wu (2007) <doi:10.1109/ICDMW.2007.89>.
 ## Usage
 
 ``` r
-dfr_cusum(lambda = 100)
+dfr_cusum(lambda = 50, delta = 0.005, min_instances = 30)
 ```
 
 ## Arguments
 
 - lambda:
 
-  Necessary level for warning zone (2 standard deviation)
+  Detection threshold: a drift is reported when the cumulative sum
+  exceeds it. Lower values react faster at the cost of more false
+  alarms.
+
+- delta:
+
+  Tolerance subtracted at every step, i.e. the increase of the error
+  rate that is still considered acceptable.
+
+- min_instances:
+
+  Minimum number of observations before a drift can be reported.
 
 ## Value
 
@@ -26,7 +37,15 @@ dfr_cusum(lambda = 100)
 
 ## Details
 
-Missing values are treated as correct predictions (`0`).
+The detector follows the `CusumDM` detector of MOA: it accumulates
+`max(0, sum + x - mean - delta)`, where `mean` is the running error
+rate, so it reacts to an increase of the error rate whatever its level.
+After a drift is reported the statistics restart from scratch. Missing
+values are treated as correct predictions (`0`).
+
+Up to version 1.3.0, `dfr_cusum()` accumulated `+1` for every error and
+`-1` for every correct prediction, so it could only detect error rates
+above 50%.
 
 ## References
 
@@ -65,5 +84,5 @@ for (i in seq_along(data$prediction)){
 
 detection[detection$type == 'drift',]
 #>     idx event  type
-#> 301 301  TRUE drift
+#> 258 258  TRUE drift
 ```

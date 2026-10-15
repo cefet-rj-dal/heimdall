@@ -17,7 +17,7 @@ dfr_aedd(
   num_epochs = 1000,
   learning_rate = 0.001,
   window_size = 100,
-  monitoring_step = 1700,
+  monitoring_step = floor(window_size/2),
   criteria = "mann_whitney",
   alpha = 0.01,
   reporting = FALSE
@@ -33,7 +33,9 @@ dfr_aedd(
 - ae_class:
 
   Autoencoder Class. When `NULL` (the default),
-  `daltoolbox::autoenc_encode_decode` is used.
+  [`daltoolboxdp::autoenc_ed`](https://rdrr.io/pkg/daltoolboxdp/man/autoenc_ed.html)
+  is used, which requires the suggested package `daltoolboxdp` and its
+  Python backend.
 
 - batch_size:
 
@@ -49,11 +51,13 @@ dfr_aedd(
 
 - window_size:
 
-  Size of the most recent data to be used
+  Number of most recent rows kept by the detector. The oldest half is
+  the reference window and the newest half the recent window.
 
 - monitoring_step:
 
-  The number of rows that the drifter waits to be is updated
+  Number of rows between two consecutive checks. The default checks
+  twice per window.
 
 - criteria:
 
@@ -73,6 +77,21 @@ dfr_aedd(
 ## Value
 
 `dfr_aedd` object
+
+## Details
+
+The autoencoder expects inputs in the `[0, 1]` range. Values outside
+that range are clipped to it, and the detector warns the first time this
+happens, so the data should be normalized beforehand (for example with
+[`daltoolbox::minmax()`](https://rdrr.io/pkg/daltoolbox/man/minmax.html)).
+`ae_class` must be a constructor accepting the arguments `input_size`,
+`encoding_size`, `batch_size`, `num_epochs` and `learning_rate`, whose
+objects implement [`fit()`](https://rdrr.io/pkg/daltoolbox/man/fit.html)
+and [`transform()`](https://rdrr.io/pkg/daltoolbox/man/transform.html).
+
+The autoencoder is trained on the reference window the first time the
+window is full, and again after every drift or whenever new columns
+appear.
 
 ## References
 
