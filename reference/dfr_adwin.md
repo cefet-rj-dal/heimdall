@@ -57,25 +57,25 @@ library(daltoolbox)
 library(heimdall)
 
 data(st_drift_examples)
-data <- st_drift_examples$univariate
+data <- st_drift_examples$uv_virtual_drift
 data$event <- NULL
 
-model <- dfr_adwin(target_feat='serie')
+model <- dfr_adwin(target_feat = "serie")
 
 detection <- NULL
-output <- list(obj=model, drift=FALSE)
-for (i in seq_along(data$serie)){
- output <- update_state(output$obj, data$serie[i])
- if (output$drift){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+output <- list(obj = model, drift = FALSE)
+for (i in seq_along(data$serie)) {
+  output <- update_state(output$obj, data$serie[i])
+  if (output$drift) {
+    type <- "drift"
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ""
+  }
+  detection <- rbind(detection, data.frame(idx = i, event = output$drift, type = type))
 }
 
-print(detection[detection$type == 'drift',])
+print(detection[detection$type == "drift", ])
 #>     idx event  type
 #> 224 224  TRUE drift
 #> 352 352  TRUE drift

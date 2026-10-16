@@ -11,7 +11,7 @@ reported."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">heimdall</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,6 +24,7 @@ reported."></head><body>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/adaptive-models.html">Adapting models to concept drift</a></li>
+    <li><a class="dropdown-item" href="../articles/configuring-detectors.html">Configuring detectors</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -53,14 +54,17 @@ reported.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">stealthy</span><span class="op">(</span></span>
 <span>  <span class="va">model</span>,</span>
 <span>  <span class="va">drift_method</span>,</span>
-<span>  monitored_features <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  norm_class <span class="op">=</span> <span class="fu">daltoolbox</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/daltoolbox/man/zscore.html" class="external-link">zscore</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  warmup_size <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  th <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  target_uni_drifter <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  incremental_memory <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  reporting <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  incremental_memory <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  active_warmup <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  class_balance <span class="op">=</span> <span class="st">"inactive"</span>,</span>
+<span>  obsolete_model <span class="op">=</span> <span class="st">"null"</span>,</span>
+<span>  reporting <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  history_size <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -74,14 +78,6 @@ reported.</p>
 
 <dt id="arg-drift-method">drift_method<a class="anchor" aria-label="anchor" href="#arg-drift-method"></a></dt>
 <dd><p>The algorithm object to detect drifts</p></dd>
-
-
-<dt id="arg-monitored-features">monitored_features<a class="anchor" aria-label="anchor" href="#arg-monitored-features"></a></dt>
-<dd><p>Names of the columns of <code>x</code> given to the drifter
-when it is a multivariate drifter, a multi-criteria drifter or a univariate
-distribution-based drifter without <code>target_feat</code> (which receives the row mean
-of the monitored columns). <code>NULL</code> (the default) monitors every feature.
-Error-based drifters and drifters with a <code>target_feat</code> are not affected.</p></dd>
 
 
 <dt id="arg-norm-class">norm_class<a class="anchor" aria-label="anchor" href="#arg-norm-class"></a></dt>
@@ -104,22 +100,61 @@ Error-based drifters and drifters with a <code>target_feat</code> are not affect
 <dd><p>If true, the model will retrain with all available data whenever the fit is called. If false, it only retrains when a drift is detected.</p></dd>
 
 
-<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>if TRUE shows drift messages</p></dd>
+<dt id="arg-active-warmup">active_warmup<a class="anchor" aria-label="anchor" href="#arg-active-warmup"></a></dt>
+<dd><p>If true, the models will be retrained for each batch while the number of rows for the warmup_size is not met.</p></dd>
+
+
+<dt id="arg-class-balance">class_balance<a class="anchor" aria-label="anchor" href="#arg-class-balance"></a></dt>
+<dd><p>Class balancing strategy. <code>"buffer"</code> sets a buffer with the last <code>warmup_size/2</code> rows for each class. <code>"inactive"</code> does nothing.</p></dd>
+
+
+<dt id="arg-obsolete-model">obsolete_model<a class="anchor" aria-label="anchor" href="#arg-obsolete-model"></a></dt>
+<dd><p>Strategy used by <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> while no model is fitted. One of <code>"null"</code> (default, returns all <code>FALSE</code>), <code>"majority"</code> (majority class classifier) or <code>"last_model"</code> (keeps using the previous model).</p></dd>
 
 
 <dt id="arg-reporting">reporting<a class="anchor" aria-label="anchor" href="#arg-reporting"></a></dt>
-<dd><p>If TRUE, some data are returned as norm_x_oh, drift_input, hist_proj, and recent_proj.</p></dd>
+<dd><p>If TRUE, every batch given to <code><a href="https://rdrr.io/pkg/daltoolbox/man/fit.html" class="external-link">fit()</a></code> (<code>x</code> and <code>y</code>) is accumulated in <code>drifter_input</code>.</p></dd>
+
+
+<dt id="arg-history-size">history_size<a class="anchor" aria-label="anchor" href="#arg-history-size"></a></dt>
+<dd><p>Maximum number of rows kept in <code>drifter_output</code> and
+<code>drifter_input</code>; the oldest rows are dropped first. <code>NULL</code> (the default) keeps
+the whole stream, so set it on long streams to bound memory.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>if TRUE shows drift messages</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Stealthy object</p>
     </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The drifter decides what it monitors through its own <code>target_feat</code>,
+given in terms of the one-hot encoded and normalized columns: a univariate
+drifter with a <code>target_feat</code> receives that column, a univariate drifter
+without one receives the row mean of every column, and multivariate,
+multi-criteria and dummy drifters receive the selected columns (every column
+when their <code>target_feat</code> is <code>NULL</code>).</p>
+<p>The batch is evaluated before the model is updated: error-based
+detectors see prequential residuals, computed with the model as it was at the
+beginning of the call, and the detector is fed the incoming batch exactly
+once per call.</p>
+<p><code>obj$drifter_output</code> holds the diagnostics reported by the drifter (for
+example the window width of ADWIN or the p-values of KSWIN; see the
+<code>drifter_output</code> of each detector), with one row per row of <code>x</code> across every
+call to <code><a href="https://rdrr.io/pkg/daltoolbox/man/fit.html" class="external-link">fit()</a></code>. Rows are <code>NA</code> while the drifter is not monitoring (during the
+warmup, or after a drift until the model is retrained) and for observations
+it skipped, such as error-based rows without a prediction.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># See ?dfr_ddm for an example of a drift detector that can be plugged here.</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># See ?dfr_ddm for a drift detector that can be plugged here, and the</span></span></span>
+<span class="r-in"><span><span class="co"># online prediction walkthroughs at</span></span></span>
+<span class="r-in"><span><span class="co"># https://github.com/cefet-rj-dal/heimdall/tree/main/examples/2_online_prediction</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

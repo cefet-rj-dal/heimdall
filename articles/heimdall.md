@@ -71,15 +71,15 @@ detect <- function(model, stream) {
 
 ## Virtual drift: monitoring a feature
 
-`st_drift_examples$univariate` is a synthetic series whose behaviour
-changes at the observations flagged in the `event` column. ADWIN keeps a
-window of adaptive size and shrinks it whenever its older and newer
-parts have significantly different means.
+`st_drift_examples$uv_virtual_drift` is a synthetic series whose
+behaviour changes at the observations flagged in the `event` column.
+ADWIN keeps a window of adaptive size and shrinks it whenever its older
+and newer parts have significantly different means.
 
 ``` r
 
 data(st_drift_examples)
-serie <- st_drift_examples$univariate
+serie <- st_drift_examples$uv_virtual_drift
 
 drifts <- detect(dfr_adwin(), serie$serie)
 drifts
@@ -91,8 +91,10 @@ drifts
 plot(serie$serie, type = "l", col = "grey40", xlab = "observation", ylab = "serie")
 abline(v = which(serie$event), lty = 2, col = "grey70")
 abline(v = drifts, col = "firebrick", lwd = 2)
-legend("bottomleft", c("true change", "detection"), lty = c(2, 1),
-       col = c("grey70", "firebrick"), bty = "n", cex = 0.8)
+legend("bottomleft", c("true change", "detection"),
+  lty = c(2, 1),
+  col = c("grey70", "firebrick"), bty = "n", cex = 0.8
+)
 ```
 
 ![](heimdall_files/figure-html/unnamed-chunk-4-1.png)
@@ -115,8 +117,10 @@ detect(dfr_hddm(), errors)
 
 ``` r
 
-plot(cumsum(errors) / seq_along(errors), type = "l", xlab = "observation",
-     ylab = "cumulative error rate")
+plot(cumsum(errors) / seq_along(errors),
+  type = "l", xlab = "observation",
+  ylab = "cumulative error rate"
+)
 abline(v = 500, lty = 2, col = "grey70")
 abline(v = detect(dfr_ddm(), errors), col = "firebrick", lwd = 2)
 ```

@@ -1,8 +1,10 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/404.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/CONTRIBUTING.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/LICENSE-text.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/LICENSE.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/articles/adaptive-models.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/articles/configuring-detectors.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/articles/heimdall.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/articles/index.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/authors.html</loc></url>
@@ -25,6 +27,7 @@
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_passive.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dist_based.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/drifter.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dummy.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/error_based.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/fit.drifter.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/index.html</loc></url>

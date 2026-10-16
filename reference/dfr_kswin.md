@@ -14,9 +14,11 @@ dfr_kswin(
   window_size = 300,
   stat_size = 100,
   alpha = 1e-04,
+  window_type = "sliding",
   monitoring_step = 1,
   exact = NULL,
-  data = NULL
+  data = NULL,
+  seed = NULL
 )
 ```
 
@@ -41,6 +43,14 @@ dfr_kswin(
   Probability for the test statistic of the Kolmogorov-Smirnov-Test The
   alpha parameter is very sensitive, therefore should be set below 0.01.
 
+- window_type:
+
+  Window policy. `"sliding"` (default) keeps at most `window_size`
+  observations, so both the reference and the statistic halves move with
+  the stream. `"anchored"` keeps every observation, which pins the
+  reference sample to the beginning of the stream and makes memory grow
+  with the stream length.
+
 - monitoring_step:
 
   Number of observations between two consecutive tests. The default
@@ -58,22 +68,27 @@ dfr_kswin(
 
   Already collected data to avoid cold start.
 
+- seed:
+
+  Seed of the random number stream used to subsample the reference
+  window. When `NULL` (the default) it is drawn from the global random
+  number generator once, when the detector is created.
+
 ## Value
 
 `dfr_kswin` object
 
 ## Details
 
-The reference window is randomly subsampled, so results depend on the
-state of the random number generator. Call
-[`base::set.seed()`](https://rdrr.io/r/base/Random.html) before the
-stream loop if reproducibility is required.
+The reference window is randomly subsampled to `stat_size` observations.
+The detector keeps its own random number stream, so it does not change
+the global random state while it runs; set `seed` (or call
+[`base::set.seed()`](https://rdrr.io/r/base/Random.html) before creating
+the detector) for reproducible results.
 
-Missing observations are skipped instead of being imputed. When a drift
-is reported the window is trimmed to its most recent `stat_size`
-observations, and
-[`reset_state()`](https://cefet-rj-dal.github.io/heimdall/reference/reset_state.md)
-preserves that window so the detector does not restart cold.
+A drift requires both a significant p-value and a KS statistic above
+`sqrt(-log(alpha) / stat_size)`, as defined by Raab et al. Missing
+observations are skipped instead of being imputed.
 
 ## References
 
@@ -84,32 +99,49 @@ prototype computing for concept drift streams. *Neurocomputing*, 416,
 ## Examples
 
 ``` r
-library(daltoolbox)
+# Load Heimdall and the synthetic univariate stream.
 library(heimdall)
 
-# This example assumes a model residual where 1 is an error and 0 is a
-# correct prediction.
+# Fix the seed for reproducibility.
+seed <- 1
+set.seed(seed)
 
+# Load the numeric stream used by the detector.
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
+serie <- st_drift_examples$uv_virtual_drift
 
-model <- dfr_kswin(target_feat='serie')
+# Plot the monitored variable before detection.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
 
+# Instantiate KSWIN with explicit window parameters.
+model <- dfr_kswin(target_feat='serie', window_size=100, stat_size=50)
+
+# Update the detector sequentially and store the alarm positions.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in seq_along(data$serie)){
- output <- update_state(output$obj, data$serie[i])
- if (output$drift){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie$serie[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 
+# Print the points where KSWIN raised drift alarms.
 detection[detection$type == 'drift',]
 #>     idx event  type
-#> 301 301  TRUE drift
+#> 221 221  TRUE drift
+#> 271 271  TRUE drift
+#> 331 331  TRUE drift
+#> 381 381  TRUE drift
+#> 431 431  TRUE drift
+
+# Overlay the detected drifts on the original stream.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
 ```

@@ -13,14 +13,15 @@ than classifier performance, this implementation is primarily aimed at
 dfr_aedd(
   encoding_size,
   ae_class = NULL,
-  batch_size = 32,
-  num_epochs = 1000,
-  learning_rate = 0.001,
+  ae_params = list(batch_size = 32, num_epochs = 1000, learning_rate = 0.001,
+    error_function = "mae"),
   window_size = 100,
+  window_type = "sliding",
   monitoring_step = floor(window_size/2),
   criteria = "mann_whitney",
   alpha = 0.01,
-  reporting = FALSE
+  threshold = 0.01,
+  target_feat = NULL
 )
 ```
 
@@ -32,27 +33,28 @@ dfr_aedd(
 
 - ae_class:
 
-  Autoencoder Class. When `NULL` (the default),
+  Autoencoder constructor. When `NULL` (the default),
   [`daltoolboxdp::autoenc_ed`](https://rdrr.io/pkg/daltoolboxdp/man/autoenc_ed.html)
   is used, which requires the suggested package `daltoolboxdp` and its
   Python backend.
 
-- batch_size:
+- ae_params:
 
-  Batch Size for batch learning
-
-- num_epochs:
-
-  Number of Epochs for training
-
-- learning_rate:
-
-  Learning Rate
+  Named list of arguments forwarded to `ae_class`, plus
+  `error_function`, which selects how the reconstruction error is
+  summarised. One of `"mae"` (default) or `"rmse"`.
 
 - window_size:
 
   Number of most recent rows kept by the detector. The oldest half is
   the reference window and the newest half the recent window.
+
+- window_type:
+
+  Window policy. `"sliding"` (default) keeps at most `window_size` rows,
+  so both halves move with the stream. `"anchored"` keeps every row,
+  which pins the reference half to the beginning of the stream and makes
+  memory grow with the stream length.
 
 - monitoring_step:
 
@@ -61,18 +63,26 @@ dfr_aedd(
 
 - criteria:
 
-  The method to be used to check if there is a drift. One of
-  `'mann_whitney'` (default), `'kolmogorov_smirnov'`, `'levene'`,
-  `'parametric_threshold'` or `'nonparametric_threshold'`
+  The method used to check for a drift. One of `"mann_whitney"`
+  (default), `"kolmogorov_smirnov"`, `"levene"`, `"psi"`,
+  `"parametric_threshold"`, `"nonparametric_threshold"` or
+  `"diff_threshold"`.
 
 - alpha:
 
-  The significance threshold for the statistical test used in criteria
+  Significance level of the hypothesis-test criteria (`"mann_whitney"`,
+  `"kolmogorov_smirnov"` and `"levene"`).
 
-- reporting:
+- threshold:
 
-  If TRUE, some data are returned as norm_x_oh, drift_input, hist_proj,
-  and recent_proj.
+  Drift threshold of the `"psi"` and `"diff_threshold"` criteria,
+  compared directly against the divergence or the median error
+  difference. It is a raw threshold, not a probability.
+
+- target_feat:
+
+  Names of the columns to be monitored. `NULL` (the default) monitors
+  every numeric column.
 
 ## Value
 
@@ -84,14 +94,18 @@ The autoencoder expects inputs in the `[0, 1]` range. Values outside
 that range are clipped to it, and the detector warns the first time this
 happens, so the data should be normalized beforehand (for example with
 [`daltoolbox::minmax()`](https://rdrr.io/pkg/daltoolbox/man/minmax.html)).
-`ae_class` must be a constructor accepting the arguments `input_size`,
-`encoding_size`, `batch_size`, `num_epochs` and `learning_rate`, whose
-objects implement [`fit()`](https://rdrr.io/pkg/daltoolbox/man/fit.html)
-and [`transform()`](https://rdrr.io/pkg/daltoolbox/man/transform.html).
+`ae_class` must be a constructor accepting the arguments `input_size`
+and `encoding_size` plus the entries of `ae_params`, whose objects
+implement [`fit()`](https://rdrr.io/pkg/daltoolbox/man/fit.html) and
+[`transform()`](https://rdrr.io/pkg/daltoolbox/man/transform.html).
 
 The autoencoder is trained on the reference window the first time the
 window is full, and again after every drift or whenever new columns
 appear.
+
+The `"levene"` criterion tests every reconstructed feature and combines
+the per-feature p-values with a Bonferroni correction, instead of
+looking at the first feature only.
 
 ## References
 
@@ -103,6 +117,7 @@ IEEE International Conference on Data Mining Workshops (ICDMW)*.
 ## Examples
 
 ``` r
-# A rendered walkthrough is available at
-# https://github.com/cefet-rj-dal/heimdall/blob/main/examples/dfr_aedd.md
+# Training an autoencoder is too slow for an inline example. A rendered
+# walkthrough is available at
+# https://github.com/cefet-rj-dal/heimdall/blob/main/examples/1_detection/dfr_aedd.md
 ```

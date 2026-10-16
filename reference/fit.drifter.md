@@ -21,7 +21,7 @@ fit(obj, data, prediction = NULL, ...)
 
 - prediction:
 
-  prediction batch as vector format. Optional, and unused by the default
+  prediction batch as vector format. Optional and unused by the default
   method; it is kept for compatibility with detectors that need the
   model output.
 

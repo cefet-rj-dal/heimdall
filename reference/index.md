@@ -23,8 +23,6 @@ Detectors that monitor the distribution of the observed features
 
 - [`dfr_adwin()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_adwin.md)
   : ADWIN method
-- [`dfr_kldist()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_kldist.md)
-  : KL Distance method
 - [`dfr_kswin()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_kswin.md)
   : KSWIN method
 - [`dfr_lbdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_lbdd.md)
@@ -38,11 +36,15 @@ Detectors that monitor the distribution of the observed features
 
 - [`dfr_aedd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_aedd.md)
   : Autoencoder-Based Drift Detection method
+- [`dfr_kldist()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_kldist.md)
+  : KL Distance method
 - [`dfr_multi_criteria()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_multi_criteria.md)
   : Multi Criteria Drifter sub-class
 
 ## Baselines
 
+- [`dummy()`](https://cefet-rj-dal.github.io/heimdall/reference/dummy.md)
+  : Dummy Drifter sub-class
 - [`dfr_inactive()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_inactive.md)
   : Inactive dummy detector
 - [`dfr_passive()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_passive.md)

@@ -7,7 +7,7 @@ than over the most recent batch alone.
 ## Usage
 
 ``` r
-nrm_memory(norm_class = daltoolbox::minmax())
+nrm_memory(norm_class = daltoolbox::minmax(), max_size = NULL)
 ```
 
 ## Arguments
@@ -15,6 +15,12 @@ nrm_memory(norm_class = daltoolbox::minmax())
 - norm_class:
 
   Normalizer class
+
+- max_size:
+
+  Maximum number of rows kept in the memory; the oldest rows are dropped
+  first. `NULL` (the default) keeps the whole history, so set it on long
+  streams to bound memory.
 
 ## Value
 

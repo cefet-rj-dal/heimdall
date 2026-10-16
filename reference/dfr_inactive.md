@@ -1,7 +1,7 @@
 # Inactive dummy detector
 
 Implements a dummy detector that never reports a drift. Useful as a
-baseline when evaluating adaptation strategies.
+lower baseline when evaluating adaptation strategies.
 
 ## Usage
 

@@ -1,12 +1,14 @@
 # KL Distance method
 
-This detector compares consecutive reference and recent windows through
-the Kullback-Leibler divergence estimated from their empirical
-distributions. In this package, it is primarily used for **virtual
-concept drift**, since it monitors changes in the distribution of a
-numeric feature stream rather than predictive error. The statistical
-foundation is the Kullback-Leibler divergence introduced by Kullback and
-Leibler (1951).
+This detector compares a reference and a recent window through the
+symmetrised Kullback-Leibler divergence of their binned empirical
+distributions, `sum((p - q) * log(p / q))`, which is the quantity also
+known as the Jeffreys divergence or, in the credit-risk literature, the
+Population Stability Index. It is multivariate: every monitored column
+contributes to the score. Because it monitors the distribution of the
+observed features rather than predictive error, it is primarily used for
+**virtual concept drift**. The statistical foundation is the divergence
+introduced by Kullback and Leibler (1951).
 
 ## Usage
 
@@ -14,9 +16,12 @@ Leibler (1951).
 dfr_kldist(
   target_feat = NULL,
   window_size = 100,
-  p_th = 0.5,
+  threshold = 0.12,
+  window_type = "sliding",
+  breaks = 20,
   monitoring_step = 1,
-  data = NULL
+  data = NULL,
+  p_th = NULL
 )
 ```
 
@@ -24,28 +29,47 @@ dfr_kldist(
 
 - target_feat:
 
-  Feature to be monitored.
+  Names of the columns to be monitored. `NULL` (the default) monitors
+  every numeric column.
 
 - window_size:
 
-  Size of the sliding window
+  Size of the window
 
-- p_th:
+- threshold:
 
-  Drift threshold applied to the KL divergence, in bits. Despite the
-  name, this is not a p-value. The default (0.5) was calibrated for the
-  default window size; larger windows estimate the divergence more
-  precisely and can use lower thresholds.
+  Drift threshold applied to the divergence. The default (`0.12`) was
+  calibrated by simulation for the default window: on stationary normal
+  data the divergence stayed below 0.1, while a shift of two standard
+  deviations exceeded 0.13 in 90% of the runs. Shifts smaller than about
+  one standard deviation are not separable from noise with 50-row
+  halves; use a larger window to detect them.
+
+- window_type:
+
+  Window policy. `"sliding"` (default) keeps at most `window_size` rows,
+  so both halves move with the stream. `"anchored"` keeps every row,
+  which pins the reference half to the beginning of the stream and makes
+  memory grow with the stream length.
+
+- breaks:
+
+  Number of bins used to discretise each feature before the divergence
+  is computed.
 
 - monitoring_step:
 
-  Number of observations between two consecutive tests. The default
-  (`1`) tests at every observation; larger values reduce the
-  computational cost on long streams.
+  Number of rows between two consecutive evaluations. The default (`1`)
+  evaluates at every row; larger values reduce the computational cost on
+  long streams.
 
 - data:
 
   Already collected data to avoid cold start.
+
+- p_th:
+
+  Deprecated name of `threshold`.
 
 ## Value
 
@@ -53,10 +77,14 @@ dfr_kldist(
 
 ## Details
 
-Missing observations are skipped instead of being imputed. When a drift
-is reported the window is trimmed to its most recent half, and
-[`reset_state()`](https://cefet-rj-dal.github.io/heimdall/reference/reset_state.md)
-preserves that window so the detector does not restart cold.
+Bins are built over the reference and recent halves together, so the two
+histograms are always comparable. Empty bins are smoothed before the
+logarithm is taken, and the score is averaged over bins and over
+features.
+
+The detector consumes one row of a data frame at a time (a single value
+is also accepted). Rows whose monitored values are all missing are
+skipped instead of being imputed.
 
 ## References
 
@@ -67,37 +95,47 @@ Kullback, S., and Leibler, R. A. (1951). On information and sufficiency.
 ## Examples
 
 ``` r
-library(daltoolbox)
+# Load Heimdall and the example data stream.
 library(heimdall)
 
-# This example assumes a model residual where 1 is an error and 0 is a
-# correct prediction.
+# Fix the seed to keep the example reproducible.
+seed <- 1
+set.seed(seed)
 
+# Load the univariate stream monitored in this walkthrough.
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
+serie <- st_drift_examples$uv_virtual_drift
 
-model <- dfr_kldist(target_feat='serie')
+# Plot the monitored numeric signal before detection.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
 
+# Instantiate the KL-divergence-based detector.
+model <- dfr_kldist(window_size=100, threshold=0.10)
+
+# Update the detector sequentially and store drift alarms.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in seq_along(data$serie)){
- output <- update_state(output$obj, data$serie[i])
- if (output$drift){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie[i, 'serie', drop=FALSE])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 
+# Print the points where KLDIST detected drift.
 detection[detection$type == 'drift',]
 #>     idx event  type
-#> 127 127  TRUE drift
-#> 219 219  TRUE drift
-#> 270 270  TRUE drift
-#> 329 329  TRUE drift
-#> 380 380  TRUE drift
-#> 431 431  TRUE drift
+#> 145 145  TRUE drift
+#> 245 245  TRUE drift
+#> 345 345  TRUE drift
+#> 445 445  TRUE drift
+# Overlay the detected drifts on the original numeric stream.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
 ```

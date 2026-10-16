@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">heimdall</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,6 +20,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/adaptive-models.html">Adapting models to concept drift</a></li>
+    <li><a class="dropdown-item" href="../articles/configuring-detectors.html">Configuring detectors</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -82,35 +83,50 @@ the development version, which reduced false alarms about sevenfold.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://cefet-rj-dal.github.io/daltoolbox/" class="external-link">daltoolbox</a></span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Load Heimdall and the synthetic example stream.</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://cefet-rj-dal.github.io/heimdall/">heimdall</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># This example uses an error-based drift detector with a synthetic</span></span></span>
-<span class="r-in"><span><span class="co"># model residual where 1 is an error and 0 is a correct prediction.</span></span></span>
+<span class="r-in"><span><span class="co"># Fix the seed for reproducibility.</span></span></span>
+<span class="r-in"><span><span class="va">seed</span> <span class="op">&lt;-</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="va">seed</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Load the stream and derive the binary monitored signal.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">st_drift_examples</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">st_drift_examples</span><span class="op">$</span><span class="va">univariate</span></span></span>
-<span class="r-in"><span><span class="va">data</span><span class="op">$</span><span class="va">event</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
-<span class="r-in"><span><span class="va">data</span><span class="op">$</span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="va">st_drift_examples</span><span class="op">$</span><span class="va">univariate</span><span class="op">$</span><span class="va">serie</span> <span class="op">&gt;</span> <span class="fl">4</span></span></span>
+<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">st_drift_examples</span><span class="op">$</span><span class="va">uv_virtual_drift</span></span></span>
+<span class="r-in"><span><span class="va">data</span><span class="op">$</span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="va">st_drift_examples</span><span class="op">$</span><span class="va">uv_virtual_drift</span><span class="op">$</span><span class="va">serie</span> <span class="op">&gt;</span> <span class="fl">4</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Plot the binary stream that ECDD will monitor.</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>, y<span class="op">=</span><span class="va">data</span><span class="op">$</span><span class="va">prediction</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="dfr_ecdd-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Instantiate the ECDD detector.</span></span></span>
 <span class="r-in"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">dfr_ecdd</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Update the detector sequentially and store the detected alarms.</span></span></span>
 <span class="r-in"><span><span class="va">detection</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
 <span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>obj<span class="op">=</span><span class="va">model</span>, drift<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">prediction</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span></span>
-<span class="r-in"><span> <span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="update_state.html">update_state</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">obj</span>, <span class="va">data</span><span class="op">$</span><span class="va">prediction</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span></span>
-<span class="r-in"><span> <span class="kw">if</span> <span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">drift</span><span class="op">)</span><span class="op">{</span></span></span>
-<span class="r-in"><span>   <span class="va">type</span> <span class="op">&lt;-</span> <span class="st">'drift'</span></span></span>
-<span class="r-in"><span>   <span class="va">output</span><span class="op">$</span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="reset_state.html">reset_state</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">obj</span><span class="op">)</span></span></span>
-<span class="r-in"><span> <span class="op">}</span><span class="kw">else</span><span class="op">{</span></span></span>
-<span class="r-in"><span>   <span class="va">type</span> <span class="op">&lt;-</span> <span class="st">''</span></span></span>
-<span class="r-in"><span> <span class="op">}</span></span></span>
-<span class="r-in"><span> <span class="va">detection</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">detection</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>idx<span class="op">=</span><span class="va">i</span>, event<span class="op">=</span><span class="va">output</span><span class="op">$</span><span class="va">drift</span>, type<span class="op">=</span><span class="va">type</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="update_state.html">update_state</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">obj</span>, <span class="va">data</span><span class="op">$</span><span class="va">prediction</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="kw">if</span> <span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">drift</span><span class="op">)</span><span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">type</span> <span class="op">&lt;-</span> <span class="st">'drift'</span></span></span>
+<span class="r-in"><span>    <span class="va">output</span><span class="op">$</span><span class="va">obj</span> <span class="op">&lt;-</span> <span class="fu"><a href="reset_state.html">reset_state</a></span><span class="op">(</span><span class="va">output</span><span class="op">$</span><span class="va">obj</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">type</span> <span class="op">&lt;-</span> <span class="st">''</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span>  <span class="va">detection</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="va">detection</span>, <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>idx<span class="op">=</span><span class="va">i</span>, event<span class="op">=</span><span class="va">output</span><span class="op">$</span><span class="va">drift</span>, type<span class="op">=</span><span class="va">type</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Print the drift points signaled by ECDD.</span></span></span>
 <span class="r-in"><span><span class="va">detection</span><span class="op">[</span><span class="va">detection</span><span class="op">$</span><span class="va">type</span> <span class="op">==</span> <span class="st">'drift'</span>,<span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     idx event  type</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 201 201  TRUE drift</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Overlay the alarms on the original numeric signal.</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span>, y<span class="op">=</span><span class="va">data</span><span class="op">$</span><span class="va">serie</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">for</span> <span class="op">(</span><span class="va">drift_index</span> <span class="kw">in</span> <span class="va">detection</span><span class="op">[</span><span class="va">detection</span><span class="op">$</span><span class="va">type</span> <span class="op">==</span> <span class="st">'drift'</span>, <span class="st">'idx'</span><span class="op">]</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="va">drift_index</span>, col<span class="op">=</span><span class="st">'red'</span>, lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-plt img"><img src="dfr_ecdd-2.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

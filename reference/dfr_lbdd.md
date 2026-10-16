@@ -1,7 +1,7 @@
 # Levene Based Drift Detection Method method
 
-LBDD is a window-based detector that compares the variability of
-reference and recent samples using Levene's test. Because it monitors
+LBDD is a window-based detector that compares the variability of a
+reference and a recent sample using Levene's test. Because it monitors
 changes in the distribution of an observed feature rather than model
 performance, it is primarily aimed at **virtual concept drift**. In this
 package, the detector follows the statistical-testing approach discussed
@@ -15,6 +15,7 @@ dfr_lbdd(
   target_feat = NULL,
   alpha = 0.001,
   window_size = 300,
+  window_type = "sliding",
   monitoring_step = 1,
   data = NULL
 )
@@ -32,7 +33,14 @@ dfr_lbdd(
 
 - window_size:
 
-  Size of the sliding window
+  Size of the window
+
+- window_type:
+
+  Window policy. `"sliding"` (default) keeps at most `window_size`
+  observations, so both halves move with the stream. `"anchored"` keeps
+  every observation, which pins the reference half to the beginning of
+  the stream and makes memory grow with the stream length.
 
 - monitoring_step:
 
@@ -60,9 +68,9 @@ Levene's test is computed with the group spread centred on the median
 (the Brown-Forsythe variant).
 
 Missing observations are skipped instead of being imputed. When a drift
-is reported the window is trimmed to its most recent half, and
+is reported the window is trimmed to its most recent half;
 [`reset_state()`](https://cefet-rj-dal.github.io/heimdall/reference/reset_state.md)
-preserves that window so the detector does not restart cold.
+empties it.
 
 ## References
 
@@ -73,39 +81,48 @@ Ogasawara, E. (2021). Analysing flight delay under concept drift.
 ## Examples
 
 ``` r
-library(daltoolbox)
+# Load Heimdall and the synthetic univariate stream.
 library(heimdall)
 
-# This example assumes a model residual where 1 is an error and 0 is a
-# correct prediction.
+# Fix the seed for reproducibility.
+seed <- 1
+set.seed(seed)
 
+# Load the numeric stream monitored by the detector.
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
+serie <- st_drift_examples$uv_virtual_drift
 
-model <- dfr_lbdd(target_feat='serie', window_size=100, alpha=0.05)
+# Plot the series before starting drift detection.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
 
+# Instantiate the Levene-based detector.
+model <- dfr_lbdd(target_feat='serie', window_size=100)
+
+# Update the detector over the stream and record each drift alarm.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in seq_along(data$serie)){
- output <- update_state(output$obj, data$serie[i])
- if (output$drift){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie$serie[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 
+# Print the positions where LBDD detected drift.
 detection[detection$type == 'drift',]
 #>     idx event  type
-#> 115 115  TRUE drift
-#> 166 166  TRUE drift
-#> 217 217  TRUE drift
-#> 268 268  TRUE drift
-#> 325 325  TRUE drift
-#> 376 376  TRUE drift
-#> 427 427  TRUE drift
-#> 478 478  TRUE drift
+#> 126 126  TRUE drift
+#> 226 226  TRUE drift
+#> 328 328  TRUE drift
+#> 428 428  TRUE drift
+
+# Overlay those drift points on the original numeric stream.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
 ```

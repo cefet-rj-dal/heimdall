@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">heimdall</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/adaptive-models.html">Adapting models to concept drift</a></li>
+    <li><a class="dropdown-item" href="articles/configuring-detectors.html">Configuring detectors</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -66,26 +67,231 @@
 <div class="section level2">
 <h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h2>
-<p>The package ships with two vignettes, also available on the <a href="https://cefet-rj-dal.github.io/heimdall/">package website</a>:</p>
+<p>The package ships with three vignettes, also available on the <a href="https://cefet-rj-dal.github.io/heimdall/">package website</a>:</p>
 <ul>
 <li>
 <code><a href="articles/heimdall.html">vignette("heimdall")</a></code> introduces the streaming workflow shared by every detector and shows how to monitor real and virtual concept drift;</li>
 <li>
-<code><a href="articles/adaptive-models.html">vignette("adaptive-models")</a></code> shows how <code><a href="reference/stealthy.html">stealthy()</a></code> retrains a model automatically when a drift is detected.</li>
+<code><a href="articles/adaptive-models.html">vignette("adaptive-models")</a></code> shows how <code><a href="reference/stealthy.html">stealthy()</a></code> retrains a model automatically when a drift is detected;</li>
+<li>
+<code><a href="articles/configuring-detectors.html">vignette("configuring-detectors")</a></code> shows how to read <code>drifter_output</code>, calibrate a threshold for your data, and choose between sliding and anchored windows.</li>
+</ul>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="drifter-outputs">Drifter outputs<a class="anchor" aria-label="anchor" href="#drifter-outputs"></a>
+</h2>
+<p>Besides the drift decision, every drifter exposes the statistic it monitors. After <code>fit()</code>, <code>obj$drifter_output</code> is a data frame with one row per observation, and <code>obj$last_drifter_output</code> holds the value for the last observation processed by <code><a href="reference/update_state.html">update_state()</a></code>. Rows are <code>NA</code> when the detector reported nothing for that observation, for example while its window is still filling or when it skipped a missing value.</p>
+<p><code><a href="reference/stealthy.html">stealthy()</a></code> exposes the output of its drifter in <code>obj$drifter_output</code> as well, with one row per row of <code>x</code> across every call to <code>fit()</code>. Rows are <code>NA</code> while the drifter is not monitoring (during the warmup, or after a drift until the model is retrained).</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr>
+<th>Drifter</th>
+<th>Type</th>
+<th>
+<code>drifter_output</code> columns</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code><a href="reference/dfr_ddm.html">dfr_ddm()</a></code></td>
+<td>error-based</td>
+<td>
+<code>miss_prob</code>: running error rate</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_eddm.html">dfr_eddm()</a></code></td>
+<td>error-based</td>
+<td>
+<code>mean_distance</code>: mean distance between two consecutive errors</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_hddm.html">dfr_hddm()</a></code></td>
+<td>error-based</td>
+<td>
+<code>estimation</code>: running error rate</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_ecdd.html">dfr_ecdd()</a></code></td>
+<td>error-based</td>
+<td>
+<code>Z</code>: exponentially weighted moving average of the errors</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_cusum.html">dfr_cusum()</a></code></td>
+<td>error-based</td>
+<td>
+<code>g</code>: cumulative sum compared with <code>lambda</code>
+</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_adwin.html">dfr_adwin()</a></code></td>
+<td>univariate</td>
+<td>
+<code>width</code>: current length of the adaptive window</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_page_hinkley.html">dfr_page_hinkley()</a></code></td>
+<td>univariate</td>
+<td>
+<code>ph_statistic</code>: Page-Hinkley statistic compared with <code>threshold</code> (the larger of the two directions when <code>direction = "both"</code>)</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_kswin.html">dfr_kswin()</a></code></td>
+<td>univariate</td>
+<td>
+<code>D</code>: Kolmogorov-Smirnov statistic; <code>p</code>: its p-value</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_lbdd.html">dfr_lbdd()</a></code></td>
+<td>univariate</td>
+<td>
+<code>levene_p</code>: p-value of Levene’s test</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_mcdd.html">dfr_mcdd()</a></code></td>
+<td>univariate</td>
+<td>
+<code>old_shapiro_p</code>, <code>new_shapiro_p</code>: normality p-values of the reference and recent halves; <code>comparison_p</code>: p-value of the t-test or Wilcoxon test</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_kldist.html">dfr_kldist()</a></code></td>
+<td>multivariate</td>
+<td>
+<code>divergence</code>: divergence between the reference and recent halves, compared with <code>threshold</code>
+</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_aedd.html">dfr_aedd()</a></code></td>
+<td>multivariate</td>
+<td>one column per feature: reconstruction error of the most recent row (encoder-decoder), or its encoding (encoder only)</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_multi_criteria.html">dfr_multi_criteria()</a></code></td>
+<td>combined</td>
+<td>one logical column per drifter in <code>drifter_list</code>, with its decision on that observation</td>
+</tr>
+<tr>
+<td>
+<code><a href="reference/dfr_inactive.html">dfr_inactive()</a></code>, <code><a href="reference/dfr_passive.html">dfr_passive()</a></code>
+</td>
+<td>baseline</td>
+<td>no columns: they monitor nothing</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="choosing-what-a-detector-monitors">Choosing what a detector monitors<a class="anchor" aria-label="anchor" href="#choosing-what-a-detector-monitors"></a>
+</h2>
+<p>Every distribution-based detector selects its input through <code>target_feat</code>:</p>
+<ul>
+<li>univariate detectors (<code><a href="reference/dfr_adwin.html">dfr_adwin()</a></code>, <code><a href="reference/dfr_page_hinkley.html">dfr_page_hinkley()</a></code>, <code><a href="reference/dfr_kswin.html">dfr_kswin()</a></code>, <code><a href="reference/dfr_lbdd.html">dfr_lbdd()</a></code>, <code><a href="reference/dfr_mcdd.html">dfr_mcdd()</a></code>) take a single column name;</li>
+<li>multivariate detectors (<code><a href="reference/dfr_kldist.html">dfr_kldist()</a></code>, <code><a href="reference/dfr_aedd.html">dfr_aedd()</a></code>) take one or more column names, and monitor every numeric column when <code>target_feat</code> is <code>NULL</code>.</li>
+</ul>
+<p>Inside <code><a href="reference/stealthy.html">stealthy()</a></code> and <code><a href="reference/dfr_multi_criteria.html">dfr_multi_criteria()</a></code>, a univariate detector without a <code>target_feat</code> receives the mean of each row. In <code><a href="reference/stealthy.html">stealthy()</a></code>, column names refer to the one-hot encoded, normalized columns, so numeric columns keep their names.</p>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="what-each-detector-cannot-see">What each detector cannot see<a class="anchor" aria-label="anchor" href="#what-each-detector-cannot-see"></a>
+</h2>
+<p>Each detector is blind to some kinds of change. Combine detectors with <code><a href="reference/dfr_multi_criteria.html">dfr_multi_criteria()</a></code> when several kinds of change matter.</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr>
+<th>Drifter</th>
+<th>Reacts to</th>
+<th>Does not see</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>
+<code><a href="reference/dfr_ddm.html">dfr_ddm()</a></code>, <code><a href="reference/dfr_hddm.html">dfr_hddm()</a></code>
+</td>
+<td>increases of the error rate</td>
+<td>decreases of the error rate, and any change that leaves the error rate unchanged</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_eddm.html">dfr_eddm()</a></code></td>
+<td>errors becoming closer together</td>
+<td>changes that do not affect the distance between errors</td>
+</tr>
+<tr>
+<td>
+<code><a href="reference/dfr_ecdd.html">dfr_ecdd()</a></code>, <code><a href="reference/dfr_cusum.html">dfr_cusum()</a></code>
+</td>
+<td>increases of the error rate</td>
+<td>decreases of the error rate</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_page_hinkley.html">dfr_page_hinkley()</a></code></td>
+<td>increases of the mean (decreases or both with <code>direction</code>)</td>
+<td>changes of spread or shape with the same mean</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_adwin.html">dfr_adwin()</a></code></td>
+<td>changes of the mean</td>
+<td>changes of spread or shape with the same mean</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_mcdd.html">dfr_mcdd()</a></code></td>
+<td>changes of location (mean or median)</td>
+<td>changes of spread with the same centre</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_lbdd.html">dfr_lbdd()</a></code></td>
+<td>changes of spread</td>
+<td>shifts of the mean with the same spread</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_kswin.html">dfr_kswin()</a></code></td>
+<td>any change of the distribution of one feature</td>
+<td>changes in the relation between features</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_kldist.html">dfr_kldist()</a></code></td>
+<td>changes of the marginal distribution of each feature; with the default 100-row window, shifts of about two standard deviations</td>
+<td>small shifts (below about one standard deviation with the default window) and changes in the relation between features</td>
+</tr>
+<tr>
+<td><code><a href="reference/dfr_aedd.html">dfr_aedd()</a></code></td>
+<td>changes of the joint distribution, through the reconstruction error</td>
+<td>changes that the autoencoder reconstructs equally well</td>
+</tr>
+</tbody>
+</table>
+<p>Distribution-based detectors only see <strong>virtual concept drift</strong> (changes in the inputs); error-based detectors only see <strong>real concept drift</strong> that degrades the predictions.</p>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="long-streams">Long streams<a class="anchor" aria-label="anchor" href="#long-streams"></a>
+</h2>
+<ul>
+<li>The window-based detectors (<code><a href="reference/dfr_kswin.html">dfr_kswin()</a></code>, <code><a href="reference/dfr_lbdd.html">dfr_lbdd()</a></code>, <code><a href="reference/dfr_mcdd.html">dfr_mcdd()</a></code>, <code><a href="reference/dfr_kldist.html">dfr_kldist()</a></code>, <code><a href="reference/dfr_aedd.html">dfr_aedd()</a></code>) run a statistical test or a comparison at every evaluation. <code>monitoring_step</code> is the main speed control: with <code>monitoring_step = 10</code>, the test runs once every ten observations.</li>
+<li>
+<code>stealthy(history_size = )</code> bounds the rows kept in <code>drifter_output</code> and <code>drifter_input</code>.</li>
+<li>
+<code>nrm_memory(max_size = )</code> bounds the history used to estimate the normalization.</li>
 </ul>
 <hr>
 </div>
 <div class="section level2">
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h2>
-<p>Heimdall usage examples are organized to help users learn the package progressively, not only to list detector names.</p>
-<p>The examples directory contains:</p>
+<p>Heimdall usage examples are organized to help users learn the package progressively, not only to list detector names. Every drifter has two examples:</p>
 <ul>
-<li>rendered walkthroughs for each detector;</li>
-<li>extracted R scripts for quick reuse;</li>
-<li>figure outputs and document exports;</li>
-<li>a dedicated guide describing the purpose of each example.</li>
+<li>a <strong>detection</strong> example, where the detector monitors a stream on its own through the <code><a href="reference/update_state.html">update_state()</a></code> loop;</li>
+<li>an <strong>online prediction</strong> example, where the detector is plugged into <code><a href="reference/stealthy.html">stealthy()</a></code> to retrain a classifier whenever a drift is reported.</li>
 </ul>
+<p>Each example is available as a rendered walkthrough, an extracted R script and a Word document.</p>
 <p>Recommended starting points:</p>
 <ul>
 <li>
@@ -93,7 +299,9 @@
 <li>
 <code>dfr_ddm</code> for an error-based supervised example;</li>
 <li>
-<code>dfr_aedd</code> for a multivariate unsupervised example.</li>
+<code>dfr_aedd</code> for a multivariate unsupervised example;</li>
+<li>
+<code>dfr_inactive</code> and <code>dfr_passive</code> as baselines to compare any detector against.</li>
 </ul>
 <p>Browse the materials here:</p>
 <ul>
@@ -121,6 +329,12 @@
 <ul>
 <li><a href="https://github.com/cefet-rj-dal/heimdall/issues" class="external-link">GitHub Issues</a></li>
 </ul>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>See <a href="https://github.com/cefet-rj-dal/heimdall/blob/main/CONTRIBUTING.md" class="external-link">CONTRIBUTING.md</a> for the development container, the Git hook, the code style and how the examples are generated.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -140,6 +354,12 @@
 </ul>
 </div>
 
+<div class="community">
+<h2 data-toc-skip>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+</ul>
+</div>
 
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>

@@ -76,7 +76,11 @@ with_ddm <- run_stream(dfr_ddm())
 
 with_ddm[with_ddm$drifted, ]
 #>    batch drifted accuracy
-#> 16    17    TRUE       NA
+#> 9     10    TRUE       NA
+#> 17    18    TRUE       NA
+#> 20    21    TRUE       NA
+#> 23    24    TRUE       NA
+#> 25    26    TRUE       NA
 ```
 
 After the drift is detected, the model needs `warmup_size` observations
@@ -85,12 +89,16 @@ batch.
 
 ``` r
 
-plot(without_detector$batch, without_detector$accuracy, type = "b", pch = 16,
-     ylim = c(0.4, 1), col = "grey50", xlab = "batch", ylab = "accuracy")
+plot(without_detector$batch, without_detector$accuracy,
+  type = "b", pch = 16,
+  ylim = c(0.4, 1), col = "grey50", xlab = "batch", ylab = "accuracy"
+)
 lines(with_ddm$batch, with_ddm$accuracy, type = "b", pch = 16, col = "steelblue")
 abline(v = 750 / 50 + 0.5, lty = 2, col = "grey70")
-legend("bottomleft", c("dfr_inactive()", "dfr_ddm()"), col = c("grey50", "steelblue"),
-       pch = 16, bty = "n", cex = 0.8)
+legend("bottomleft", c("dfr_inactive()", "dfr_ddm()"),
+  col = c("grey50", "steelblue"),
+  pch = 16, bty = "n", cex = 0.8
+)
 ```
 
 ![](adaptive-models_files/figure-html/unnamed-chunk-5-1.png)
@@ -103,7 +111,7 @@ c(
   with_ddm = mean(with_ddm$accuracy[after], na.rm = TRUE)
 )
 #> without_detector         with_ddm 
-#>        0.6728571        0.9630769
+#>        0.4457143        0.9100000
 ```
 
 ## Choosing the detector

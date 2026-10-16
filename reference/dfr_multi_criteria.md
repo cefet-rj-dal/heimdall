@@ -58,11 +58,11 @@ set.seed(1)
 data <- data.frame(serie = c(stats::rnorm(100), stats::rnorm(100, mean = 10)))
 
 model <- dfr_multi_criteria(
- drifter_list = list(
-   ph = dfr_page_hinkley(),
-   ph_sensitive = dfr_page_hinkley(threshold = 10)
- ),
- combination = 'or'
+  drifter_list = list(
+    ph = dfr_page_hinkley(),
+    ph_sensitive = dfr_page_hinkley(threshold = 10)
+  ),
+  combination = "or"
 )
 
 model <- fit(model, data)

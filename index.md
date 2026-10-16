@@ -22,7 +22,7 @@ understand that distinction through small, reproducible workflows.
 
 ## Getting started
 
-The package ships with two vignettes, also available on the [package
+The package ships with three vignettes, also available on the [package
 website](https://cefet-rj-dal.github.io/heimdall/):
 
 - [`vignette("heimdall")`](https://cefet-rj-dal.github.io/heimdall/articles/heimdall.md)
@@ -31,27 +31,146 @@ website](https://cefet-rj-dal.github.io/heimdall/):
 - [`vignette("adaptive-models")`](https://cefet-rj-dal.github.io/heimdall/articles/adaptive-models.md)
   shows how
   [`stealthy()`](https://cefet-rj-dal.github.io/heimdall/reference/stealthy.md)
-  retrains a model automatically when a drift is detected.
+  retrains a model automatically when a drift is detected;
+- [`vignette("configuring-detectors")`](https://cefet-rj-dal.github.io/heimdall/articles/configuring-detectors.md)
+  shows how to read `drifter_output`, calibrate a threshold for your
+  data, and choose between sliding and anchored windows.
+
+------------------------------------------------------------------------
+
+## Drifter outputs
+
+Besides the drift decision, every drifter exposes the statistic it
+monitors. After `fit()`, `obj$drifter_output` is a data frame with one
+row per observation, and `obj$last_drifter_output` holds the value for
+the last observation processed by
+[`update_state()`](https://cefet-rj-dal.github.io/heimdall/reference/update_state.md).
+Rows are `NA` when the detector reported nothing for that observation,
+for example while its window is still filling or when it skipped a
+missing value.
+
+[`stealthy()`](https://cefet-rj-dal.github.io/heimdall/reference/stealthy.md)
+exposes the output of its drifter in `obj$drifter_output` as well, with
+one row per row of `x` across every call to `fit()`. Rows are `NA` while
+the drifter is not monitoring (during the warmup, or after a drift until
+the model is retrained).
+
+| Drifter | Type | `drifter_output` columns |
+|----|----|----|
+| [`dfr_ddm()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_ddm.md) | error-based | `miss_prob`: running error rate |
+| [`dfr_eddm()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_eddm.md) | error-based | `mean_distance`: mean distance between two consecutive errors |
+| [`dfr_hddm()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_hddm.md) | error-based | `estimation`: running error rate |
+| [`dfr_ecdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_ecdd.md) | error-based | `Z`: exponentially weighted moving average of the errors |
+| [`dfr_cusum()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_cusum.md) | error-based | `g`: cumulative sum compared with `lambda` |
+| [`dfr_adwin()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_adwin.md) | univariate | `width`: current length of the adaptive window |
+| [`dfr_page_hinkley()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_page_hinkley.md) | univariate | `ph_statistic`: Page-Hinkley statistic compared with `threshold` (the larger of the two directions when `direction = "both"`) |
+| [`dfr_kswin()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_kswin.md) | univariate | `D`: Kolmogorov-Smirnov statistic; `p`: its p-value |
+| [`dfr_lbdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_lbdd.md) | univariate | `levene_p`: p-value of Levene’s test |
+| [`dfr_mcdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_mcdd.md) | univariate | `old_shapiro_p`, `new_shapiro_p`: normality p-values of the reference and recent halves; `comparison_p`: p-value of the t-test or Wilcoxon test |
+| [`dfr_kldist()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_kldist.md) | multivariate | `divergence`: divergence between the reference and recent halves, compared with `threshold` |
+| [`dfr_aedd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_aedd.md) | multivariate | one column per feature: reconstruction error of the most recent row (encoder-decoder), or its encoding (encoder only) |
+| [`dfr_multi_criteria()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_multi_criteria.md) | combined | one logical column per drifter in `drifter_list`, with its decision on that observation |
+| [`dfr_inactive()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_inactive.md), [`dfr_passive()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_passive.md) | baseline | no columns: they monitor nothing |
+
+------------------------------------------------------------------------
+
+## Choosing what a detector monitors
+
+Every distribution-based detector selects its input through
+`target_feat`:
+
+- univariate detectors
+  ([`dfr_adwin()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_adwin.md),
+  [`dfr_page_hinkley()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_page_hinkley.md),
+  [`dfr_kswin()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_kswin.md),
+  [`dfr_lbdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_lbdd.md),
+  [`dfr_mcdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_mcdd.md))
+  take a single column name;
+- multivariate detectors
+  ([`dfr_kldist()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_kldist.md),
+  [`dfr_aedd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_aedd.md))
+  take one or more column names, and monitor every numeric column when
+  `target_feat` is `NULL`.
+
+Inside
+[`stealthy()`](https://cefet-rj-dal.github.io/heimdall/reference/stealthy.md)
+and
+[`dfr_multi_criteria()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_multi_criteria.md),
+a univariate detector without a `target_feat` receives the mean of each
+row. In
+[`stealthy()`](https://cefet-rj-dal.github.io/heimdall/reference/stealthy.md),
+column names refer to the one-hot encoded, normalized columns, so
+numeric columns keep their names.
+
+------------------------------------------------------------------------
+
+## What each detector cannot see
+
+Each detector is blind to some kinds of change. Combine detectors with
+[`dfr_multi_criteria()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_multi_criteria.md)
+when several kinds of change matter.
+
+| Drifter | Reacts to | Does not see |
+|----|----|----|
+| [`dfr_ddm()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_ddm.md), [`dfr_hddm()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_hddm.md) | increases of the error rate | decreases of the error rate, and any change that leaves the error rate unchanged |
+| [`dfr_eddm()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_eddm.md) | errors becoming closer together | changes that do not affect the distance between errors |
+| [`dfr_ecdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_ecdd.md), [`dfr_cusum()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_cusum.md) | increases of the error rate | decreases of the error rate |
+| [`dfr_page_hinkley()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_page_hinkley.md) | increases of the mean (decreases or both with `direction`) | changes of spread or shape with the same mean |
+| [`dfr_adwin()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_adwin.md) | changes of the mean | changes of spread or shape with the same mean |
+| [`dfr_mcdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_mcdd.md) | changes of location (mean or median) | changes of spread with the same centre |
+| [`dfr_lbdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_lbdd.md) | changes of spread | shifts of the mean with the same spread |
+| [`dfr_kswin()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_kswin.md) | any change of the distribution of one feature | changes in the relation between features |
+| [`dfr_kldist()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_kldist.md) | changes of the marginal distribution of each feature; with the default 100-row window, shifts of about two standard deviations | small shifts (below about one standard deviation with the default window) and changes in the relation between features |
+| [`dfr_aedd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_aedd.md) | changes of the joint distribution, through the reconstruction error | changes that the autoencoder reconstructs equally well |
+
+Distribution-based detectors only see **virtual concept drift** (changes
+in the inputs); error-based detectors only see **real concept drift**
+that degrades the predictions.
+
+------------------------------------------------------------------------
+
+## Long streams
+
+- The window-based detectors
+  ([`dfr_kswin()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_kswin.md),
+  [`dfr_lbdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_lbdd.md),
+  [`dfr_mcdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_mcdd.md),
+  [`dfr_kldist()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_kldist.md),
+  [`dfr_aedd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_aedd.md))
+  run a statistical test or a comparison at every evaluation.
+  `monitoring_step` is the main speed control: with
+  `monitoring_step = 10`, the test runs once every ten observations.
+- `stealthy(history_size = )` bounds the rows kept in `drifter_output`
+  and `drifter_input`.
+- `nrm_memory(max_size = )` bounds the history used to estimate the
+  normalization.
 
 ------------------------------------------------------------------------
 
 ## Examples
 
 Heimdall usage examples are organized to help users learn the package
-progressively, not only to list detector names.
+progressively, not only to list detector names. Every drifter has two
+examples:
 
-The examples directory contains:
+- a **detection** example, where the detector monitors a stream on its
+  own through the
+  [`update_state()`](https://cefet-rj-dal.github.io/heimdall/reference/update_state.md)
+  loop;
+- an **online prediction** example, where the detector is plugged into
+  [`stealthy()`](https://cefet-rj-dal.github.io/heimdall/reference/stealthy.md)
+  to retrain a classifier whenever a drift is reported.
 
-- rendered walkthroughs for each detector;
-- extracted R scripts for quick reuse;
-- figure outputs and document exports;
-- a dedicated guide describing the purpose of each example.
+Each example is available as a rendered walkthrough, an extracted R
+script and a Word document.
 
 Recommended starting points:
 
 - `dfr_adwin` for a simple univariate distribution-monitoring example;
 - `dfr_ddm` for an error-based supervised example;
-- `dfr_aedd` for a multivariate unsupervised example.
+- `dfr_aedd` for a multivariate unsupervised example;
+- `dfr_inactive` and `dfr_passive` as baselines to compare any detector
+  against.
 
 Browse the materials here:
 
@@ -86,3 +205,12 @@ If you encounter any issues or would like to suggest new features,
 please open an issue:
 
 - [GitHub Issues](https://github.com/cefet-rj-dal/heimdall/issues)
+
+------------------------------------------------------------------------
+
+## Contributing
+
+See
+[CONTRIBUTING.md](https://github.com/cefet-rj-dal/heimdall/blob/main/CONTRIBUTING.md)
+for the development container, the Git hook, the code style and how the
+examples are generated.

@@ -1,10 +1,10 @@
 # Mean Comparison Distance method
 
-MCDD is a window-based detector that compares the location of reference
-and recent samples by means of hypothesis tests on their central
-tendency. Because it monitors the distribution of observed features
-rather than predictive errors, it is primarily intended for **virtual
-concept drift**. In this package, the detector follows the
+MCDD is a window-based detector that compares the location of a
+reference and a recent sample by means of a hypothesis test on their
+central tendency. Because it monitors the distribution of an observed
+feature rather than predictive errors, it is primarily intended for
+**virtual concept drift**. In this package, the detector follows the
 statistical-testing perspective adopted by Giusti et al. (2021) for
 drift analysis.
 
@@ -14,7 +14,9 @@ drift analysis.
 dfr_mcdd(
   target_feat = NULL,
   alpha = 1e-04,
+  normality_alpha = 0.05,
   window_size = 300,
+  window_type = "sliding",
   monitoring_step = 1,
   data = NULL
 )
@@ -28,11 +30,25 @@ dfr_mcdd(
 
 - alpha:
 
-  Probability threshold for all test statistics
+  Probability threshold for the comparison test
+
+- normality_alpha:
+
+  Significance level of the Shapiro-Wilk normality test used to decide
+  between the parametric and the nonparametric comparison. It is
+  deliberately separate from `alpha`, since the two thresholds answer
+  different questions.
 
 - window_size:
 
-  Size of the sliding window
+  Size of the window
+
+- window_type:
+
+  Window policy. `"sliding"` (default) keeps at most `window_size`
+  observations, so both halves move with the stream. `"anchored"` keeps
+  every observation, which pins the reference half to the beginning of
+  the stream and makes memory grow with the stream length.
 
 - monitoring_step:
 
@@ -62,10 +78,7 @@ is used. Shapiro-Wilk is only defined for samples of at most 5000
 observations, so larger windows always fall back to the nonparametric
 test.
 
-Missing observations are skipped instead of being imputed. When a drift
-is reported the window is trimmed to its most recent half, and
-[`reset_state()`](https://cefet-rj-dal.github.io/heimdall/reference/reset_state.md)
-preserves that window so the detector does not restart cold.
+Missing observations are skipped instead of being imputed.
 
 ## References
 
@@ -76,39 +89,47 @@ Ogasawara, E. (2021). Analysing flight delay under concept drift.
 ## Examples
 
 ``` r
-library(daltoolbox)
+# Load Heimdall and the synthetic stream.
 library(heimdall)
 
-# This example assumes a model residual where 1 is an error and 0 is a
-# correct prediction.
+# Fix the seed to keep the walkthrough reproducible.
+seed <- 1
+set.seed(seed)
 
+# Load the univariate series monitored in this example.
 data(st_drift_examples)
-data <- st_drift_examples$univariate
-data$event <- NULL
+serie <- st_drift_examples$uv_virtual_drift
 
-model <- dfr_mcdd(target_feat='serie', window_size=100, alpha=0.05)
+# Plot the monitored signal before running the detector.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
 
+# Instantiate the mean-comparison detector.
+model <- dfr_mcdd(target_feat='serie', window_size=100)
+
+# Update the detector sequentially and collect the alarm positions.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-for (i in seq_along(data$serie)){
- output <- update_state(output$obj, data$serie[i])
- if (output$drift){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+for (i in seq_len(nrow(serie))){
+  output <- update_state(output$obj, serie$serie[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
 }
 
+# Print the detected drift points.
 detection[detection$type == 'drift',]
 #>     idx event  type
-#> 108 108  TRUE drift
-#> 159 159  TRUE drift
-#> 210 210  TRUE drift
-#> 261 261  TRUE drift
-#> 315 315  TRUE drift
-#> 366 366  TRUE drift
-#> 417 417  TRUE drift
-#> 468 468  TRUE drift
+#> 225 225  TRUE drift
+#> 332 332  TRUE drift
+#> 432 432  TRUE drift
+
+# Overlay the detected drifts on the original series.
+plot(x=seq_len(nrow(serie)), y=serie$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
 ```
