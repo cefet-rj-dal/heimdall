@@ -158,4 +158,7 @@ test_that("aedd runs end to end with the default daltoolboxdp autoencoder", {
   expect_equal(nrow(model$drifter_output), 200)
   # Output is reported on the evaluated rows, every monitoring_step rows.
   expect_gt(sum(!is.na(model$drifter_output[[1]])), 0)
+
+  # torch leaves a compilation cache in the temporary directory.
+  unlink(Sys.glob(file.path(dirname(tempdir()), "torchinductor_*")), recursive = TRUE)
 })
