@@ -1,0 +1,20 @@
+# Fast checks on the content of the repository itself. The same checks run
+# locally through the pre-commit hook in .githooks/ (see CONTRIBUTING.md).
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+name: repository-checks
+
+permissions: read-all
+
+jobs:
+  repository-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reject file names and committed merge conflicts
+        run: git ls-files -z | .githooks/check-files.sh

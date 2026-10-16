@@ -11,5 +11,8 @@
 ^_pkgdown\.yml$
 ^docs$
 ^\.lintr$
-^package\.R$
 ^jupyter\.R$
+^\.devcontainer$
+^CONTRIBUTING\.md$
+^\.githooks$
+^\.gitattributes$

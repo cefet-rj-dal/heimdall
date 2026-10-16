@@ -1,0 +1,76 @@
+# Runs what needs the Python backend of daltoolboxdp (the default autoencoder
+# of dfr_aedd): the AEDD tests with a real autoencoder, and the rendering of
+# every example under Rmd/examples, which fails if any example breaks.
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+name: python-backend
+
+permissions: read-all
+
+jobs:
+  python-backend:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      NOT_CRAN: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-pandoc@v2
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install the Python backend
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install numpy pandas scikit-learn
+          echo "RETICULATE_PYTHON=$(which python)" >> "$GITHUB_ENV"
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            any::reticulate
+            any::daltoolboxdp
+            any::testthat
+            any::rmarkdown
+            any::markdown
+            any::knitr
+            local::.
+          needs: examples
+
+      - name: AEDD tests with the real autoencoder
+        run: testthat::test_local(filter = "aedd", stop_on_failure = TRUE)
+        shell: Rscript {0}
+
+      - name: Render every example
+        run: Rscript Rmd/conversor.R
+
+      - name: Upload the rendered examples
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered-examples
+          path: |
+            examples/
+            !examples/logs/
+          if-no-files-found: warn
+
+      - name: Upload the conversion log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: conversion-log
+          path: examples/logs/

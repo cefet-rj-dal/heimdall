@@ -30,14 +30,12 @@ set.seed(seed)
 ```
 
 
-
 ``` r
 # Load the univariate stream and derive the binary monitored signal.
 data(st_drift_examples)
 data <- st_drift_examples$uv_virtual_drift
 data$prediction <- st_drift_examples$uv_virtual_drift$serie > 4
 ```
-
 
 
 ``` r
@@ -52,7 +50,6 @@ plot(x=seq_len(nrow(data)), y=data$prediction)
 # Instantiate the DDM detector.
 model <- dfr_ddm()
 ```
-
 
 
 ``` r
@@ -72,7 +69,6 @@ for (i in seq_len(nrow(data))){
 ```
 
 
-
 ``` r
 # Print the positions where DDM detected drift.
 detection[detection$type == 'drift',]
@@ -82,12 +78,6 @@ detection[detection$type == 'drift',]
 ##     idx event  type
 ## 201 201  TRUE drift
 ```
-
-```
-##     idx event  type
-## 201 201  TRUE drift
-```
-
 
 
 ``` r

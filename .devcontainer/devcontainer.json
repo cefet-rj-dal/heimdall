@@ -1,0 +1,24 @@
+{
+  "name": "heimdall",
+  "image": "dsc-lucas-dev",
+  "workspaceFolder": "/workspaces/heimdall",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/heimdall,type=bind",
+  "containerEnv": {
+    "TZ": "America/Sao_Paulo"
+  },
+  "postCreateCommand": "apt-get update && apt-get install -y --no-install-recommends libuv1 && Rscript -e \"if (!requireNamespace('markdown', quietly = TRUE)) install.packages('markdown')\" && git config --global --add safe.directory /workspaces/heimdall && git config --global core.autocrlf true",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "REditorSupport.r",
+        "REditorSupport.r-syntax"
+      ],
+      "settings": {
+        "r.rterm.linux": "/usr/local/bin/R",
+        "r.rpath.linux": "/usr/local/bin/R",
+        "r.bracketedPaste": true,
+        "r.lsp.enabled": true
+      }
+    }
+  }
+}

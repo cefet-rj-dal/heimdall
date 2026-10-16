@@ -183,13 +183,6 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
 ```
 ## [1] "Time Step:7"
 ## [1] "Time Step:8"
-```
-
-```
-## Stealthy detected a drift, discarding old data
-```
-
-```
 ## [1] "Time Step:9"
 ## [1] "Time Step:10"
 ```
@@ -208,15 +201,15 @@ results
 
 ```
 ##   Batch Index tp fp tn fn drifted         elap
-## 1           2  0  0  0  0       0 0.0006630421
-## 2           3 33  0 17  0       0 0.0047764778
-## 3           4 27  0 23  0       0 0.0026822090
-## 4           5 26  0 23  1       0 0.0028519630
-## 5           6  0  0  0  0       1 0.0024209023
-## 6           7 26  0 23  1       0 0.0044221878
-## 7           8  0  0  0  0       1 0.0023841858
-## 8           9 19  0 31  0       0 0.0044119358
-## 9          10 25  0 25  0       0 0.0026845932
+## 1           2  0  0  0  0       0 0.0007948875
+## 2           3 33  0 17  0       0 0.0062544346
+## 3           4 27  0 23  0       0 0.0065295696
+## 4           5 26  0 23  1       0 0.0055713654
+## 5           6  0  0  0  0       1 0.0052034855
+## 6           7 26  0 23  1       0 0.0075461864
+## 7           8 24  0 26  0       0 0.0068805218
+## 8           9 19  0 31  0       0 0.0059871674
+## 9          10 24  0 25  1       0 0.0061814785
 ```
 
 
@@ -230,13 +223,13 @@ fn_sum <- sum(results['fn'])
 precision <- tp_sum/(tp_sum + fp_sum)
 recall <- tp_sum/(tp_sum + fn_sum)
 accuracy <- (tp_sum + tn_sum)/(tp_sum + fp_sum + tn_sum + fn_sum)
-f1 <- 2 * (precision * recall) / (((beta^2)*precision) + recall)
+f1 <- (1 + beta^2) * (precision * recall) / (((beta^2)*precision) + recall)
 
 print(paste('Precision', precision, 'Recall', recall, 'F1', f1, 'Accuracy', accuracy))
 ```
 
 ```
-## [1] "Precision 1 Recall 0.987341772151899 F1 0.993630573248408 Accuracy 0.993333333333333"
+## [1] "Precision 1 Recall 0.983516483516483 F1 0.991689750692521 Accuracy 0.991428571428571"
 ```
 
 ``` r

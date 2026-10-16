@@ -48,7 +48,7 @@ monitoring_step <- batch_size # Process data in batch_size frequency
 model <- stealthy(
   model=daltoolbox::cla_dtree(target, slevels), # Naive Bayes Classifier
   drift_method=dfr_aedd(
-    encoding_size=1, ae_class=daltoolboxdp::autoenc_ed, criteria='levene', alpha=0.05, 
+    encoding_size=1, ae_class=daltoolboxdp::autoenc_ed, criteria='psi', threshold=0.1, 
     monitoring_step=batch_size), # Using AEDD
   norm_class=nrm_memory(norm_class = daltoolbox::minmax()), # Normalization with MinMax
   warmup_size=warmup_size, # Warmup size used to train models

@@ -176,7 +176,6 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
 ## [1] "Time Step:4"
 ## [1] "Time Step:5"
 ## [1] "Time Step:6"
-## [1] "Time Step:7"
 ```
 
 ```
@@ -184,6 +183,7 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
 ```
 
 ```
+## [1] "Time Step:7"
 ## [1] "Time Step:8"
 ## [1] "Time Step:9"
 ## [1] "Time Step:10"
@@ -202,16 +202,16 @@ results
 ```
 
 ```
-##   Batch Index tp fp tn fn drifted        elap
-## 1           2  0  0  0  0       0 0.000770092
-## 2           3 17  0 33  0       0 0.009655237
-## 3           4 23  0 27  0       0 0.091904163
-## 4           5 23  1 26  0       0 0.107221842
-## 5           6  0 26  0 24       0 0.094189167
-## 6           7  0  0  0  0       1 0.092348576
-## 7           8 31  0 19  0       0 0.009528160
-## 8           9 26  0 24  0       0 0.109263182
-## 9          10 27  0 23  0       0 0.093159437
+##   Batch Index tp fp tn fn drifted         elap
+## 1           2  0  0  0  0       0 0.0007147789
+## 2           3 17  0 33  0       0 0.0061211586
+## 3           4 23  0 27  0       0 0.0047130585
+## 4           5 23  1 26  0       0 0.0056102276
+## 5           6  0  0  0  0       1 0.0091671944
+## 6           7 22  1 21  6       0 0.0063481331
+## 7           8 23  3 16  8       0 0.0049889088
+## 8           9 25  7 17  1       0 0.0062878132
+## 9          10 22  2 21  5       0 0.0429861546
 ```
 
 
@@ -225,13 +225,13 @@ fn_sum <- sum(results['fn'])
 precision <- tp_sum/(tp_sum + fp_sum)
 recall <- tp_sum/(tp_sum + fn_sum)
 accuracy <- (tp_sum + tn_sum)/(tp_sum + fp_sum + tn_sum + fn_sum)
-f1 <- 2 * (precision * recall) / (((beta^2)*precision) + recall)
+f1 <- (1 + beta^2) * (precision * recall) / (((beta^2)*precision) + recall)
 
 print(paste('Precision', precision, 'Recall', recall, 'F1', f1, 'Accuracy', accuracy))
 ```
 
 ```
-## [1] "Precision 0.844827586206897 Recall 0.859649122807018 F1 0.852173913043478 Accuracy 0.854285714285714"
+## [1] "Precision 0.917159763313609 Recall 0.885714285714286 F1 0.901162790697674 Accuracy 0.902857142857143"
 ```
 
 ``` r

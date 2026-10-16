@@ -1,43 +1,43 @@
-#'@title ADWIN method
-#'@description ADWIN (Adaptive Windowing) is a sequential change detector that maintains a variable-length window and tests whether the means of two subwindows differ significantly. In this package, the implementation is primarily used for **virtual concept drift** when it monitors a numeric feature stream, although the same mechanism can also detect **real concept drift** if applied to an error or loss stream. The theoretical basis follows Bifet and Gavalda (2007) <doi:10.1137/1.9781611972771.42>.
-#'@param target_feat Feature to be monitored.
-#'@param delta The significance parameter for the ADWIN algorithm.
-#'@details The implementation is written in pure R and follows the
-#'exponential-histogram version of ADWIN distributed with scikit-multiflow.
-#'The window is compressed into buckets of exponentially growing size (at most
-#'five buckets per size), and the cut points are checked every 32 observations,
-#'once the window holds more than 10 observations. All the state lives in the
-#'object itself, so a `dfr_adwin` object can be serialized with
-#'[base::saveRDS()].
-#ADWIN detection: Bifet, Albert, and Ricard Gavalda. "Learning from time-changing data with adaptive windowing." In Proceedings of the 2007 SIAM international conference on data mining, pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
-#ADWIN implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/adwin.py
-#'@references Bifet, A., and Gavalda, R. (2007). Learning from time-changing data with adaptive windowing. In *Proceedings of the 2007 SIAM International Conference on Data Mining*, 443-448. <doi:10.1137/1.9781611972771.42>
-#'@return `dfr_adwin` object
-#'@examples
-#'library(daltoolbox)
-#'library(heimdall)
+#' @title ADWIN method
+#' @description ADWIN (Adaptive Windowing) is a sequential change detector that maintains a variable-length window and tests whether the means of two subwindows differ significantly. In this package, the implementation is primarily used for **virtual concept drift** when it monitors a numeric feature stream, although the same mechanism can also detect **real concept drift** if applied to an error or loss stream. The theoretical basis follows Bifet and Gavalda (2007) <doi:10.1137/1.9781611972771.42>.
+#' @param target_feat Feature to be monitored.
+#' @param delta The significance parameter for the ADWIN algorithm.
+#' @details The implementation is written in pure R and follows the
+#' exponential-histogram version of ADWIN distributed with scikit-multiflow.
+#' The window is compressed into buckets of exponentially growing size (at most
+#' five buckets per size), and the cut points are checked every 32 observations,
+#' once the window holds more than 10 observations. All the state lives in the
+#' object itself, so a `dfr_adwin` object can be serialized with
+#' [base::saveRDS()].
+# ADWIN detection: Bifet, Albert, and Ricard Gavalda. "Learning from time-changing data with adaptive windowing." In Proceedings of the 2007 SIAM international conference on data mining, pp. 443-448. Society for Industrial and Applied Mathematics, 2007.
+# ADWIN implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/adwin.py
+#' @references Bifet, A., and Gavalda, R. (2007). Learning from time-changing data with adaptive windowing. In *Proceedings of the 2007 SIAM International Conference on Data Mining*, 443-448. <doi:10.1137/1.9781611972771.42>
+#' @return `dfr_adwin` object
+#' @examples
+#' library(daltoolbox)
+#' library(heimdall)
 #'
-#'data(st_drift_examples)
-#'data <- st_drift_examples$uv_virtual_drift
-#'data$event <- NULL
+#' data(st_drift_examples)
+#' data <- st_drift_examples$uv_virtual_drift
+#' data$event <- NULL
 #'
-#'model <- dfr_adwin(target_feat='serie')
+#' model <- dfr_adwin(target_feat = "serie")
 #'
-#'detection <- NULL
-#'output <- list(obj=model, drift=FALSE)
-#'for (i in seq_along(data$serie)){
-#'  output <- update_state(output$obj, data$serie[i])
-#'  if (output$drift){
-#'    type <- 'drift'
-#'    output$obj <- reset_state(output$obj)
-#'  }else{
-#'    type <- ''
-#'  }
-#'  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
-#'}
+#' detection <- NULL
+#' output <- list(obj = model, drift = FALSE)
+#' for (i in seq_along(data$serie)) {
+#'   output <- update_state(output$obj, data$serie[i])
+#'   if (output$drift) {
+#'     type <- "drift"
+#'     output$obj <- reset_state(output$obj)
+#'   } else {
+#'     type <- ""
+#'   }
+#'   detection <- rbind(detection, data.frame(idx = i, event = output$drift, type = type))
+#' }
 #'
-#'print(detection[detection$type == 'drift',])
-#'@export
+#' print(detection[detection$type == "drift", ])
+#' @export
 dfr_adwin <- function(target_feat = NULL, delta = 2e-05) {
   .check_probability(delta, "delta")
 
@@ -194,7 +194,7 @@ dfr_adwin <- function(target_feat = NULL, delta = 2e-05) {
         u1 <- u1 - u2
 
         if ((n1 >= .adwin_min_window_length) && (n0 >= .adwin_min_window_length) &&
-            .adwin_cut(state, n0, n1, (u0 / n0) - (u1 / n1))) {
+          .adwin_cut(state, n0, n1, (u0 / n0) - (u1 / n1))) {
           reduce_width <- TRUE
           change <- TRUE
           if (state$width > 0) {
@@ -216,7 +216,7 @@ dfr_adwin <- function(target_feat = NULL, delta = 2e-05) {
   return(list(state = state, change = change))
 }
 
-#'@export
+#' @export
 update_state.dfr_adwin <- function(obj, value, ...) {
   value <- .as_scalar(value, obj$target_feat)
   if (is.na(value)) {
@@ -235,12 +235,12 @@ update_state.dfr_adwin <- function(obj, value, ...) {
   return(list(obj = obj, drift = has_drift))
 }
 
-#'@export
+#' @export
 fit.dfr_adwin <- function(obj, data, ...) {
   return(.fit_vector_stream(obj, data, output_names = "width"))
 }
 
-#'@export
+#' @export
 reset_state.dfr_adwin <- function(obj) {
   obj$drifted <- FALSE
   obj$state <- .adwin_state(obj$state$delta)

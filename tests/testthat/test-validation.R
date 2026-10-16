@@ -3,7 +3,7 @@ test_that("constructors reject out-of-range parameters", {
   expect_error(dfr_kswin(window_size = 10, stat_size = 20), "smaller than window_size")
   expect_error(dfr_mcdd(alpha = -1), "between 0 and 1")
   expect_error(dfr_lbdd(window_size = 1), "greater than or equal to")
-  expect_error(dfr_kldist(p_th = -0.1), "non-negative")
+  expect_error(dfr_kldist(threshold = -0.1), "greater than or equal to 0")
   expect_error(dfr_kldist(window_size = "serie"), "numeric value")
   expect_error(dfr_hddm(drift_confidence = 5), "between 0 and 1")
   expect_error(dfr_eddm(warning_level = 3), "between 0 and 1")

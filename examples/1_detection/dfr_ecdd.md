@@ -15,12 +15,10 @@ Reference: Ross, G. J., Adams, N. M., Tasoulis, D. K., and Hand, D. J. (2012). *
 This example is useful if you want to learn how a smoother, control-chart-style detector can be used inside the standard Heimdall streaming loop.
 
 
-
 ``` r
 # Load Heimdall and the synthetic example stream.
 library(heimdall)
 ```
-
 
 
 ``` r
@@ -28,7 +26,6 @@ library(heimdall)
 seed <- 1
 set.seed(seed)
 ```
-
 
 
 ``` r
@@ -39,7 +36,6 @@ data$prediction <- st_drift_examples$uv_virtual_drift$serie > 4
 ```
 
 
-
 ``` r
 # Plot the binary stream that ECDD will monitor.
 plot(x=seq_len(nrow(data)), y=data$prediction)
@@ -47,15 +43,11 @@ plot(x=seq_len(nrow(data)), y=data$prediction)
 
 ![plot of chunk unnamed-chunk-4](fig/dfr_ecdd/unnamed-chunk-4-1.png)
 
-![plot of chunk unnamed-chunk-4](fig/dfr_ecdd/unnamed-chunk-4-1.png)
-
-
 
 ``` r
 # Instantiate the ECDD detector.
 model <- dfr_ecdd()
 ```
-
 
 
 ``` r
@@ -75,7 +67,6 @@ for (i in seq_len(nrow(data))){
 ```
 
 
-
 ``` r
 # Print the drift points signaled by ECDD.
 detection[detection$type == 'drift',]
@@ -86,12 +77,6 @@ detection[detection$type == 'drift',]
 ## 201 201  TRUE drift
 ```
 
-```
-##     idx event  type
-## 201 201  TRUE drift
-```
-
-
 
 ``` r
 # Overlay the alarms on the original numeric signal.
@@ -100,7 +85,5 @@ for (drift_index in detection[detection$type == 'drift', 'idx']) {
   abline(v=drift_index, col='red', lty=2)
 }
 ```
-
-![plot of chunk unnamed-chunk-8](fig/dfr_ecdd/unnamed-chunk-8-1.png)
 
 ![plot of chunk unnamed-chunk-8](fig/dfr_ecdd/unnamed-chunk-8-1.png)

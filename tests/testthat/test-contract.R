@@ -75,3 +75,39 @@ test_that("at least one error-based detector reacts to an abrupt drift", {
   )
   expect_true(any(reacted))
 })
+
+test_that("drifter_output has one row per observation for every detector", {
+  stream <- c(drifting_numeric_stream()[1:100], NA, drifting_numeric_stream()[101:200])
+  errors <- c(drifting_error_stream()[1:100], NA, drifting_error_stream()[101:200])
+  for (name in names(error_based_detectors())) {
+    model <- fit(error_based_detectors()[[name]], errors)
+    expect_equal(nrow(model$drifter_output), length(errors), info = name)
+  }
+  for (name in names(univariate_detectors())) {
+    model <- fit(univariate_detectors()[[name]], stream)
+    expect_equal(nrow(model$drifter_output), length(stream), info = name)
+  }
+  frame <- data.frame(a = stream, b = rev(stream))
+  for (model in list(
+    dfr_kldist(window_size = 20), dfr_inactive(), dfr_passive(),
+    dfr_multi_criteria(list(ph = dfr_page_hinkley(target_feat = "a")))
+  )) {
+    expect_equal(nrow(fit(model, frame)$drifter_output), nrow(frame), info = class(model)[1])
+  }
+})
+
+test_that("drifter_output is NA where the detector reported nothing", {
+  model <- fit(dfr_adwin(), c(1, 2, NA, 3))
+  expect_true(is.na(model$drifter_output$width[3]))
+  expect_equal(model$drifter_output$width[c(1, 2, 4)], c(1, 2, 3))
+})
+
+test_that("the baselines report a drifter_output without columns", {
+  model <- fit(dfr_inactive(), 1:5)
+  expect_equal(dim(model$drifter_output), c(5L, 0L))
+})
+
+test_that("mcdd uses snake_case output columns", {
+  model <- fit(dfr_mcdd(window_size = 20), stats::rnorm(40))
+  expect_equal(names(model$drifter_output), c("old_shapiro_p", "new_shapiro_p", "comparison_p"))
+})

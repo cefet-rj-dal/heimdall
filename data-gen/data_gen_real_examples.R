@@ -4,7 +4,8 @@ gen_data <- function() {
   
   { # Brazilian Flight Data 1
     
-    load('../stealthy/data-real/bfd_2023.rdata')
+    # The raw flight data is not versioned; place bfd_2023.rdata in data-real/.
+    load('data-real/bfd_2023.rdata')
     
     bfd['batch_index'] <- format(bfd['expected_depart'], '%Y-%m-%d')
     ordered_batches <- sort(unique(bfd$batch_index))

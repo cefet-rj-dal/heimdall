@@ -77,7 +77,7 @@ monitoring_step <- batch_size # Process data in batch_size frequency
 # Define the stealthy model
 model <- stealthy(
   model=daltoolbox::cla_dtree(target, slevels), # Naive Bayes Classifier
-  drift_method=dfr_kldist(window_size=batch_size*2, breaks=20, p_th=0.35), # Using KLDIST
+  drift_method=dfr_kldist(window_size=batch_size*2, breaks=20, threshold=0.35), # Using KLDIST
   norm_class=nrm_memory(norm_class = daltoolbox::zscore()), # Normalization with MinMax
   warmup_size=warmup_size, # Warmup size used to train models
   incremental_memory=FALSE, # Do not force retrain in each batch

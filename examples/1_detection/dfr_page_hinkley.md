@@ -76,7 +76,7 @@ detection[detection$type == 'drift',]
 
 ```
 ##     idx event  type
-## 207 207  TRUE drift
+## 205 205  TRUE drift
 ```
 
 ```
@@ -101,5 +101,5 @@ print(paste('Successfull run at', Sys.time()))
 ```
 
 ```
-## [1] "Successfull run at 2026-05-21 16:07:19.79779"
+## [1] "Successfull run at 2026-10-16 10:25:29.035802"
 ```

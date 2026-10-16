@@ -35,14 +35,59 @@
   invisible(TRUE)
 }
 
-#' Validate the name of the monitored feature
+#' Validate the name(s) of the monitored feature(s)
+#'
+#' Univariate detectors take a single column name; multivariate detectors
+#' (`multiple = TRUE`) take one or more.
 #' @noRd
-.check_target_feat <- function(target_feat) {
-  if (!is.null(target_feat) &&
-      (!is.character(target_feat) || (length(target_feat) != 1L) || is.na(target_feat))) {
+.check_target_feat <- function(target_feat, multiple = FALSE) {
+  if (is.null(target_feat)) {
+    return(invisible(TRUE))
+  }
+  if (multiple) {
+    if (!is.character(target_feat) || (length(target_feat) == 0L) || anyNA(target_feat)) {
+      stop("target_feat must be NULL or a vector of column names", call. = FALSE)
+    }
+  } else if (!is.character(target_feat) || (length(target_feat) != 1L) || is.na(target_feat)) {
     stop("target_feat must be NULL or a single column name", call. = FALSE)
   }
   invisible(TRUE)
+}
+
+#' Select the monitored columns of a multivariate observation
+#'
+#' Returns a named numeric vector with the `target_feat` columns of a one-row
+#' data frame (or of a named vector), or with every numeric column when
+#' `target_feat` is `NULL`. Factors and text are left out unless they are
+#' explicitly selected, in which case they must hold numbers.
+#' @noRd
+.select_features <- function(value, target_feat = NULL, where = "update_state") {
+  if (is.data.frame(value) || is.matrix(value)) {
+    value <- as.data.frame(value)
+    if (nrow(value) != 1L) {
+      stop(sprintf("%s expects a single observation (one row)", where), call. = FALSE)
+    }
+  } else {
+    value <- unlist(value)
+    if (is.null(names(value)) || any(names(value) == "")) {
+      names(value) <- paste0("V", seq_along(value))
+    }
+    value <- as.data.frame(as.list(value), check.names = FALSE)
+  }
+  if (is.null(target_feat)) {
+    target_feat <- names(value)[vapply(value, function(column) is.numeric(column) || is.logical(column), logical(1))]
+  } else {
+    missing_features <- setdiff(target_feat, names(value))
+    if (length(missing_features) > 0L) {
+      stop(
+        sprintf("%s: the monitored features are not in the data: %s", where, paste(missing_features, collapse = ", ")),
+        call. = FALSE
+      )
+    }
+  }
+  row <- vapply(value[target_feat], function(column) suppressWarnings(as.numeric(column)), numeric(1))
+  row[is.infinite(row)] <- NA_real_
+  return(row)
 }
 
 #' Initial window of the window-based detectors
@@ -186,13 +231,13 @@
   }
 
   obj$drifter_output <- NULL
-  obj$last_drifter_output <- NULL
 
   output <- list(obj = obj, drift = FALSE)
-  collected <- NULL
+  collected <- vector("list", length(data))
   for (i in seq_along(data)) {
+    output$obj$last_drifter_output <- NULL
     output <- update_state(output$obj, data[i])
-    collected <- rbind(collected, output$obj$last_drifter_output)
+    collected[i] <- list(output$obj$last_drifter_output)
   }
 
   output$obj$drifter_output <- .as_drifter_output(collected, output_names)
@@ -208,31 +253,152 @@
   }
 
   obj$drifter_output <- NULL
-  obj$last_drifter_output <- NULL
 
   output <- list(obj = obj, drift = FALSE)
-  collected <- NULL
+  collected <- vector("list", nrow(data))
   for (i in seq_len(nrow(data))) {
+    output$obj$last_drifter_output <- NULL
     output <- update_state(output$obj, data[i, , drop = FALSE])
-    collected <- rbind(collected, output$obj$last_drifter_output)
+    collected[i] <- list(output$obj$last_drifter_output)
   }
 
   output$obj$drifter_output <- .as_drifter_output(collected, output_names)
   return(output$obj)
 }
 
-#' Gather the per-observation diagnostics collected by `fit()`
+#' Convert the diagnostics of one observation to a named list of scalars
+#'
+#' Accepts a scalar, a (named) vector, a one-row matrix or a one-row data
+#' frame. Unnamed values are called `V1`, `V2`, and so on.
 #' @noRd
-.as_drifter_output <- function(collected, output_names = NULL) {
-  if (is.null(collected)) {
+.as_output_row <- function(value) {
+  if (is.null(value)) {
     return(NULL)
   }
-  collected <- as.data.frame(collected)
-  if (!is.null(output_names) && (ncol(collected) == length(output_names))) {
-    names(collected) <- output_names
+  if (is.data.frame(value) || is.matrix(value)) {
+    value <- as.list(as.data.frame(value, check.names = FALSE)[1L, , drop = FALSE])
+  } else {
+    value <- as.list(value)
   }
-  rownames(collected) <- seq_len(nrow(collected))
-  return(collected)
+  if (is.null(names(value)) || any(names(value) == "")) {
+    names(value) <- paste0("V", seq_along(value))
+  }
+  return(value)
+}
+
+#' Gather the per-observation diagnostics collected by `fit()`
+#'
+#' Returns one row per observation; observations for which the detector
+#' reported nothing (for example while its window is filling) are `NA`. A
+#' detector that never reports anything gets a frame without columns.
+#' @noRd
+.as_drifter_output <- function(collected, output_names = NULL) {
+  rows <- lapply(collected, .as_output_row)
+  present <- !vapply(rows, is.null, logical(1))
+  if (!any(present)) {
+    return(data.frame(row.names = seq_along(collected)))
+  }
+
+  columns <- unique(unlist(lapply(rows[present], names), use.names = FALSE))
+  output <- lapply(columns, function(column) {
+    unlist(lapply(rows, function(row) {
+      if (is.null(row[[column]])) NA else row[[column]]
+    }), use.names = FALSE)
+  })
+  names(output) <- columns
+  output <- as.data.frame(output, check.names = FALSE)
+
+  if (!is.null(output_names) && (ncol(output) == length(output_names))) {
+    names(output) <- output_names
+  }
+  rownames(output) <- seq_len(nrow(output))
+  return(output)
+}
+
+#' Run code with a private random number stream
+#'
+#' The global `.Random.seed` is saved before and restored after, so detectors
+#' that sample (such as KSWIN) do not change the caller's random state.
+#' @noRd
+.with_rng <- function(rng, code) {
+  global_env <- globalenv()
+  had_seed <- exists(".Random.seed", envir = global_env, inherits = FALSE)
+  if (had_seed) {
+    global_seed <- get(".Random.seed", envir = global_env, inherits = FALSE)
+  }
+  on.exit({
+    if (had_seed) {
+      assign(".Random.seed", global_seed, envir = global_env) # nolint: object_name_linter. R requires this name.
+    } else if (exists(".Random.seed", envir = global_env, inherits = FALSE)) {
+      rm(".Random.seed", envir = global_env)
+    }
+  })
+  if (!is.null(rng)) {
+    assign(".Random.seed", rng, envir = global_env) # nolint: object_name_linter.
+  }
+  value <- code()
+  list(value = value, rng = get(".Random.seed", envir = global_env, inherits = FALSE))
+}
+
+#' Create a private random number stream
+#'
+#' When `seed` is `NULL`, it is drawn from the global generator, so a
+#' `set.seed()` call before creating the detector still makes it reproducible.
+#' @noRd
+.rng_state <- function(seed = NULL) {
+  if (is.null(seed)) {
+    seed <- sample.int(.Machine$integer.max, 1L)
+  }
+  .with_rng(NULL, function() set.seed(seed))$rng
+}
+
+#' Sample with a private random number stream
+#' @noRd
+.sample_local <- function(rng, x, size) {
+  result <- .with_rng(rng, function() sample(x, size))
+  list(sample = result$value, rng = result$rng)
+}
+
+#' Keep only the most recent rows of a data frame
+#'
+#' `NULL` for `max_rows` keeps every row.
+#' @noRd
+.keep_last_rows <- function(data, max_rows = NULL) {
+  if (is.null(data) || is.null(max_rows) || (nrow(data) <= max_rows)) {
+    return(data)
+  }
+  data <- data[seq.int(nrow(data) - max_rows + 1L, nrow(data)), , drop = FALSE]
+  rownames(data) <- NULL
+  return(data)
+}
+
+#' Stack two diagnostic frames, aligning their columns
+#'
+#' Columns missing from one of the frames are filled with `NA`. Either frame
+#' may be `NULL` or have no columns.
+#' @noRd
+.bind_rows_fill <- function(first, second) {
+  if (is.null(first)) {
+    return(second)
+  }
+  if (is.null(second)) {
+    return(first)
+  }
+  columns <- union(names(first), names(second))
+  n_rows <- nrow(first) + nrow(second)
+  if (length(columns) == 0L) {
+    return(data.frame(row.names = seq_len(n_rows)))
+  }
+  output <- lapply(columns, function(column) {
+    c(
+      if (column %in% names(first)) first[[column]] else rep(NA, nrow(first)),
+      if (column %in% names(second)) second[[column]] else rep(NA, nrow(second))
+    )
+  })
+  names(output) <- columns
+  output <- as.data.frame(output, check.names = FALSE)
+  rownames(output) <- seq_len(n_rows)
+  return(output)
 }
 
 #' Pick the monitored column of a tabular stream

@@ -1,19 +1,19 @@
-#'@title Adapted EWMA for Concept Drift Detection (ECDD) method
-#'@description ECDD applies an exponentially weighted moving average (EWMA) control chart to the online classification error stream. Since it monitors predictive errors directly, it is primarily designed to detect **real concept drift**. The method follows Ross et al. (2012), who adapted EWMA charts for concept-drift detection in streaming classifiers <doi:10.1016/j.patrec.2011.08.019>.
-#'@param lambda EWMA smoothing parameter
-#'@param min_run_instances The minimum number of instances before detecting change
-#'@param average_run_length Desired Average Run Length (ARL), i.e. the expected
-#'number of observations between two false alarms. The published control-limit
-#'polynomials exist for 100, 400 and 1000; other values use the next one up,
-#'and values above 1000 are rejected. The default changed from 100 to 400 in
-#'the development version, which reduced false alarms about sevenfold.
-#'@details Missing values are treated as correct predictions (`0`).
-#ECDD: Gordon Ross, Niall Adams, Dimitris Tasoulis, David Hand: Exponentially weighted moving average charts for detecting concept drift. Pattern Recognition Letters 2012, Volume 33, Issue 2: 191-198, DOI:10.1016/j.patrec.2011.08.019
-#ECDD implementation: Frouros, https://github.com/IFCA-Advanced-Computing/frouros/blob/acde82386da735ca8e15f85112f48d5cfb10cc9a/frouros/detectors/concept_drift/streaming/statistical_process_control/ecdd.py
-#'@references Ross, G. J., Adams, N. M., Tasoulis, D. K., and Hand, D. J. (2012). Exponentially weighted moving average charts for detecting concept drift. *Pattern Recognition Letters*, 33(2), 191-198. <doi:10.1016/j.patrec.2011.08.019>
-#'@return `dfr_ecdd` object
-#'@example examples/1_detection/r/dfr_ecdd.R
-#'@export
+#' @title Adapted EWMA for Concept Drift Detection (ECDD) method
+#' @description ECDD applies an exponentially weighted moving average (EWMA) control chart to the online classification error stream. Since it monitors predictive errors directly, it is primarily designed to detect **real concept drift**. The method follows Ross et al. (2012), who adapted EWMA charts for concept-drift detection in streaming classifiers <doi:10.1016/j.patrec.2011.08.019>.
+#' @param lambda EWMA smoothing parameter
+#' @param min_run_instances The minimum number of instances before detecting change
+#' @param average_run_length Desired Average Run Length (ARL), i.e. the expected
+#' number of observations between two false alarms. The published control-limit
+#' polynomials exist for 100, 400 and 1000; other values use the next one up,
+#' and values above 1000 are rejected. The default changed from 100 to 400 in
+#' the development version, which reduced false alarms about sevenfold.
+#' @details Missing values are treated as correct predictions (`0`).
+# ECDD: Gordon Ross, Niall Adams, Dimitris Tasoulis, David Hand: Exponentially weighted moving average charts for detecting concept drift. Pattern Recognition Letters 2012, Volume 33, Issue 2: 191-198, DOI:10.1016/j.patrec.2011.08.019
+# ECDD implementation: Frouros, https://github.com/IFCA-Advanced-Computing/frouros/blob/acde82386da735ca8e15f85112f48d5cfb10cc9a/frouros/detectors/concept_drift/streaming/statistical_process_control/ecdd.py
+#' @references Ross, G. J., Adams, N. M., Tasoulis, D. K., and Hand, D. J. (2012). Exponentially weighted moving average charts for detecting concept drift. *Pattern Recognition Letters*, 33(2), 191-198. <doi:10.1016/j.patrec.2011.08.019>
+#' @return `dfr_ecdd` object
+#' @example examples/1_detection/r/dfr_ecdd.R
+#' @export
 dfr_ecdd <- function(lambda = 0.2, min_run_instances = 30, average_run_length = 400) {
   .check_probability(lambda, "lambda")
   .check_positive_integer(min_run_instances, "min_run_instances", min_value = 1L)
@@ -46,7 +46,7 @@ dfr_ecdd <- function(lambda = 0.2, min_run_instances = 30, average_run_length = 
   return(obj)
 }
 
-#'@export
+#' @export
 update_state.dfr_ecdd <- function(obj, value, ...) {
   value <- .as_error(value)
 
@@ -83,12 +83,12 @@ update_state.dfr_ecdd <- function(obj, value, ...) {
       )$state
       obj$drifted <- TRUE
       obj$last_drifter_output <- state$Z
-      
+
       return(list(obj = obj, drift = TRUE))
     } else {
       obj$state <- state
       obj$last_drifter_output <- state$Z
-      
+
       return(list(obj = obj, drift = FALSE))
     }
   } else {
@@ -99,12 +99,12 @@ update_state.dfr_ecdd <- function(obj, value, ...) {
   }
 }
 
-#'@export
+#' @export
 fit.dfr_ecdd <- function(obj, data, ...) {
   return(.fit_vector_stream(obj, data, output_names = "Z"))
 }
 
-#'@export
+#' @export
 reset_state.dfr_ecdd <- function(obj) {
   obj$drifted <- FALSE
   obj$state <- dfr_ecdd(

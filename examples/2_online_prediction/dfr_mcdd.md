@@ -179,6 +179,13 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
 ## [1] "Time Step:7"
 ## [1] "Time Step:8"
 ## [1] "Time Step:9"
+```
+
+```
+## Stealthy detected a drift, discarding old data
+```
+
+```
 ## [1] "Time Step:10"
 ```
 
@@ -195,16 +202,16 @@ results
 ```
 
 ```
-##   Batch Index tp fp tn fn drifted         elap
-## 1           2  0  0  0  0       0 0.0006716251
-## 2           3 33  0 17  0       0 0.0066962242
-## 3           4 27  0 23  0       0 0.0028331280
-## 4           5 26  0 23  1       0 0.0028169155
-## 5           6  0  0 23 27       0 0.0030162334
-## 6           7  0  0 23 27       0 0.0035259724
-## 7           8  0  0 26 24       0 0.0034909248
-## 8           9  0  0 31 19       0 0.0035076141
-## 9          10  0  0 25 25       0 0.0027956963
+##   Batch Index tp fp tn fn drifted        elap
+## 1           2  0  0  0  0       0 0.000841856
+## 2           3 33  0 17  0       0 0.006959200
+## 3           4 27  0 23  0       0 0.011321783
+## 4           5 26  0 23  1       0 0.011192083
+## 5           6  0  0 23 27       0 0.011025190
+## 6           7  0  0 23 27       0 0.010205269
+## 7           8  0  0 26 24       0 0.009437323
+## 8           9  0  0  0  0       1 0.010658741
+## 9          10 24  0 25  1       0 0.008418083
 ```
 
 
@@ -218,24 +225,21 @@ fn_sum <- sum(results['fn'])
 precision <- tp_sum/(tp_sum + fp_sum)
 recall <- tp_sum/(tp_sum + fn_sum)
 accuracy <- (tp_sum + tn_sum)/(tp_sum + fp_sum + tn_sum + fn_sum)
-f1 <- 2 * (precision * recall) / (((beta^2)*precision) + recall)
+f1 <- (1 + beta^2) * (precision * recall) / (((beta^2)*precision) + recall)
 
 print(paste('Precision', precision, 'Recall', recall, 'F1', f1, 'Accuracy', accuracy))
 ```
 
 ```
-## [1] "Precision 1 Recall 0.411483253588517 F1 0.583050847457627 Accuracy 0.6925"
+## [1] "Precision 1 Recall 0.578947368421053 F1 0.733333333333333 Accuracy 0.771428571428571"
 ```
 
 ``` r
 plot(x=seq_len(nrow(df)), y=df$serie, col=as.numeric(df[[target]]))
 abline(v=250, col='blue', lty=2)
-```
-
-![plot of chunk unnamed-chunk-9](fig/dfr_mcdd/unnamed-chunk-9-1.png)
-
-``` r
 for (drift_index in results[results['drifted'] == 1, 'Batch Index']) {
   abline(v=drift_index*batch_size, col='red', lty=2)
 }
 ```
+
+![plot of chunk unnamed-chunk-9](fig/dfr_mcdd/unnamed-chunk-9-1.png)

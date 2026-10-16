@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Rejects staged files whose names cannot be checked out on Windows, and
+# staged files that still hold merge conflict markers.
+# Enable with: git config core.hooksPath .githooks
+git diff --cached --name-only --diff-filter=ACMR -z | "$(dirname "$0")/check-files.sh"

@@ -18,6 +18,6 @@ detectors monitor a single numeric feature; missing observations are skipped
 instead of being imputed.
 }
 \examples{
-obj <- dist_based(target_feat = 'serie')
+obj <- dist_based(target_feat = "serie")
 obj$target_feat
 }

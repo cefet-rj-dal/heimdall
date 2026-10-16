@@ -34,22 +34,22 @@ data(st_drift_examples)
 data <- st_drift_examples$uv_virtual_drift
 data$event <- NULL
 
-model <- dfr_adwin(target_feat='serie')
+model <- dfr_adwin(target_feat = "serie")
 
 detection <- NULL
-output <- list(obj=model, drift=FALSE)
-for (i in seq_along(data$serie)){
- output <- update_state(output$obj, data$serie[i])
- if (output$drift){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+output <- list(obj = model, drift = FALSE)
+for (i in seq_along(data$serie)) {
+  output <- update_state(output$obj, data$serie[i])
+  if (output$drift) {
+    type <- "drift"
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ""
+  }
+  detection <- rbind(detection, data.frame(idx = i, event = output$drift, type = type))
 }
 
-print(detection[detection$type == 'drift',])
+print(detection[detection$type == "drift", ])
 }
 \references{
 Bifet, A., and Gavalda, R. (2007). Learning from time-changing data with adaptive windowing. In \emph{Proceedings of the 2007 SIAM International Conference on Data Mining}, 443-448. \url{doi:10.1137/1.9781611972771.42}

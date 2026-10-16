@@ -12,7 +12,8 @@ dfr_kswin(
   window_type = "sliding",
   monitoring_step = 1,
   exact = NULL,
-  data = NULL
+  data = NULL,
+  seed = NULL
 )
 }
 \arguments{
@@ -35,6 +36,10 @@ between the exact and the asymptotic test, which is much faster for windows of
 this size. Up to version 1.3.0 the default was \code{TRUE}.}
 
 \item{data}{Already collected data to avoid cold start.}
+
+\item{seed}{Seed of the random number stream used to subsample the reference
+window. When \code{NULL} (the default) it is drawn from the global random number
+generator once, when the detector is created.}
 }
 \value{
 \code{dfr_kswin} object
@@ -44,8 +49,9 @@ KSWIN applies a Kolmogorov-Smirnov test between a recent window and a reference 
 }
 \details{
 The reference window is randomly subsampled to \code{stat_size}
-observations, so results depend on the state of the random number generator.
-Call \code{\link[base:set.seed]{base::set.seed()}} before the stream loop if reproducibility is required.
+observations. The detector keeps its own random number stream, so it does not
+change the global random state while it runs; set \code{seed} (or call
+\code{\link[base:set.seed]{base::set.seed()}} before creating the detector) for reproducible results.
 
 A drift requires both a significant p-value and a KS statistic above
 \code{sqrt(-log(alpha) / stat_size)}, as defined by Raab et al. Missing

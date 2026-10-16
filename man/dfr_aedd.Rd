@@ -13,7 +13,9 @@ dfr_aedd(
   window_type = "sliding",
   monitoring_step = floor(window_size/2),
   criteria = "mann_whitney",
-  alpha = 0.01
+  alpha = 0.01,
+  threshold = 0.01,
+  target_feat = NULL
 )
 }
 \arguments{
@@ -35,7 +37,11 @@ default checks twice per window.}
 
 \item{criteria}{The method used to check for a drift. One of \code{"mann_whitney"} (default), \code{"kolmogorov_smirnov"}, \code{"levene"}, \code{"psi"}, \code{"parametric_threshold"}, \code{"nonparametric_threshold"} or \code{"diff_threshold"}.}
 
-\item{alpha}{Decision threshold for \code{criteria}. For the hypothesis tests it is a significance level; for \code{"psi"} and \code{"diff_threshold"} it is compared directly against the statistic, so it is a raw threshold rather than a probability.}
+\item{alpha}{Significance level of the hypothesis-test criteria (\code{"mann_whitney"}, \code{"kolmogorov_smirnov"} and \code{"levene"}).}
+
+\item{threshold}{Drift threshold of the \code{"psi"} and \code{"diff_threshold"} criteria, compared directly against the divergence or the median error difference. It is a raw threshold, not a probability.}
+
+\item{target_feat}{Names of the columns to be monitored. \code{NULL} (the default) monitors every numeric column.}
 }
 \value{
 \code{dfr_aedd} object

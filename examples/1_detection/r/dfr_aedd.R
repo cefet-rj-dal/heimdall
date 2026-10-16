@@ -30,7 +30,6 @@ serie[, monitored_features] <- transform(normalizer, serie[, monitored_features]
 model <- dfr_aedd(
   encoding_size=1,
   ae_class=autoenc_ed,
-  batch_size=64,
   monitoring_step=10,
   window_size=256
 )

@@ -79,7 +79,7 @@ summarize_phase <- function(results, phase) {
 # Convert a Jupyter notebook (.ipynb) to R Markdown (.Rmd)
 convert_ipynb_to_rmarkdown <- function(input) {
   # Require rmarkdown without attaching; return a clear message if missing
-  if (!require("rmarkdown")) return("Missing necessary package: 'rmarkdown'")
+  if (!requireNamespace("rmarkdown", quietly = TRUE)) stop("Missing necessary package: 'rmarkdown'")
 
   # Validate extension
   if (tolower(xfun::file_ext(input)) != "ipynb") {
@@ -129,9 +129,9 @@ build_output_paths <- function(input) {
 # '<examples-subdir>/fig/<doc-basename>/'.
 convert_rmd_md <- function(input) {
   # Require needed packages; keep behavior consistent with original
-  if (!require("rmarkdown")) return("Missing necessary package: 'rmarkdown'")
-  if (!require("markdown"))  return("Missing necessary package: 'markdown'")
-  if (!require("knitr"))     return("Missing necessary package: 'knitr'")
+  if (!requireNamespace("rmarkdown", quietly = TRUE)) stop("Missing necessary package: 'rmarkdown'")
+  if (!requireNamespace("markdown", quietly = TRUE)) stop("Missing necessary package: 'markdown'")
+  if (!requireNamespace("knitr", quietly = TRUE)) stop("Missing necessary package: 'knitr'")
 
   # Validate extension
   if (tolower(xfun::file_ext(input)) != "rmd") {
@@ -159,7 +159,7 @@ convert_rmd_md <- function(input) {
   }
 
   # Knit Rmd -> md (knitr will write figures under './figure' by default)
-  knit(input, mdfile)
+  knitr::knit(input, mdfile)
 
   # Move figures from './figure' to '<md-dir>/fig/<doc-basename>/' if they exist
   if (dir.exists("figure")) {
@@ -191,10 +191,15 @@ convert_rmd_md <- function(input) {
 
 # Render an .Rmd to .docx under 'examples/<subdir>/doc/'.
 convert_rmd_docx <- function(input) {
-  if (!require("rmarkdown")) return("Missing necessary package: 'rmarkdown'")
+  if (!requireNamespace("rmarkdown", quietly = TRUE)) stop("Missing necessary package: 'rmarkdown'")
 
   if (tolower(xfun::file_ext(input)) != "rmd") {
     return("Error: Invalid file format")
+  }
+
+  # The examples index is only rendered to Markdown.
+  if (tolower(basename(input)) == "readme.rmd") {
+    return(invisible(NULL))
   }
 
   paths <- build_output_paths(input)
@@ -214,7 +219,7 @@ convert_rmd_docx <- function(input) {
 
 # Extract a pure .R script under 'examples/<subdir>/r/'.
 convert_rmd_r <- function(input) {
-  if (!require("knitr")) return("Missing necessary package: 'knitr'")
+  if (!requireNamespace("knitr", quietly = TRUE)) stop("Missing necessary package: 'knitr'")
 
   if (tolower(xfun::file_ext(input)) != "rmd") {
     return("Error: Invalid file format")
@@ -222,7 +227,7 @@ convert_rmd_r <- function(input) {
 
   paths <- build_output_paths(input)
   rfile <- paths$rfile
-  if (basename(rfile) == "README.R") {
+  if (tolower(basename(rfile)) == "readme.r") {
     return(invisible(NULL))
   }
   r_dir <- dirname(rfile)
@@ -271,6 +276,9 @@ if (TRUE) {
   total_fail <- md_summary$fail + docx_summary$fail + r_summary$fail
   if (total_fail > 0) {
     cat(sprintf("Conversion finished with failures. Log: %s\n", log_file))
+    if (!interactive()) {
+      quit(status = 1)
+    }
   } else {
     cat("Conversion finished without failures.\n")
   }

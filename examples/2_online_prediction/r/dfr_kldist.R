@@ -1,7 +1,5 @@
 # Load Heimdall and the built-in synthetic data stream.
 library(heimdall)
-# library(devtools)
-# load_all('/home/lucas/heimdall')
 
 # Fix the seed to make the example reproducible.
 seed <- 1
@@ -9,13 +7,13 @@ set.seed(seed)
 
 # Load the univariate stream and derive the binary monitored signal.
 data(st_drift_examples)
-df <- st_drift_examples$uv_vct_real_drift
+df <- st_drift_examples$mv_vct_real_drift
 
 # Plot the binary stream monitored by ADWIN.
-plot(x=seq_len(nrow(df)), y=df$serie, col=df$target)
+plot(x=seq_len(nrow(df)), y=df$serie1, col=df$target)
 
 # Define features
-features <- c('serie')
+features <- c('serie1', 'serie2')
 
 ## Force Target as Factor
 target <- 'target'
@@ -48,8 +46,8 @@ monitoring_step <- batch_size # Process data in batch_size frequency
 # Define the stealthy model
 model <- stealthy(
   model=daltoolbox::cla_dtree(target, slevels), # Naive Bayes Classifier
-  drift_method=dfr_kldist(window_size=batch_size*2, p_th=0.1), # Using KLDIST
-  norm_class=nrm_memory(norm_class = daltoolbox::minmax()), # Normalization with MinMax
+  drift_method=dfr_kldist(window_size=batch_size*2, breaks=20, threshold=0.35), # Using KLDIST
+  norm_class=nrm_memory(norm_class = daltoolbox::zscore()), # Normalization with MinMax
   warmup_size=warmup_size, # Warmup size used to train models
   incremental_memory=FALSE, # Do not force retrain in each batch
   class_balance='inactive', # No class balancing
@@ -146,7 +144,7 @@ accuracy <- (tp_sum + tn_sum)/(tp_sum + fp_sum + tn_sum + fn_sum)
 f1 <- (1 + beta^2) * (precision * recall) / (((beta^2)*precision) + recall)
 
 print(paste('Precision', precision, 'Recall', recall, 'F1', f1, 'Accuracy', accuracy))
-plot(x=seq_len(nrow(df)), y=df$serie, col=as.numeric(df[[target]]))
+plot(x=seq_len(nrow(df)), y=df$serie1, col=as.numeric(df[[target]]))
 abline(v=250, col='blue', lty=2)
 for (drift_index in results[results['drifted'] == 1, 'Batch Index']) {
   abline(v=drift_index*batch_size, col='red', lty=2)

@@ -86,7 +86,7 @@ monitoring_step <- batch_size # Process data in batch_size frequency
 model <- stealthy(
   model=daltoolbox::cla_dtree(target, slevels), # Naive Bayes Classifier
   drift_method=dfr_aedd(
-    encoding_size=1, ae_class=daltoolboxdp::autoenc_ed, criteria='levene', alpha=0.05, 
+    encoding_size=1, ae_class=daltoolboxdp::autoenc_ed, criteria='psi', threshold=0.1, 
     monitoring_step=batch_size), # Using AEDD
   norm_class=nrm_memory(norm_class = daltoolbox::minmax()), # Normalization with MinMax
   warmup_size=warmup_size, # Warmup size used to train models
@@ -177,6 +177,14 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
 ## [1] "Time Step:2"
 ## [1] "Time Step:3"
 ## [1] "Time Step:4"
+```
+
+```
+## Warning: dfr_aedd: values outside [0, 1] were clipped. Normalize the data
+## (e.g., with daltoolbox::minmax()) before feeding the detector.
+```
+
+```
 ## [1] "Time Step:5"
 ## [1] "Time Step:6"
 ## [1] "Time Step:7"
@@ -205,16 +213,16 @@ results
 ```
 
 ```
-##   Batch Index tp fp tn fn drifted         elap
-## 1           2  0  0  0  0       0 0.0006690025
-## 2           3 20  0 26  4       0 1.4835772514
-## 3           4 20  0 29  1       0 0.0215146542
-## 4           5 20  3 23  4       0 0.0226352215
-## 5           6  0  0 19 31       0 0.0225510597
-## 6           7  0  0  0  0       1 0.0243589878
-## 7           8 18  4 25  3       0 1.4758367538
-## 8           9 21  4 17  8       0 0.0209794044
-## 9          10 20  1 25  4       0 0.0209741592
+##   Batch Index tp fp tn fn drifted        elap
+## 1           2  0  0  0  0       0 0.001117706
+## 2           3 20  0 26  4       0 0.009728432
+## 3           4 20  0 29  1       0 0.085484266
+## 4           5 20  3 23  4       0 3.116001129
+## 5           6  0  0 19 31       0 0.081123829
+## 6           7  0  0  0  0       1 0.092304230
+## 7           8 18  4 25  3       0 0.009926319
+## 8           9 21  4 17  8       0 0.063365459
+## 9          10 20  1 25  4       0 2.975129366
 ```
 
 
@@ -228,7 +236,7 @@ fn_sum <- sum(results['fn'])
 precision <- tp_sum/(tp_sum + fp_sum)
 recall <- tp_sum/(tp_sum + fn_sum)
 accuracy <- (tp_sum + tn_sum)/(tp_sum + fp_sum + tn_sum + fn_sum)
-f1 <- 2 * (precision * recall) / (((beta^2)*precision) + recall)
+f1 <- (1 + beta^2) * (precision * recall) / (((beta^2)*precision) + recall)
 
 print(paste('Precision', precision, 'Recall', recall, 'F1', f1, 'Accuracy', accuracy))
 ```

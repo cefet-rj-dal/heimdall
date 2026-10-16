@@ -4,10 +4,14 @@
 \alias{nrm_memory}
 \title{Memory Normalizer}
 \usage{
-nrm_memory(norm_class = daltoolbox::minmax())
+nrm_memory(norm_class = daltoolbox::minmax(), max_size = NULL)
 }
 \arguments{
 \item{norm_class}{Normalizer class}
+
+\item{max_size}{Maximum number of rows kept in the memory; the oldest rows
+are dropped first. \code{NULL} (the default) keeps the whole history, so set it on
+long streams to bound memory.}
 }
 \value{
 Norm object

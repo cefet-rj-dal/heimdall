@@ -1,18 +1,18 @@
-#'@title Adapted Drift Detection Method (DDM) method
-#'@description DDM monitors the online error rate of a predictive model under the PAC-learning assumption that, in a stationary environment, the error should decrease or remain stable as more samples are observed. Because it operates on the classifier error stream, it is primarily a detector of **real concept drift**. The method follows Gama et al. (2004) <doi:10.1007/978-3-540-28645-5_29>.
-#'@param min_instances The minimum number of instances before detecting change
-#'@param warning_level Necessary level for warning zone (2 standard deviation)
-#'@param out_control_level Necessary level for a positive drift detection
-#'@details The detector only reacts to an increase of the error rate (a
-#'degradation of the model); improvements are not reported. Values must be `1`
-#'(error) or `0` (correct prediction), and missing values are treated as
-#'correct predictions (`0`).
-#DDM: Joao Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning with Drift Detection. SBIA 2004: 286-295.
-#DDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/ddm.py
-#'@references Gama, J., Medas, P., Castillo, G., and Rodrigues, P. P. (2004). Learning with drift detection. In *Advances in Artificial Intelligence - SBIA 2004*, 286-295. <doi:10.1007/978-3-540-28645-5_29>
-#'@return `dfr_ddm` object
-#'@example examples/1_detection/r/dfr_ddm.R
-#'@export
+#' @title Adapted Drift Detection Method (DDM) method
+#' @description DDM monitors the online error rate of a predictive model under the PAC-learning assumption that, in a stationary environment, the error should decrease or remain stable as more samples are observed. Because it operates on the classifier error stream, it is primarily a detector of **real concept drift**. The method follows Gama et al. (2004) <doi:10.1007/978-3-540-28645-5_29>.
+#' @param min_instances The minimum number of instances before detecting change
+#' @param warning_level Necessary level for warning zone (2 standard deviation)
+#' @param out_control_level Necessary level for a positive drift detection
+#' @details The detector only reacts to an increase of the error rate (a
+#' degradation of the model); improvements are not reported. Values must be `1`
+#' (error) or `0` (correct prediction), and missing values are treated as
+#' correct predictions (`0`).
+# DDM: Joao Gama, Pedro Medas, Gladys Castillo, Pedro Pereira Rodrigues: Learning with Drift Detection. SBIA 2004: 286-295.
+# DDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/ddm.py
+#' @references Gama, J., Medas, P., Castillo, G., and Rodrigues, P. P. (2004). Learning with drift detection. In *Advances in Artificial Intelligence - SBIA 2004*, 286-295. <doi:10.1007/978-3-540-28645-5_29>
+#' @return `dfr_ddm` object
+#' @example examples/1_detection/r/dfr_ddm.R
+#' @export
 dfr_ddm <- function(min_instances = 30, warning_level = 2, out_control_level = 3) {
   .check_positive_integer(min_instances, "min_instances", min_value = 1L)
   .check_number(warning_level, "warning_level", min_value = 0)
@@ -45,7 +45,7 @@ dfr_ddm <- function(min_instances = 30, warning_level = 2, out_control_level = 3
   return(obj)
 }
 
-#'@export
+#' @export
 update_state.dfr_ddm <- function(obj, value, ...) {
   value <- .as_error(value)
 
@@ -62,7 +62,7 @@ update_state.dfr_ddm <- function(obj, value, ...) {
   if (state$sample_count < state$min_instances) {
     obj$state <- state
     obj$last_drifter_output <- state$miss_prob
-    
+
     return(list(obj = obj, drift = FALSE))
   }
 
@@ -84,28 +84,28 @@ update_state.dfr_ddm <- function(obj, value, ...) {
     obj$drifted <- TRUE
     obj$state <- state
     obj$last_drifter_output <- state$miss_prob
-    
+
     return(list(obj = obj, drift = TRUE))
   } else if ((state$miss_prob + state$miss_std) > (state$miss_prob_min + state$warning_level * state$miss_sd_min)) {
     state$in_warning_zone <- TRUE
     obj$state <- state
     obj$last_drifter_output <- state$miss_prob
-    
+
     return(list(obj = obj, drift = FALSE))
   } else {
     obj$state <- state
     obj$last_drifter_output <- state$miss_prob
-    
+
     return(list(obj = obj, drift = FALSE))
   }
 }
 
-#'@export
+#' @export
 fit.dfr_ddm <- function(obj, data, ...) {
   return(.fit_vector_stream(obj, data, output_names = "miss_prob"))
 }
 
-#'@export
+#' @export
 reset_state.dfr_ddm <- function(obj) {
   obj$drifted <- FALSE
   obj$state <- dfr_ddm(

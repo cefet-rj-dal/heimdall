@@ -24,8 +24,7 @@ This example is meant to help you understand the standard Heimdall workflow for 
 
 ```{r}
 # Load Heimdall so the detector and built-in datasets are available.
-devtools::load_all('/home/lucas/heimdall/')
-# library(heimdall)
+library(heimdall)
 ```
 
 ```{r}

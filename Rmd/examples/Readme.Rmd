@@ -14,42 +14,45 @@ Concept drift detectors are often presented only as formulas or as constructor a
 
 ## Folder structure
 
-- `*.md`: rendered detector walkthroughs.
+- `1_detection/`: each detector monitoring a stream on its own, through the `update_state()` loop.
+- `2_online_prediction/`: each detector plugged into `stealthy()`, which retrains a classifier whenever a drift is reported.
+
+Inside each folder:
+
+- `*.md`: rendered walkthroughs.
 - `doc/`: Word versions of the same examples.
 - `fig/`: figures generated during rendering.
 - `r/`: extracted R scripts for users who prefer a plain script version.
 
-## Real concept drift examples
+The sources are the `.Rmd` files under `Rmd/examples/`; `Rmd/conversor.R` renders them into this folder.
 
-These examples are recommended when you want to monitor predictive behavior through an error stream or another performance-related signal.
+## Examples by drifter
 
-- [dfr_cusum.md](./dfr_cusum.md): A compact introduction to sequential error monitoring with CUSUM.
-- [dfr_ddm.md](./dfr_ddm.md): A practical starting point for users who want a classic error-rate drift detector.
-- [dfr_ecdd.md](./dfr_ecdd.md): An EWMA-style example for users interested in control-chart monitoring.
-- [dfr_eddm.md](./dfr_eddm.md): A useful example when gradual degradation matters more than abrupt jumps.
-- [dfr_hddm.md](./dfr_hddm.md): A statistically grounded example based on Hoeffding bounds.
+Every drifter has a detection example and an online prediction example.
 
-## Virtual concept drift examples
-
-These examples are recommended when you want to monitor changes in the feature distribution directly, even without labels.
-
-- [dfr_adwin.md](./dfr_adwin.md): A simple first example for univariate streaming data.
-- [dfr_aedd.md](./dfr_aedd.md): A multivariate unsupervised example based on autoencoder reconstruction error.
-- [dfr_kldist.md](./dfr_kldist.md): A direct distribution-comparison example based on KL divergence.
-- [dfr_kswin.md](./dfr_kswin.md): A window-based statistical test example using the Kolmogorov-Smirnov test.
-- [dfr_lbdd.md](./dfr_lbdd.md): A detector focused on variance shifts across windows.
-- [dfr_mcdd.md](./dfr_mcdd.md): A detector focused on central-tendency changes across windows.
-
-## Flexible sequential detector
-
-The detector below can be used with different monitored signals. In the rendered example, it is applied to a numeric stream so that readers can understand it as a feature-monitoring workflow.
-
-- [dfr_page_hinkley.md](./dfr_page_hinkley.md): A classic sequential change-point detector with a compact API and an easy-to-follow example.
+| Drifter | Kind | Detection | Online prediction | What it shows |
+|---|---|---|---|---|
+| `dfr_cusum` | real (error-based) | [detection](./1_detection/dfr_cusum.md) | [online prediction](./2_online_prediction/dfr_cusum.md) | Sequential error monitoring with a cumulative sum. |
+| `dfr_ddm` | real (error-based) | [detection](./1_detection/dfr_ddm.md) | [online prediction](./2_online_prediction/dfr_ddm.md) | A classic error-rate drift detector. |
+| `dfr_ecdd` | real (error-based) | [detection](./1_detection/dfr_ecdd.md) | [online prediction](./2_online_prediction/dfr_ecdd.md) | EWMA control-chart monitoring of the errors. |
+| `dfr_eddm` | real (error-based) | [detection](./1_detection/dfr_eddm.md) | [online prediction](./2_online_prediction/dfr_eddm.md) | Gradual degradation, through the distance between errors. |
+| `dfr_hddm` | real (error-based) | [detection](./1_detection/dfr_hddm.md) | [online prediction](./2_online_prediction/dfr_hddm.md) | Error-rate monitoring based on Hoeffding bounds. |
+| `dfr_adwin` | virtual (univariate) | [detection](./1_detection/dfr_adwin.md) | [online prediction](./2_online_prediction/dfr_adwin.md) | A simple first example with an adaptive window. |
+| `dfr_page_hinkley` | virtual (univariate) | [detection](./1_detection/dfr_page_hinkley.md) | [online prediction](./2_online_prediction/dfr_page_hinkley.md) | A classic sequential change-point detector. |
+| `dfr_kswin` | virtual (univariate) | [detection](./1_detection/dfr_kswin.md) | [online prediction](./2_online_prediction/dfr_kswin.md) | Window comparison with the Kolmogorov-Smirnov test. |
+| `dfr_lbdd` | virtual (univariate) | [detection](./1_detection/dfr_lbdd.md) | [online prediction](./2_online_prediction/dfr_lbdd.md) | Changes of spread across windows. |
+| `dfr_mcdd` | virtual (univariate) | [detection](./1_detection/dfr_mcdd.md) | [online prediction](./2_online_prediction/dfr_mcdd.md) | Changes of location across windows. |
+| `dfr_kldist` | virtual (multivariate) | [detection](./1_detection/dfr_kldist.md) | [online prediction](./2_online_prediction/dfr_kldist.md) | Distribution comparison with a binned divergence. |
+| `dfr_aedd` | virtual (multivariate) | [detection](./1_detection/dfr_aedd.md) | [online prediction](./2_online_prediction/dfr_aedd.md) | Autoencoder reconstruction error, unsupervised. |
+| `dfr_multi_criteria` | combined | [detection](./1_detection/dfr_multi_criteria.md) | [online prediction](./2_online_prediction/dfr_multi_criteria.md) | Several detectors combined into one decision. |
+| `dfr_inactive` | baseline | [detection](./1_detection/dfr_inactive.md) | [online prediction](./2_online_prediction/dfr_inactive.md) | Never reports a drift: the model is never retrained. |
+| `dfr_passive` | baseline | [detection](./1_detection/dfr_passive.md) | [online prediction](./2_online_prediction/dfr_passive.md) | Always reports a drift: the model is retrained on every batch. |
 
 ## Suggested learning path
 
 If you are new to Heimdall, a practical order is:
 
-1. start with [dfr_adwin.md](./dfr_adwin.md) or [dfr_ddm.md](./dfr_ddm.md);
-2. compare them with [dfr_kswin.md](./dfr_kswin.md) or [dfr_ecdd.md](./dfr_ecdd.md);
-3. move to [dfr_aedd.md](./dfr_aedd.md) when you want a multivariate unsupervised workflow.
+1. start with the detection examples of `dfr_adwin` or `dfr_ddm`;
+2. compare them with `dfr_kswin` or `dfr_ecdd`;
+3. move to the online prediction examples, and compare a detector with the `dfr_inactive` and `dfr_passive` baselines;
+4. move to `dfr_aedd` when you want a multivariate unsupervised workflow.

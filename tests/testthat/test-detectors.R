@@ -59,7 +59,7 @@ test_that("kl distance rarely alarms on a stationary stream", {
 
 test_that("kl distance reacts to a shift of the mean", {
   set.seed(5)
-  detections <- detect_indices(dfr_kldist(p_th = 0.15), data.frame(a = c(stats::rnorm(500), stats::rnorm(500, 2))))
+  detections <- detect_indices(dfr_kldist(threshold = 0.15), data.frame(a = c(stats::rnorm(500), stats::rnorm(500, 2))))
   expect_true(any(detections > 500 & detections < 600))
 })
 

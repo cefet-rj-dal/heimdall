@@ -202,16 +202,16 @@ results
 ```
 
 ```
-##   Batch Index tp fp tn fn drifted         elap
-## 1           2  0  0  0  0       0 0.0006942749
-## 2           3 33  0 17  0       0 0.0136439800
-## 3           4 27  0 23  0       0 0.0134391785
-## 4           5 26  0 23  1       0 0.0064198971
-## 5           6  0  0 23 27       0 0.0061430931
-## 6           7  0  0  0  0       1 0.0113029480
-## 7           8 24  1 25  0       0 0.0145082474
-## 8           9 19  0 31  0       0 0.0062134266
-## 9          10 25  0 25  0       0 0.0064225197
+##   Batch Index tp fp tn fn drifted        elap
+## 1           2  0  0  0  0       0 0.002398491
+## 2           3 33  0 17  0       0 0.011869907
+## 3           4 27  0 23  0       0 0.007945776
+## 4           5 26  0 23  1       0 0.008886576
+## 5           6  0  0 23 27       0 0.010550261
+## 6           7  0  0  0  0       1 0.008562088
+## 7           8 24  1 25  0       0 0.008817673
+## 8           9 19  0 31  0       0 0.032344103
+## 9          10 25  0 25  0       0 0.031448126
 ```
 
 
@@ -225,7 +225,7 @@ fn_sum <- sum(results['fn'])
 precision <- tp_sum/(tp_sum + fp_sum)
 recall <- tp_sum/(tp_sum + fn_sum)
 accuracy <- (tp_sum + tn_sum)/(tp_sum + fp_sum + tn_sum + fn_sum)
-f1 <- 2 * (precision * recall) / (((beta^2)*precision) + recall)
+f1 <- (1 + beta^2) * (precision * recall) / (((beta^2)*precision) + recall)
 
 print(paste('Precision', precision, 'Recall', recall, 'F1', f1, 'Accuracy', accuracy))
 ```

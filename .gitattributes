@@ -1,0 +1,13 @@
+# Shell scripts must keep LF line endings to run on Linux and in the dev container.
+*.sh text eol=lf
+.githooks/* text eol=lf
+
+# Generated files: rendered from Rmd/examples by Rmd/conversor.R, or by roxygen2
+# and rmarkdown. Edit the sources instead. GitHub collapses them in diffs.
+examples/**/*.md linguist-generated=true
+examples/**/r/*.R linguist-generated=true
+examples/**/fig/** linguist-generated=true -diff
+examples/**/doc/*.docx linguist-generated=true -diff
+man/*.Rd linguist-generated=true
+NAMESPACE linguist-generated=true
+README.md linguist-generated=true

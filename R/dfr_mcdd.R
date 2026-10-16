@@ -1,30 +1,30 @@
-#'@title Mean Comparison Distance method
-#'@description MCDD is a window-based detector that compares the location of a reference and a recent sample by means of a hypothesis test on their central tendency. Because it monitors the distribution of an observed feature rather than predictive errors, it is primarily intended for **virtual concept drift**. In this package, the detector follows the statistical-testing perspective adopted by Giusti et al. (2021) for drift analysis.
-#'@param target_feat Feature to be monitored
-#'@param alpha Probability threshold for the comparison test
-#'@param normality_alpha Significance level of the Shapiro-Wilk normality test used to decide between the parametric and the nonparametric comparison. It is deliberately separate from `alpha`, since the two thresholds answer different questions.
-#'@param window_size Size of the window
-#'@param window_type Window policy. `"sliding"` (default) keeps at most `window_size` observations, so both halves move with the stream. `"anchored"` keeps every observation, which pins the reference half to the beginning of the stream and makes memory grow with the stream length.
-#'@param monitoring_step Number of observations between two consecutive tests. The default (`1`) tests at every observation; larger values reduce the computational cost on long streams.
-#'@param data Already collected data to avoid cold start.
-#'@details MCDD only reacts to changes of location (mean or median); a change of
-#'spread with the same centre is not detected, so combine it with [dfr_lbdd()]
-#'when both kinds of change matter.
+#' @title Mean Comparison Distance method
+#' @description MCDD is a window-based detector that compares the location of a reference and a recent sample by means of a hypothesis test on their central tendency. Because it monitors the distribution of an observed feature rather than predictive errors, it is primarily intended for **virtual concept drift**. In this package, the detector follows the statistical-testing perspective adopted by Giusti et al. (2021) for drift analysis.
+#' @param target_feat Feature to be monitored
+#' @param alpha Probability threshold for the comparison test
+#' @param normality_alpha Significance level of the Shapiro-Wilk normality test used to decide between the parametric and the nonparametric comparison. It is deliberately separate from `alpha`, since the two thresholds answer different questions.
+#' @param window_size Size of the window
+#' @param window_type Window policy. `"sliding"` (default) keeps at most `window_size` observations, so both halves move with the stream. `"anchored"` keeps every observation, which pins the reference half to the beginning of the stream and makes memory grow with the stream length.
+#' @param monitoring_step Number of observations between two consecutive tests. The default (`1`) tests at every observation; larger values reduce the computational cost on long streams.
+#' @param data Already collected data to avoid cold start.
+#' @details MCDD only reacts to changes of location (mean or median); a change of
+#' spread with the same centre is not detected, so combine it with [dfr_lbdd()]
+#' when both kinds of change matter.
 #'
-#'Normality of both halves of the window is checked with
-#'[stats::shapiro.test()]; when it holds, a t-test is applied, otherwise a
-#'Wilcoxon rank-sum test is used. Shapiro-Wilk is only defined for samples of at
-#'most 5000 observations, so larger windows always fall back to the
-#'nonparametric test.
+#' Normality of both halves of the window is checked with
+#' [stats::shapiro.test()]; when it holds, a t-test is applied, otherwise a
+#' Wilcoxon rank-sum test is used. Shapiro-Wilk is only defined for samples of at
+#' most 5000 observations, so larger windows always fall back to the
+#' nonparametric test.
 #'
-#'Missing observations are skipped instead of being imputed.
-#MCDD detection: Lucas Giusti, Leonardo Carvalho, Antonio Tadeu Gomes, Rafaelli Coutinho, Jorge Soares, Eduardo Ogasawara, Analysing flight delay under concept drift, Evolving Systems, 2021, DOI:/10.1007/s12530-021-09415-z.
-#'@references Giusti, L., Carvalho, L., Gomes, A. T., Coutinho, R., Soares, J., and Ogasawara, E. (2021). Analysing flight delay under concept drift. *Evolving Systems*. <doi:10.1007/s12530-021-09415-z>
-#'@return `dfr_mcdd` object
-#'@importFrom stats shapiro.test t.test wilcox.test
-#'@importFrom utils head tail
-#'@example examples/1_detection/r/dfr_mcdd.R
-#'@export
+#' Missing observations are skipped instead of being imputed.
+# MCDD detection: Lucas Giusti, Leonardo Carvalho, Antonio Tadeu Gomes, Rafaelli Coutinho, Jorge Soares, Eduardo Ogasawara, Analysing flight delay under concept drift, Evolving Systems, 2021, DOI:/10.1007/s12530-021-09415-z.
+#' @references Giusti, L., Carvalho, L., Gomes, A. T., Coutinho, R., Soares, J., and Ogasawara, E. (2021). Analysing flight delay under concept drift. *Evolving Systems*. <doi:10.1007/s12530-021-09415-z>
+#' @return `dfr_mcdd` object
+#' @importFrom stats shapiro.test t.test wilcox.test
+#' @importFrom utils head tail
+#' @example examples/1_detection/r/dfr_mcdd.R
+#' @export
 dfr_mcdd <- function(target_feat = NULL, alpha = 1e-04, normality_alpha = 0.05, window_size = 300, window_type = "sliding", monitoring_step = 1, data = NULL) {
   .check_probability(alpha, "alpha")
   .check_probability(normality_alpha, "normality_alpha")
@@ -35,7 +35,7 @@ dfr_mcdd <- function(target_feat = NULL, alpha = 1e-04, normality_alpha = 0.05, 
   obj <- dist_based(target_feat = target_feat)
 
   state <- list()
-  
+
   state$window_size <- window_size
   state$alpha <- alpha
   state$normality_alpha <- normality_alpha
@@ -55,7 +55,7 @@ dfr_mcdd <- function(target_feat = NULL, alpha = 1e-04, normality_alpha = 0.05, 
   return(obj)
 }
 
-#'@export
+#' @export
 update_state.dfr_mcdd <- function(obj, value, ...) {
   state <- obj$state
   obj$last_drifter_output <- cbind(old_shapiro_p = NA_real_, new_shapiro_p = NA_real_, comparison_p = NA_real_)
@@ -121,12 +121,12 @@ update_state.dfr_mcdd <- function(obj, value, ...) {
   return(list(obj = obj, drift = FALSE))
 }
 
-#'@export
+#' @export
 fit.dfr_mcdd <- function(obj, data, ...) {
-  return(.fit_vector_stream(obj, data, output_names = c("Old Shapiro p", "New Shapiro p", "Comparison p")))
+  return(.fit_vector_stream(obj, data, output_names = c("old_shapiro_p", "new_shapiro_p", "comparison_p")))
 }
 
-#'@export
+#' @export
 reset_state.dfr_mcdd <- function(obj) {
   obj$drifted <- FALSE
   obj$state <- dfr_mcdd(

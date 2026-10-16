@@ -51,7 +51,7 @@ plot(x=seq_len(nrow(serie)), y=serie$serie)
 
 ``` r
 # Instantiate the KL-divergence-based detector.
-model <- dfr_kldist(window_size=100, p_th=0.10)
+model <- dfr_kldist(window_size=100, threshold=0.10)
 ```
 
 
@@ -82,10 +82,9 @@ detection[detection$type == 'drift',]
 ```
 ##     idx event  type
 ## 145 145  TRUE drift
-## 226 226  TRUE drift
-## 319 319  TRUE drift
-## 369 369  TRUE drift
-## 419 419  TRUE drift
+## 245 245  TRUE drift
+## 345 345  TRUE drift
+## 445 445  TRUE drift
 ```
 
 ``` r

@@ -16,12 +16,14 @@ Every detector in the package follows the same contract:
 \itemize{
 \item \code{update_state(obj, value)} returns a list with the updated object
 (\code{obj}) and a logical flag (\code{drift}) telling whether a drift was detected
-\strong{in that call};
+** in that call**;
 \item \code{obj$drifted} is sticky: it stays \code{TRUE} after the first detection
 until \code{reset_state()} is called;
 \item \code{reset_state(obj)} returns the detector to its initial state;
 \item \code{obj$drifter_output} holds the per-observation diagnostics produced by
-the last call to \code{fit()}.
+the last call to \code{fit()}, one row per observation; rows are \code{NA} when the
+detector reported nothing for that observation (for example while its window
+is filling, or for a skipped missing value).
 }
 }
 \examples{

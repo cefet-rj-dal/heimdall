@@ -1,34 +1,34 @@
-#'@title Metric
-#'@description Ancestor class for metric calculation
-#'@return Metric object
-#'@examples
-#'obj <- metric()
-#'class(obj)
-#'@import daltoolbox
-#'@export
+#' @title Metric
+#' @description Ancestor class for metric calculation
+#' @return Metric object
+#' @examples
+#' obj <- metric()
+#' class(obj)
+#' @import daltoolbox
+#' @export
 metric <- function() {
   obj <- dal_base()
-  attr(obj, 'class') <- 'metric'
+  attr(obj, "class") <- "metric"
   return(obj)
 }
 
-#'@title Accuracy Calculator
-#'@description Class for accuracy calculation. Binary labels (logical, 0/1 or
-#'factors with those labels) are compared by value; other labels are compared
-#'as text.
-#'@return Metric object
-#'@examples
-#'library(daltoolbox)
-#'obj <- mt_accuracy()
-#'evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
-#'@export
+#' @title Accuracy Calculator
+#' @description Class for accuracy calculation. Binary labels (logical, 0/1 or
+#' factors with those labels) are compared by value; other labels are compared
+#' as text.
+#' @return Metric object
+#' @examples
+#' library(daltoolbox)
+#' obj <- mt_accuracy()
+#' evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
+#' @export
 mt_accuracy <- function() {
   obj <- metric()
   class(obj) <- append("mt_accuracy", class(obj))
   return(obj)
 }
 
-#'@export
+#' @export
 evaluate.mt_accuracy <- function(obj, y_pred, y_true, ...) {
   .check_same_length(y_pred, y_true)
   labels <- tryCatch(
@@ -41,56 +41,56 @@ evaluate.mt_accuracy <- function(obj, y_pred, y_true, ...) {
   return(mean(labels$pred == labels$true, na.rm = TRUE))
 }
 
-#'@title Precision Calculator
-#'@description Class for precision calculation
-#'@return Metric object
-#'@examples
-#'library(daltoolbox)
-#'obj <- mt_precision()
-#'evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
-#'@export
+#' @title Precision Calculator
+#' @description Class for precision calculation
+#' @return Metric object
+#' @examples
+#' library(daltoolbox)
+#' obj <- mt_precision()
+#' evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
+#' @export
 mt_precision <- function() {
   obj <- metric()
   class(obj) <- append("mt_precision", class(obj))
   return(obj)
 }
 
-#'@export
+#' @export
 evaluate.mt_precision <- function(obj, y_pred, y_true, ...) {
   .check_same_length(y_pred, y_true)
   return(.precision(y_true, y_pred))
 }
 
-#'@title Recall Calculator
-#'@description Class for recall calculation
-#'@return Metric object
-#'@examples
-#'library(daltoolbox)
-#'obj <- mt_recall()
-#'evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
-#'@export
+#' @title Recall Calculator
+#' @description Class for recall calculation
+#' @return Metric object
+#' @examples
+#' library(daltoolbox)
+#' obj <- mt_recall()
+#' evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
+#' @export
 mt_recall <- function() {
   obj <- metric()
   class(obj) <- append("mt_recall", class(obj))
   return(obj)
 }
 
-#'@export
+#' @export
 evaluate.mt_recall <- function(obj, y_pred, y_true, ...) {
   .check_same_length(y_pred, y_true)
   return(.recall(y_true, y_pred))
 }
 
-#'@title FScore Calculator
-#'@description Class for FScore calculation
-#'@param f The beta parameter of the F-beta score. `f = 1` (the default) gives the usual F1 score, values below 1 weight precision more heavily and values above 1 weight recall more heavily.
-#'@return Metric object
-#'@examples
-#'library(daltoolbox)
-#'obj <- mt_fscore(f = 1)
-#'evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
-#'@export
-mt_fscore <- function(f=1) {
+#' @title FScore Calculator
+#' @description Class for FScore calculation
+#' @param f The beta parameter of the F-beta score. `f = 1` (the default) gives the usual F1 score, values below 1 weight precision more heavily and values above 1 weight recall more heavily.
+#' @return Metric object
+#' @examples
+#' library(daltoolbox)
+#' obj <- mt_fscore(f = 1)
+#' evaluate(obj, c(TRUE, FALSE, TRUE), c(TRUE, TRUE, TRUE))
+#' @export
+mt_fscore <- function(f = 1) {
   if (!is.numeric(f) || (length(f) != 1L) || is.na(f) || (f <= 0)) {
     stop("f must be a single positive numeric value", call. = FALSE)
   }
@@ -100,8 +100,8 @@ mt_fscore <- function(f=1) {
   return(obj)
 }
 
-#'@export
-evaluate.mt_fscore <- function(obj, y_pred, y_true, ...){
+#' @export
+evaluate.mt_fscore <- function(obj, y_pred, y_true, ...) {
   beta <- obj$f
   if (is.null(beta)) {
     beta <- 1
@@ -120,22 +120,22 @@ evaluate.mt_fscore <- function(obj, y_pred, y_true, ...){
   return(fscore)
 }
 
-#'@title ROC AUC Calculator
-#'@description Class for ROC AUC calculation
-#'@return Metric object
-#'@examples
-#'library(daltoolbox)
-#'obj <- mt_rocauc()
-#'evaluate(obj, c(0.9, 0.2, 0.8, 0.1), factor(c(TRUE, TRUE, FALSE, FALSE)))
-#'@export
+#' @title ROC AUC Calculator
+#' @description Class for ROC AUC calculation
+#' @return Metric object
+#' @examples
+#' library(daltoolbox)
+#' obj <- mt_rocauc()
+#' evaluate(obj, c(0.9, 0.2, 0.8, 0.1), factor(c(TRUE, TRUE, FALSE, FALSE)))
+#' @export
 mt_rocauc <- function() {
   obj <- metric()
   class(obj) <- append("mt_rocauc", class(obj))
   return(obj)
 }
 
-#'@importFrom pROC auc
-#'@export
+#' @importFrom pROC auc
+#' @export
 evaluate.mt_rocauc <- function(obj, y_pred, y_true, ...) {
   .check_same_length(y_pred, y_true)
 
@@ -144,13 +144,13 @@ evaluate.mt_rocauc <- function(obj, y_pred, y_true, ...) {
 
   missing <- is.na(pred_values) | is.na(true_values)
   if (any(missing)) {
-    warning(sprintf('mt_rocauc: %d observations with missing values were removed.', sum(missing)))
+    warning(sprintf("mt_rocauc: %d observations with missing values were removed.", sum(missing)))
     pred_values <- pred_values[!missing]
     true_values <- true_values[!missing]
   }
 
   if ((length(unique(true_values)) < 2) || (length(unique(pred_values)) < 2)) {
-    warning('mt_rocauc: ROC AUC is undefined when the observed or the predicted values are constant. Returning NA.')
+    warning("mt_rocauc: ROC AUC is undefined when the observed or the predicted values are constant. Returning NA.")
     return(NA_real_)
   }
 
@@ -159,7 +159,7 @@ evaluate.mt_rocauc <- function(obj, y_pred, y_true, ...) {
     lv <- levels(as.factor(true_values))
   }
 
-  rocauc <- pROC::auc(pROC::roc(true_values, pred_values, levels = lv, direction = '<', quiet = TRUE))
+  rocauc <- pROC::auc(pROC::roc(true_values, pred_values, levels = lv, direction = "<", quiet = TRUE))
 
   return(as.numeric(rocauc))
 }

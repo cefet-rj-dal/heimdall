@@ -1,20 +1,20 @@
-#'@title Adapted Early Drift Detection Method (EDDM) method
-#'@description EDDM extends DDM by monitoring the distance between classification errors instead of only the error rate, which makes it more sensitive to gradual degradation. Because it operates on the model error stream, it is primarily intended for **real concept drift**. The method follows Baena-Garcia et al. (2006), who proposed EDDM for improved detection of gradual drift.
-#'@param min_instances The minimum number of instances before detecting change
-#'@param min_num_errors The minimum number of errors before detecting change
-#'@param warning_level Necessary level for warning zone
-#'@param out_control_level Necessary level for a positive drift detection
-#'@details EDDM monitors the distance between consecutive errors, which makes
-#'it sensitive to gradual drifts but also prone to false alarms when the error
-#'rate is high. `warning_level` must not be lower than `out_control_level`.
-#'Values must be `1` (error) or `0` (correct prediction), and missing values
-#'are treated as correct predictions (`0`).
-#EDDM: Manuel Baena-Garcia, Jose Del Campo-Avila, Raul Fidalgo, Albert Bifet, Ricard Gavalda, Rafael Morales-Bueno. Early Drift Detection Method. In Fourth International Workshop on Knowledge Discovery from Data Streams, 2006.
-#EDDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/eddm.py
-#'@references Baena-Garcia, M., del Campo-Avila, J., Fidalgo, R., Bifet, A., Gavalda, R., and Morales-Bueno, R. (2006). Early drift detection method. In *Fourth International Workshop on Knowledge Discovery from Data Streams*.
-#'@return `dfr_eddm` object
-#'@example examples/1_detection/r/dfr_eddm.R
-#'@export
+#' @title Adapted Early Drift Detection Method (EDDM) method
+#' @description EDDM extends DDM by monitoring the distance between classification errors instead of only the error rate, which makes it more sensitive to gradual degradation. Because it operates on the model error stream, it is primarily intended for **real concept drift**. The method follows Baena-Garcia et al. (2006), who proposed EDDM for improved detection of gradual drift.
+#' @param min_instances The minimum number of instances before detecting change
+#' @param min_num_errors The minimum number of errors before detecting change
+#' @param warning_level Necessary level for warning zone
+#' @param out_control_level Necessary level for a positive drift detection
+#' @details EDDM monitors the distance between consecutive errors, which makes
+#' it sensitive to gradual drifts but also prone to false alarms when the error
+#' rate is high. `warning_level` must not be lower than `out_control_level`.
+#' Values must be `1` (error) or `0` (correct prediction), and missing values
+#' are treated as correct predictions (`0`).
+# EDDM: Manuel Baena-Garcia, Jose Del Campo-Avila, Raul Fidalgo, Albert Bifet, Ricard Gavalda, Rafael Morales-Bueno. Early Drift Detection Method. In Fourth International Workshop on Knowledge Discovery from Data Streams, 2006.
+# EDDM implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/eddm.py
+#' @references Baena-Garcia, M., del Campo-Avila, J., Fidalgo, R., Bifet, A., Gavalda, R., and Morales-Bueno, R. (2006). Early drift detection method. In *Fourth International Workshop on Knowledge Discovery from Data Streams*.
+#' @return `dfr_eddm` object
+#' @example examples/1_detection/r/dfr_eddm.R
+#' @export
 dfr_eddm <- function(min_instances = 30, min_num_errors = 30, warning_level = 0.95, out_control_level = 0.9) {
   .check_positive_integer(min_instances, "min_instances", min_value = 1L)
   .check_positive_integer(min_num_errors, "min_num_errors", min_value = 1L)
@@ -53,7 +53,7 @@ dfr_eddm <- function(min_instances = 30, min_num_errors = 30, warning_level = 0.
   return(obj)
 }
 
-#'@export
+#' @export
 update_state.dfr_eddm <- function(obj, value, ...) {
   value <- .as_error(value)
 
@@ -64,7 +64,7 @@ update_state.dfr_eddm <- function(obj, value, ...) {
   if (value != 1) {
     obj$state <- state
     obj$last_drifter_output <- state$m_mean
-    
+
     return(list(obj = obj, drift = FALSE))
   }
 
@@ -112,7 +112,7 @@ update_state.dfr_eddm <- function(obj, value, ...) {
     obj$drifted <- TRUE
     obj$state <- state
     obj$last_drifter_output <- state$m_mean
-    
+
     return(list(obj = obj, drift = TRUE))
   }
 
@@ -131,12 +131,12 @@ update_state.dfr_eddm <- function(obj, value, ...) {
   return(list(obj = obj, drift = FALSE))
 }
 
-#'@export
+#' @export
 fit.dfr_eddm <- function(obj, data, ...) {
   return(.fit_vector_stream(obj, data, output_names = "mean_distance"))
 }
 
-#'@export
+#' @export
 reset_state.dfr_eddm <- function(obj) {
   obj$drifted <- FALSE
   obj$state <- dfr_eddm(

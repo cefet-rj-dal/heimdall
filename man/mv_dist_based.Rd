@@ -4,15 +4,21 @@
 \alias{mv_dist_based}
 \title{Multivariate Distribution Based Drifter sub-class}
 \usage{
-mv_dist_based()
+mv_dist_based(target_feat = NULL)
+}
+\arguments{
+\item{target_feat}{Names of the columns to be monitored. \code{NULL} (the default)
+monitors every numeric column.}
 }
 \value{
 Drifter object
 }
 \description{
 Implements Multivariate Distribution Based drift detectors.
+These detectors consume one row of a data frame at a time and monitor its
+numeric columns.
 }
 \examples{
-obj <- mv_dist_based()
-class(obj)
+obj <- mv_dist_based(target_feat = c("serie1", "serie2"))
+obj$target_feat
 }

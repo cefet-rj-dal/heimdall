@@ -1,12 +1,27 @@
+# R and RStudio
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
 .ipynb_checkpoints
+
+# Build and pkgdown outputs
 docs
 inst/doc
-./develop/data/xrays
 /doc/
 /Meta/
 vignettes/*.html
 vignettes/*.R
+README.html
+
+# testthat artifacts
+tests/testthat/_problems/
+tests/testthat/testthat-problems.rds
+
+# Large raw datasets, kept out of the repository (see data-gen/)
+data-real/
+*.rdata
+!data/*.RData
+
+# Example conversion logs
+examples/logs/

@@ -15,8 +15,10 @@ registerS3method("fit", "mean_autoencoder", function(obj, data, ...) {
 
 registerS3method("transform", "mean_autoencoder", function(obj, data, ...) {
   data <- as.data.frame(data)
-  as.data.frame(matrix(obj$means, nrow = nrow(data), ncol = length(obj$means), byrow = TRUE,
-                       dimnames = list(NULL, names(data))))
+  as.data.frame(matrix(obj$means,
+    nrow = nrow(data), ncol = length(obj$means), byrow = TRUE,
+    dimnames = list(NULL, names(data))
+  ))
 }, envir = asNamespace("daltoolbox"))
 
 aedd_stream <- function() {
@@ -82,8 +84,10 @@ test_that("aedd reset clears the drift flag and keeps the configuration", {
 
 test_that("every aedd criterion runs end to end", {
   stream <- aedd_stream()
-  for (criteria in c("mann_whitney", "kolmogorov_smirnov", "levene", "psi", "diff_threshold",
-                     "parametric_threshold", "nonparametric_threshold")) {
+  for (criteria in c(
+    "mann_whitney", "kolmogorov_smirnov", "levene", "psi", "diff_threshold",
+    "parametric_threshold", "nonparametric_threshold"
+  )) {
     expect_error(fit(new_aedd(criteria = criteria), stream), NA, info = criteria)
   }
 })
@@ -125,4 +129,33 @@ test_that("aedd explains how to get the default autoencoder", {
 test_that("aedd uses daltoolboxdp::autoenc_ed by default", {
   skip_if_not_installed("daltoolboxdp")
   expect_identical(dfr_aedd(encoding_size = 1)$ae_class, daltoolboxdp::autoenc_ed)
+})
+
+test_that("aedd reports one drifter_output row per observation", {
+  model <- fit(new_aedd(), aedd_stream()[1:30, ])
+  expect_equal(nrow(model$drifter_output), 30)
+  expect_true(all(is.na(model$drifter_output[1:19, ])))
+  expect_false(anyNA(model$drifter_output[20:30, ]))
+})
+
+test_that("aedd runs end to end with the default daltoolboxdp autoencoder", {
+  skip_on_cran()
+  skip_if_not_installed("daltoolboxdp")
+  skip_if_not_installed("reticulate")
+  skip_if_not(reticulate::py_module_available("torch"), "the Python backend of daltoolboxdp is not available")
+
+  set.seed(11)
+  stable <- data.frame(x = stats::runif(120, 0.4, 0.6), y = stats::runif(120, 0.4, 0.6))
+  shifted <- data.frame(x = stats::runif(80, 0.85, 0.95), y = stats::runif(80, 0.85, 0.95))
+  model <- dfr_aedd(
+    encoding_size = 1,
+    ae_params = list(batch_size = 16, num_epochs = 50, learning_rate = 0.01),
+    window_size = 40,
+    monitoring_step = 5
+  )
+  model <- fit(model, rbind(stable, shifted))
+  expect_true(model$drifted)
+  expect_equal(nrow(model$drifter_output), 200)
+  # Output is reported on the evaluated rows, every monitoring_step rows.
+  expect_gt(sum(!is.na(model$drifter_output[[1]])), 0)
 })

@@ -7,7 +7,6 @@
 stealthy(
   model,
   drift_method,
-  monitored_features = NULL,
   norm_class = daltoolbox::zscore(),
   warmup_size = 100,
   th = 0.5,
@@ -17,6 +16,7 @@ stealthy(
   class_balance = "inactive",
   obsolete_model = "null",
   reporting = FALSE,
+  history_size = NULL,
   verbose = FALSE
 )
 }
@@ -24,13 +24,6 @@ stealthy(
 \item{model}{The algorithm object to be used for predictions}
 
 \item{drift_method}{The algorithm object to detect drifts}
-
-\item{monitored_features}{Names of the columns of \code{x} given to the drifter
-when it is a multivariate drifter, a multi-criteria drifter, a dummy drifter
-or a univariate distribution-based drifter without \code{target_feat} (which
-receives the row mean of the monitored columns). \code{NULL} (the default)
-monitors every feature. Error-based drifters and drifters with a
-\code{target_feat} are not affected.}
 
 \item{norm_class}{Class used to perform normalization}
 
@@ -48,7 +41,11 @@ monitors every feature. Error-based drifters and drifters with a
 
 \item{obsolete_model}{Strategy used by \code{predict()} while no model is fitted. One of \code{"null"} (default, returns all \code{FALSE}), \code{"majority"} (majority class classifier) or \code{"last_model"} (keeps using the previous model).}
 
-\item{reporting}{If TRUE, the per-batch drifter inputs and outputs are accumulated in \code{drifter_input} and \code{drifter_output}. Keep it FALSE on long streams, since the accumulated frames grow with the whole history.}
+\item{reporting}{If TRUE, every batch given to \code{fit()} (\code{x} and \code{y}) is accumulated in \code{drifter_input}.}
+
+\item{history_size}{Maximum number of rows kept in \code{drifter_output} and
+\code{drifter_input}; the oldest rows are dropped first. \code{NULL} (the default) keeps
+the whole stream, so set it on long streams to bound memory.}
 
 \item{verbose}{if TRUE shows drift messages}
 }
@@ -61,10 +58,24 @@ model and a drift detector, retraining the model whenever a drift is
 reported.
 }
 \details{
+The drifter decides what it monitors through its own \code{target_feat},
+given in terms of the one-hot encoded and normalized columns: a univariate
+drifter with a \code{target_feat} receives that column, a univariate drifter
+without one receives the row mean of every column, and multivariate,
+multi-criteria and dummy drifters receive the selected columns (every column
+when their \code{target_feat} is \code{NULL}).
+
 The batch is evaluated before the model is updated: error-based
 detectors see prequential residuals, computed with the model as it was at the
 beginning of the call, and the detector is fed the incoming batch exactly
 once per call.
+
+\code{obj$drifter_output} holds the diagnostics reported by the drifter (for
+example the window width of ADWIN or the p-values of KSWIN; see the
+\code{drifter_output} of each detector), with one row per row of \code{x} across every
+call to \code{fit()}. Rows are \code{NA} while the drifter is not monitoring (during the
+warmup, or after a drift until the model is retrained) and for observations
+it skipped, such as error-based rows without a prediction.
 }
 \examples{
 # See ?dfr_ddm for a drift detector that can be plugged here, and the

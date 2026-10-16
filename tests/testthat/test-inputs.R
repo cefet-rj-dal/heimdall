@@ -63,7 +63,7 @@ test_that("parameters are validated", {
   expect_error(dfr_kswin(window_size = 10, stat_size = 10), "smaller than window_size")
   expect_error(dfr_ddm(min_instances = 2.5), "whole number")
   expect_error(dfr_eddm(warning_level = 0.5, out_control_level = 0.9), "greater than or equal to out_control_level")
-  expect_error(dfr_kldist(p_th = "a"), "numeric")
+  expect_error(dfr_kldist(threshold = "a"), "numeric")
   expect_error(dfr_page_hinkley(target_feat = 1), "target_feat")
   expect_error(dfr_page_hinkley(direction = "up"), NULL)
   expect_error(dfr_cusum(lambda = -1), "greater than or equal to 0")

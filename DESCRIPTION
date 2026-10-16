@@ -31,9 +31,10 @@ Imports:
   pROC
 Suggests:
   daltoolboxdp,
+  reticulate,
   testthat (>= 3.0.0),
   knitr,
   rmarkdown
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-Config/roxygen2/version: 8.1.0
+Config/roxygen2/version: 8.1.1

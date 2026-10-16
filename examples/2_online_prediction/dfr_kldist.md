@@ -21,8 +21,6 @@ This example is a compact template for online prediction with distribution-based
 ``` r
 # Load Heimdall and the built-in synthetic data stream.
 library(heimdall)
-# library(devtools)
-# load_all('/home/lucas/heimdall')
 ```
 
 
@@ -38,14 +36,14 @@ set.seed(seed)
 ``` r
 # Load the univariate stream and derive the binary monitored signal.
 data(st_drift_examples)
-df <- st_drift_examples$uv_vct_real_drift
+df <- st_drift_examples$mv_vct_real_drift
 ```
 
 
 
 ``` r
 # Plot the binary stream monitored by ADWIN.
-plot(x=seq_len(nrow(df)), y=df$serie, col=df$target)
+plot(x=seq_len(nrow(df)), y=df$serie1, col=df$target)
 ```
 
 ![plot of chunk unnamed-chunk-4](fig/dfr_kldist/unnamed-chunk-4-1.png)
@@ -53,7 +51,7 @@ plot(x=seq_len(nrow(df)), y=df$serie, col=df$target)
 
 ``` r
 # Define features
-features <- c('serie')
+features <- c('serie1', 'serie2')
 
 ## Force Target as Factor
 target <- 'target'
@@ -86,8 +84,8 @@ monitoring_step <- batch_size # Process data in batch_size frequency
 # Define the stealthy model
 model <- stealthy(
   model=daltoolbox::cla_dtree(target, slevels), # Naive Bayes Classifier
-  drift_method=dfr_kldist(window_size=batch_size*2, p_th=0.1), # Using KLDIST
-  norm_class=nrm_memory(norm_class = daltoolbox::minmax()), # Normalization with MinMax
+  drift_method=dfr_kldist(window_size=batch_size*2, breaks=20, threshold=0.35), # Using KLDIST
+  norm_class=nrm_memory(norm_class = daltoolbox::zscore()), # Normalization with MinMax
   warmup_size=warmup_size, # Warmup size used to train models
   incremental_memory=FALSE, # Do not force retrain in each batch
   class_balance='inactive', # No class balancing
@@ -175,11 +173,20 @@ for (batch in ordered_batches[2:length(ordered_batches)]){
 ```
 ## [1] "Time Step:2"
 ## [1] "Time Step:3"
+## [1] "Time Step:4"
+## [1] "Time Step:5"
+## [1] "Time Step:6"
+## [1] "Time Step:7"
 ```
 
 ```
-## Error in `update_state.dfr_kldist()`:
-## ! 'list' object cannot be coerced to type 'double'
+## Stealthy detected a drift, discarding old data
+```
+
+```
+## [1] "Time Step:8"
+## [1] "Time Step:9"
+## [1] "Time Step:10"
 ```
 
 ``` r
@@ -196,7 +203,15 @@ results
 
 ```
 ##   Batch Index tp fp tn fn drifted         elap
-## 1           2  0  0  0  0       0 0.0006427765
+## 1           2  0  0  0  0       0 0.0008370876
+## 2           3 20  0 26  4       0 0.0083847046
+## 3           4 20  0 29  1       0 0.0133905411
+## 4           5 20  3 23  4       0 0.0147039890
+## 5           6  0  0 19 31       0 0.0426852703
+## 6           7  0  0  0  0       1 0.0396850109
+## 7           8 18  4 25  3       0 0.0077352524
+## 8           9 21  4 17  8       0 0.0132055283
+## 9          10 20  1 25  4       0 0.0127480030
 ```
 
 
@@ -210,24 +225,21 @@ fn_sum <- sum(results['fn'])
 precision <- tp_sum/(tp_sum + fp_sum)
 recall <- tp_sum/(tp_sum + fn_sum)
 accuracy <- (tp_sum + tn_sum)/(tp_sum + fp_sum + tn_sum + fn_sum)
-f1 <- 2 * (precision * recall) / (((beta^2)*precision) + recall)
+f1 <- (1 + beta^2) * (precision * recall) / (((beta^2)*precision) + recall)
 
 print(paste('Precision', precision, 'Recall', recall, 'F1', f1, 'Accuracy', accuracy))
 ```
 
 ```
-## [1] "Precision NaN Recall NaN F1 NaN Accuracy NaN"
+## [1] "Precision 0.908396946564885 Recall 0.683908045977011 F1 0.780327868852459 Accuracy 0.808571428571429"
 ```
 
 ``` r
-plot(x=seq_len(nrow(df)), y=df$serie, col=as.numeric(df[[target]]))
+plot(x=seq_len(nrow(df)), y=df$serie1, col=as.numeric(df[[target]]))
 abline(v=250, col='blue', lty=2)
-```
-
-![plot of chunk unnamed-chunk-9](fig/dfr_kldist/unnamed-chunk-9-1.png)
-
-``` r
 for (drift_index in results[results['drifted'] == 1, 'Batch Index']) {
   abline(v=drift_index*batch_size, col='red', lty=2)
 }
 ```
+
+![plot of chunk unnamed-chunk-9](fig/dfr_kldist/unnamed-chunk-9-1.png)

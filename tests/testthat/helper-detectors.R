@@ -50,13 +50,24 @@ detect_indices <- function(model, stream) {
   indices
 }
 
-# Error stream whose error rate jumps from 10% to 60% at observation 501.
-regression_error_stream <- function() {
-  set.seed(123)
-  c(stats::rbinom(500, 1, 0.1), stats::rbinom(500, 1, 0.6))
+# Statistical checks used by test-statistical.R.
+stream_length <- 1200
+change_point <- 600
+
+first_delay <- function(make_detector, stream) {
+  detections <- detect_indices(make_detector(), stream)
+  detections <- detections[detections > change_point]
+  if (length(detections) == 0L) Inf else detections[1] - change_point
 }
 
-drifting_frame <- function() {
-  set.seed(42)
-  data.frame(serie = c(stats::rnorm(200, mean = 0), stats::rnorm(200, mean = 20)))
+check_detector <- function(name, make_detector, stationary, shifted, max_false_alarms, max_delay, seeds = 1:3) {
+  for (seed in seeds) {
+    set.seed(seed)
+    false_alarms <- length(detect_indices(make_detector(), stationary()))
+    testthat::expect_lte(false_alarms, max_false_alarms, label = sprintf("%s false alarms (seed %d)", name, seed))
+
+    set.seed(100 + seed)
+    delay <- first_delay(make_detector, shifted())
+    testthat::expect_lte(delay, max_delay, label = sprintf("%s detection delay (seed %d)", name, seed))
+  }
 }

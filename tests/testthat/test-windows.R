@@ -17,7 +17,7 @@ test_that("the anchored policy keeps every observation", {
   model <- fit(dfr_mcdd(window_size = 10, alpha = 1e-30, window_type = "anchored"), seq_len(50))
   expect_equal(length(model$state$window), 50)
 
-  model <- fit(dfr_kldist(window_size = 10, p_th = 1e6, window_type = "anchored"), data.frame(serie = seq_len(50)))
+  model <- fit(dfr_kldist(window_size = 10, threshold = 1e6, window_type = "anchored"), data.frame(serie = seq_len(50)))
   expect_equal(nrow(model$state$window), 50)
 })
 

@@ -20,12 +20,26 @@
   encoder nor an encoder-decoder; it fails with an explicit message instead of
   reaching an undefined variable.
 * `dfr_kldist()` is now multivariate: it consumes a data frame one row at a
-  time, every numeric column contributes to the score, and it no longer takes
-  a `target_feat` argument. It gained a `breaks` argument.
+  time, and every monitored column contributes to the score. Its
+  `target_feat` argument now takes one or more column names (by default every
+  numeric column), and it gained a `breaks` argument.
+* `dfr_kldist(p_th)` was renamed `threshold`, since it is not a p-value; `p_th`
+  still works and warns. The default threshold is now `0.12`, calibrated by
+  simulation for the default window.
+* `dfr_aedd()` uses `alpha` only as the significance level of the hypothesis
+  tests (it must now be between 0 and 1), and a new `threshold` argument for
+  the `"psi"` and `"diff_threshold"` criteria, which compare the statistic
+  directly.
+* `stealthy()` no longer has a `monitored_features` argument. Select the
+  monitored columns with the `target_feat` of the drifter instead.
+* The `drifter_output` columns of `dfr_mcdd()` are now `old_shapiro_p`,
+  `new_shapiro_p` and `comparison_p`, and the baselines `dfr_inactive()` and
+  `dfr_passive()` report a `drifter_output` without columns.
 * `dfr_mcdd()` gained `normality_alpha` (default `0.05`). The Shapiro-Wilk
   threshold no longer reuses `alpha`, which at its default of `1e-08` made the
   normality gate a no-op.
-* `reset_state()` on the window-based detectors restarts with an empty window.
+* `reset_state()` on `dfr_lbdd()`, `dfr_mcdd()`, `dfr_kldist()` and
+  `dfr_aedd()` restarts with an empty window (`dfr_kswin()` keeps its window).
   Together with the sliding policy, which tests as soon as the window is full
   (one observation earlier than 1.3.x), this moves the detection positions of
   `dfr_kswin()`, `dfr_lbdd()` and `dfr_mcdd()`.
@@ -71,11 +85,25 @@
 
 * Every detector stores the per-observation diagnostics of its last `fit()`
   call in `obj$drifter_output` (for example the window width of ADWIN, the
-  p-values of KSWIN and MCDD, or the divergence of `dfr_kldist()`).
+  p-values of KSWIN and MCDD, or the divergence of `dfr_kldist()`), with one
+  row per observation and `NA` where the detector reported nothing.
+* `stealthy()` always exposes the diagnostics of its drifter in
+  `obj$drifter_output`, one row per row of `x` across every call to `fit()`,
+  whatever the kind of drifter. `reporting = TRUE` now only controls the
+  accumulation of the raw batches in `drifter_input`.
 * `dfr_page_hinkley()` gains `direction = c("increase", "decrease", "both")`.
   The default keeps the previous one-sided behaviour.
 * New `dummy()` ancestor class for the baseline detectors `dfr_inactive()` and
   `dfr_passive()`.
+* `mv_dist_based()` takes a `target_feat` with one or more column names, so
+  every distribution-based detector selects what it monitors the same way.
+* `stealthy(history_size = )` bounds the rows kept in `drifter_output` and
+  `drifter_input`, and `nrm_memory(max_size = )` bounds the history used to
+  estimate the normalization.
+* `dfr_kswin()` keeps its own random number stream, so it no longer changes
+  the global random state while it runs, and gains a `seed` argument.
+* `dfr_kldist()` is about three times faster: the window is kept as a numeric
+  matrix and the histograms are built with `tabulate()`.
 
 ## Bug fixes
 
@@ -98,7 +126,6 @@
 * `stealthy()` initialised `train_model` only when `class_balance = "buffer"`.
 * `stealthy(target_uni_drifter = TRUE)` works with factor targets; it used to
   feed `NA` to the detector, which then never detected anything.
-* `stealthy()` now honours `monitored_features`, which was ignored.
 
 ### Detectors
 
@@ -196,17 +223,29 @@
 * `caret` and `Metrics` were dropped from `Imports`. One-hot encoding in
   `stealthy()` is now done internally with the same column names produced by
   `caret::dummyVars()`, and precision and recall are computed internally.
-* `reticulate` was dropped from `Suggests`, together with the bundled
-  `adwin.py` module. `daltoolboxdp` was added to `Suggests` for the default
-  autoencoder of `dfr_aedd()`.
+* The bundled `adwin.py` module was removed: `dfr_adwin()` no longer needs
+  Python. `reticulate` stays in `Suggests` only for the tests that check
+  whether the Python backend of `daltoolboxdp` is available, and
+  `daltoolboxdp` was added to `Suggests` for the default autoencoder of
+  `dfr_aedd()`.
 
 ## Documentation and infrastructure
 
-* New vignettes: `vignette("heimdall")` and `vignette("adaptive-models")`.
+* New vignettes: `vignette("heimdall")`, `vignette("adaptive-models")` and
+  `vignette("configuring-detectors")`.
 * Examples are organised in `examples/1_detection` and
-  `examples/2_online_prediction`, with synthetic datasets and online
-  prediction walkthroughs for every detector.
+  `examples/2_online_prediction`, with a detection example and an online
+  prediction example for every drifter, including `dfr_multi_criteria()` and
+  the `dfr_inactive()` and `dfr_passive()` baselines.
+* The README documents the output of each drifter, how each one selects its
+  input, and which changes each one cannot see.
 * New tests cover every detector, `stealthy()`, `dfr_multi_criteria()`, the
-  metrics and the internal helpers, plus regression tests that pin the
-  detection positions of every detector on fixed streams.
-* New GitHub Actions workflows for test coverage and linting.
+  metrics and the internal helpers, plus statistical tests of the false-alarm
+  rate and the detection delay of every detector across several seeds.
+* New GitHub Actions workflows for test coverage, linting (which now fails on
+  any lint), R CMD check in the base image of the development container, the
+  AEDD tests with the real autoencoder and the rendering of every example, and
+  checks that reject file names invalid on Windows and committed merge
+  conflict markers. A matching pre-commit hook is in `.githooks/`.
+* The code was restyled with `styler`, and legacy files, large raw datasets and
+  orphaned example outputs were removed from the repository.

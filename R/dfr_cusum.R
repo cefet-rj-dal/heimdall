@@ -1,24 +1,24 @@
-#'@title Cumulative Sum for Concept Drift Detection (CUSUM) method
-#'@description CUSUM is a sequential analysis procedure that accumulates deviations in a monitored signal and raises an alarm when the cumulative evidence exceeds a threshold. In this package, the detector is implemented as an error-based monitor, so it is primarily intended for **real concept drift** affecting predictive performance. The concept-drift adaptation follows the sequential change-detection literature discussed by Muthukrishnan, Berg, and Wu (2007) <doi:10.1109/ICDMW.2007.89>.
-#'@param lambda Detection threshold: a drift is reported when the cumulative
-#'sum exceeds it. Lower values react faster at the cost of more false alarms.
-#'@param delta Tolerance subtracted at every step, i.e. the increase of the
-#'error rate that is still considered acceptable.
-#'@param min_instances Minimum number of observations before a drift can be
-#'reported.
-#'@details The detector follows the `CusumDM` detector of MOA: it accumulates
-#'`max(0, sum + x - mean - delta)`, where `mean` is the running error rate, so
-#'it reacts to an increase of the error rate whatever its level. After a drift
-#'is reported the statistics restart from scratch. Missing values are treated
-#'as correct predictions (`0`).
+#' @title Cumulative Sum for Concept Drift Detection (CUSUM) method
+#' @description CUSUM is a sequential analysis procedure that accumulates deviations in a monitored signal and raises an alarm when the cumulative evidence exceeds a threshold. In this package, the detector is implemented as an error-based monitor, so it is primarily intended for **real concept drift** affecting predictive performance. The concept-drift adaptation follows the sequential change-detection literature discussed by Muthukrishnan, Berg, and Wu (2007) <doi:10.1109/ICDMW.2007.89>.
+#' @param lambda Detection threshold: a drift is reported when the cumulative
+#' sum exceeds it. Lower values react faster at the cost of more false alarms.
+#' @param delta Tolerance subtracted at every step, i.e. the increase of the
+#' error rate that is still considered acceptable.
+#' @param min_instances Minimum number of observations before a drift can be
+#' reported.
+#' @details The detector follows the `CusumDM` detector of MOA: it accumulates
+#' `max(0, sum + x - mean - delta)`, where `mean` is the running error rate, so
+#' it reacts to an increase of the error rate whatever its level. After a drift
+#' is reported the statistics restart from scratch. Missing values are treated
+#' as correct predictions (`0`).
 #'
-#'Up to version 1.3.0, `dfr_cusum()` accumulated `+1` for every error and `-1`
-#'for every correct prediction, so it could only detect error rates above 50%.
-#CUMSUM: S. Muthukrishnan, Eric Berg, Yihua Wu: Sequential Change Detection on Data Streams. Seventh IEEE International Conference on Data Mining Workshops (ICDMW 2007), DOI:10.1109/ICDMW.2007.89
-#'@references Muthukrishnan, S., Berg, E., and Wu, Y. (2007). Sequential change detection on data streams. In *Seventh IEEE International Conference on Data Mining Workshops (ICDMW 2007)*. <doi:10.1109/ICDMW.2007.89>
-#'@return `dfr_cusum` object
-#'@example examples/1_detection/r/dfr_cusum.R
-#'@export
+#' Up to version 1.3.0, `dfr_cusum()` accumulated `+1` for every error and `-1`
+#' for every correct prediction, so it could only detect error rates above 50%.
+# CUMSUM: S. Muthukrishnan, Eric Berg, Yihua Wu: Sequential Change Detection on Data Streams. Seventh IEEE International Conference on Data Mining Workshops (ICDMW 2007), DOI:10.1109/ICDMW.2007.89
+#' @references Muthukrishnan, S., Berg, E., and Wu, Y. (2007). Sequential change detection on data streams. In *Seventh IEEE International Conference on Data Mining Workshops (ICDMW 2007)*. <doi:10.1109/ICDMW.2007.89>
+#' @return `dfr_cusum` object
+#' @example examples/1_detection/r/dfr_cusum.R
+#' @export
 dfr_cusum <- function(lambda = 50, delta = 0.005, min_instances = 30) {
   .check_number(lambda, "lambda", min_value = 0)
   .check_number(delta, "delta", min_value = 0)
@@ -46,7 +46,7 @@ dfr_cusum <- function(lambda = 50, delta = 0.005, min_instances = 30) {
   )
 }
 
-#'@export
+#' @export
 update_state.dfr_cusum <- function(obj, value, ...) {
   value <- .as_error(value)
 
@@ -67,12 +67,12 @@ update_state.dfr_cusum <- function(obj, value, ...) {
   return(list(obj = obj, drift = FALSE))
 }
 
-#'@export
+#' @export
 fit.dfr_cusum <- function(obj, data, ...) {
   return(.fit_vector_stream(obj, data, output_names = "g"))
 }
 
-#'@export
+#' @export
 reset_state.dfr_cusum <- function(obj) {
   obj$drifted <- FALSE
   obj$state <- .cusum_state(obj$state$lambda, obj$state$delta, obj$state$min_instances)
