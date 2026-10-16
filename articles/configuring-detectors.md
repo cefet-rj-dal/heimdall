@@ -154,9 +154,9 @@ between two evaluations:
 set.seed(4)
 long_stream <- c(rnorm(3000), rnorm(1000, mean = 2))
 system.time(every_step <- fit(dfr_lbdd(), long_stream))[["elapsed"]]
-#> [1] 1.862
+#> [1] 1.265
 system.time(every_tenth <- fit(dfr_lbdd(monitoring_step = 10), long_stream))[["elapsed"]]
-#> [1] 0.3
+#> [1] 0.206
 ```
 
 The detection is delayed by at most `monitoring_step` observations. On
