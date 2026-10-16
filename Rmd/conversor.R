@@ -256,11 +256,16 @@ if (FALSE) {
   }
 }
 
-# Convert all .Rmd under 'Rmd/' in phases:
+# Convert all .Rmd under 'Rmd/' (or the files given on the command line) in phases:
 # 1. generate all Markdown files
 # 2. generate all Word files
 # 3. generate all extracted R scripts
 texs <- list.files(path = dir, pattern = ".Rmd$", full.names = TRUE, recursive = TRUE)
+# Rscript Rmd/conversor.R <file.Rmd> ... converts only the given files.
+selected <- commandArgs(trailingOnly = TRUE)
+if (length(selected) > 0) {
+  texs <- selected
+}
 if (TRUE) {
   append_log(sprintf("Conversion run started at %s\n", format(Sys.time(), "%Y-%m-%d %H:%M:%S")))
   append_log(sprintf("Working directory: %s\n", normalizePath(getwd(), winslash = "/")))

@@ -159,7 +159,8 @@ gen_data <- function() {
 
 if (TRUE) {
   save_examples <- function(st_drift_examples) {
-    save(st_drift_examples, file="/home/lucas/heimdall/data/st_drift_examples.RData", compress = TRUE, version = 2)
+    # Run from the repository root.
+    save(st_drift_examples, file = "data/st_drift_examples.RData", compress = TRUE, version = 2)
   }
 
   st_drift_examples <- gen_data()

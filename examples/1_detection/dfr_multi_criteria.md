@@ -89,7 +89,7 @@ detection[detection$type == 'drift',]
 
 ``` r
 # Fit the combined detector on the whole stream to inspect the decision of each detector.
-model <- fit(model, serie[, 'serie', drop=FALSE])
+model <- daltoolbox::fit(model, serie[, 'serie', drop=FALSE])
 head(model$drifter_output)
 ```
 
@@ -129,5 +129,5 @@ print(paste('Successfull run at', Sys.time()))
 ```
 
 ```
-## [1] "Successfull run at 2026-10-16 10:25:28.098857"
+## [1] "Successfull run at 2026-10-16 11:32:50.29376"
 ```

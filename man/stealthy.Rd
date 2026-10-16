@@ -39,7 +39,7 @@ stealthy(
 
 \item{class_balance}{Class balancing strategy. \code{"buffer"} sets a buffer with the last \code{warmup_size/2} rows for each class. \code{"inactive"} does nothing.}
 
-\item{obsolete_model}{Strategy used by \code{predict()} while no model is fitted. One of \code{"null"} (default, returns all \code{FALSE}), \code{"majority"} (majority class classifier) or \code{"last_model"} (keeps using the previous model).}
+\item{obsolete_model}{Strategy used by \code{predict()} while no model is fitted. One of \code{"null"} (default, returns all \code{FALSE}), \code{"majority"} (majority class of the data the previous model was trained on) or \code{"last_model"} (keeps using the previous model).}
 
 \item{reporting}{If TRUE, every batch given to \code{fit()} (\code{x} and \code{y}) is accumulated in \code{drifter_input}.}
 

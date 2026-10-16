@@ -58,6 +58,19 @@ jobs:
       - name: Render every example
         run: Rscript Rmd/conversor.R
 
+      # The conversion knits every example in one R session, where a package
+      # attached by one example can hide a missing library() call in another.
+      # Running each extracted script in its own process catches that.
+      - name: Run every example script on its own
+        run: |
+          status=0
+          for script in examples/*/r/*.R; do
+            echo "::group::$script"
+            Rscript "$script" || { echo "::error file=$script::example failed"; status=1; }
+            echo "::endgroup::"
+          done
+          exit $status
+
       - name: Upload the rendered examples
         if: always()
         uses: actions/upload-artifact@v4

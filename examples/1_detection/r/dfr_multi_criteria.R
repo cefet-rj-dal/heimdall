@@ -39,7 +39,7 @@ for (i in seq_len(nrow(serie))){
 detection[detection$type == 'drift',]
 
 # Fit the combined detector on the whole stream to inspect the decision of each detector.
-model <- fit(model, serie[, 'serie', drop=FALSE])
+model <- daltoolbox::fit(model, serie[, 'serie', drop=FALSE])
 head(model$drifter_output)
 colSums(model$drifter_output)
 

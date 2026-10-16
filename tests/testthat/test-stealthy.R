@@ -195,3 +195,18 @@ test_that("history_size bounds drifter_output and drifter_input", {
   expect_equal(nrow(model$drifter_input), 120)
   expect_error(stealthy(sign_classifier(), dfr_inactive(), history_size = 0), "greater than or equal to 1")
 })
+
+test_that("obsolete_model = 'majority' predicts the majority class after a drift", {
+  model <- stealthy(sign_classifier(), dfr_passive(), warmup_size = 100, obsolete_model = "majority")
+  # Mostly positive labels, so TRUE is the majority class.
+  for (i in 1:3) {
+    x <- batch(50, 1, i)
+    model <- fit(model, x, labels_for(x))
+  }
+  expect_true(model$drifted)
+  expect_false(model$fitted)
+
+  prediction <- predict(model, batch(10, -1, 4))
+  expect_equal(names(prediction), c("FALSE", "TRUE"))
+  expect_true(all(prediction[["TRUE"]] == 1))
+})

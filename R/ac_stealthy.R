@@ -11,7 +11,7 @@
 #' @param incremental_memory If true, the model will retrain with all available data whenever the fit is called. If false, it only retrains when a drift is detected.
 #' @param active_warmup If true, the models will be retrained for each batch while the number of rows for the warmup_size is not met.
 #' @param class_balance Class balancing strategy. `"buffer"` sets a buffer with the last `warmup_size/2` rows for each class. `"inactive"` does nothing.
-#' @param obsolete_model Strategy used by `predict()` while no model is fitted. One of `"null"` (default, returns all `FALSE`), `"majority"` (majority class classifier) or `"last_model"` (keeps using the previous model).
+#' @param obsolete_model Strategy used by `predict()` while no model is fitted. One of `"null"` (default, returns all `FALSE`), `"majority"` (majority class of the data the previous model was trained on) or `"last_model"` (keeps using the previous model).
 #' @param reporting If TRUE, every batch given to `fit()` (`x` and `y`) is accumulated in `drifter_input`.
 #' @param history_size Maximum number of rows kept in `drifter_output` and
 #' `drifter_input`; the oldest rows are dropped first. `NULL` (the default) keeps
@@ -199,6 +199,13 @@ fit.stealthy <- function(obj, x, y, ...) {
       obj$model <- fit(obj$model, norm_data)
       obj$model$feat_names <- names(norm_data)
 
+      # Majority class of the same training data, used by predict() after a
+      # drift when obsolete_model is "majority".
+      if (obj$obsolete_model == "majority") {
+        majority <- daltoolbox::cla_majority(names(y_model_train)[1], obj$model$slevels)
+        obj$majority_model <- fit(majority, norm_data)
+      }
+
       obj$fitted <- TRUE
     }
   }
@@ -252,7 +259,7 @@ predict.stealthy <- function(object, data, ...) {
   }
   prediction_model <- object$model
   if ((!object$fitted) && (object$obsolete_model == "majority")) {
-    prediction_model <- daltoolbox::cla_majority(object$model$attribute, object$model$slevels)
+    prediction_model <- object$majority_model
   }
 
   data_oh <- .one_hot_apply(object$dummy, data)
