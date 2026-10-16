@@ -11,7 +11,7 @@
 
 \item{data}{data batch in data frame format}
 
-\item{prediction}{prediction batch as vector format. Optional, and unused by
+\item{prediction}{prediction batch as vector format. Optional and unused by
 the default method; it is kept for compatibility with detectors that need the
 model output.}
 

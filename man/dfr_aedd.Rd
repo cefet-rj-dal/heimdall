@@ -7,40 +7,35 @@
 dfr_aedd(
   encoding_size,
   ae_class = NULL,
-  batch_size = 32,
-  num_epochs = 1000,
-  learning_rate = 0.001,
+  ae_params = list(batch_size = 32, num_epochs = 1000, learning_rate = 0.001,
+    error_function = "mae"),
   window_size = 100,
+  window_type = "sliding",
   monitoring_step = floor(window_size/2),
   criteria = "mann_whitney",
-  alpha = 0.01,
-  reporting = FALSE
+  alpha = 0.01
 )
 }
 \arguments{
 \item{encoding_size}{Encoding Size}
 
-\item{ae_class}{Autoencoder Class. When \code{NULL} (the default),
+\item{ae_class}{Autoencoder constructor. When \code{NULL} (the default),
 \code{daltoolboxdp::autoenc_ed} is used, which requires the suggested package
 \code{daltoolboxdp} and its Python backend.}
 
-\item{batch_size}{Batch Size for batch learning}
-
-\item{num_epochs}{Number of Epochs for training}
-
-\item{learning_rate}{Learning Rate}
+\item{ae_params}{Named list of arguments forwarded to \code{ae_class}, plus \code{error_function}, which selects how the reconstruction error is summarised. One of \code{"mae"} (default) or \code{"rmse"}.}
 
 \item{window_size}{Number of most recent rows kept by the detector. The
 oldest half is the reference window and the newest half the recent window.}
 
+\item{window_type}{Window policy. \code{"sliding"} (default) keeps at most \code{window_size} rows, so both halves move with the stream. \code{"anchored"} keeps every row, which pins the reference half to the beginning of the stream and makes memory grow with the stream length.}
+
 \item{monitoring_step}{Number of rows between two consecutive checks. The
 default checks twice per window.}
 
-\item{criteria}{The method to be used to check if there is a drift. One of \code{'mann_whitney'} (default), \code{'kolmogorov_smirnov'}, \code{'levene'}, \code{'parametric_threshold'} or \code{'nonparametric_threshold'}}
+\item{criteria}{The method used to check for a drift. One of \code{"mann_whitney"} (default), \code{"kolmogorov_smirnov"}, \code{"levene"}, \code{"psi"}, \code{"parametric_threshold"}, \code{"nonparametric_threshold"} or \code{"diff_threshold"}.}
 
-\item{alpha}{The significance threshold for the statistical test used in criteria}
-
-\item{reporting}{If TRUE, some data are returned as norm_x_oh, drift_input, hist_proj, and recent_proj.}
+\item{alpha}{Decision threshold for \code{criteria}. For the hypothesis tests it is a significance level; for \code{"psi"} and \code{"diff_threshold"} it is compared directly against the statistic, so it is a raw threshold rather than a probability.}
 }
 \value{
 \code{dfr_aedd} object
@@ -53,15 +48,20 @@ The autoencoder expects inputs in the \verb{[0, 1]} range. Values
 outside that range are clipped to it, and the detector warns the first time
 this happens, so the data should be normalized beforehand (for example with
 \code{daltoolbox::minmax()}). \code{ae_class} must be a constructor accepting the
-arguments \code{input_size}, \code{encoding_size}, \code{batch_size}, \code{num_epochs} and
-\code{learning_rate}, whose objects implement \code{fit()} and \code{transform()}.
+arguments \code{input_size} and \code{encoding_size} plus the entries of \code{ae_params},
+whose objects implement \code{fit()} and \code{transform()}.
 
 The autoencoder is trained on the reference window the first time the
 window is full, and again after every drift or whenever new columns appear.
+
+The \code{"levene"} criterion tests every reconstructed feature and
+combines the per-feature p-values with a Bonferroni correction, instead of
+looking at the first feature only.
 }
 \examples{
-# A rendered walkthrough is available at
-# https://github.com/cefet-rj-dal/heimdall/blob/main/examples/dfr_aedd.md
+# Training an autoencoder is too slow for an inline example. A rendered
+# walkthrough is available at
+# https://github.com/cefet-rj-dal/heimdall/blob/main/examples/1_detection/dfr_aedd.md
 }
 \references{
 Kaminskyi, D., Li, B., and Muller, E. (2022). Reconstruction-based unsupervised drift detection over multivariate streaming data. In \emph{2022 IEEE International Conference on Data Mining Workshops (ICDMW)}. \url{doi:10.1109/ICDMW58026.2022.00109}

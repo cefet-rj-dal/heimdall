@@ -51,7 +51,7 @@ model <- dfr_multi_criteria(
    ph = dfr_page_hinkley(),
    ph_sensitive = dfr_page_hinkley(threshold = 10)
  ),
- combination = 'or'
+ combination = "or"
 )
 
 model <- fit(model, data)

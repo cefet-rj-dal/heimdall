@@ -16,7 +16,6 @@ reference:
     desc: Detectors that monitor the distribution of the observed features (virtual concept drift).
     contents:
       - dfr_adwin
-      - dfr_kldist
       - dfr_kswin
       - dfr_lbdd
       - dfr_mcdd
@@ -24,9 +23,11 @@ reference:
   - title: Multivariate and combined detectors
     contents:
       - dfr_aedd
+      - dfr_kldist
       - dfr_multi_criteria
   - title: Baselines
     contents:
+      - dummy
       - dfr_inactive
       - dfr_passive
   - title: Adaptive models

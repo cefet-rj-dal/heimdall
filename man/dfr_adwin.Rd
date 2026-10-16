@@ -31,7 +31,7 @@ library(daltoolbox)
 library(heimdall)
 
 data(st_drift_examples)
-data <- st_drift_examples$univariate
+data <- st_drift_examples$uv_virtual_drift
 data$event <- NULL
 
 model <- dfr_adwin(target_feat='serie')

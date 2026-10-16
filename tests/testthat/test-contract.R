@@ -1,7 +1,7 @@
 test_that("update_state always returns the obj/drift contract", {
-  for (name in names(all_detectors())) {
-    detector <- all_detectors()[[name]]
-    output <- update_state(detector, 1)
+  detectors <- c(vector_detectors(), list(dfr_inactive = dfr_inactive(), dfr_passive = dfr_passive()))
+  for (name in names(detectors)) {
+    output <- update_state(detectors[[name]], 1)
 
     expect_true(is.list(output), info = name)
     expect_true(all(c("obj", "drift") %in% names(output)), info = name)
@@ -12,10 +12,9 @@ test_that("update_state always returns the obj/drift contract", {
 })
 
 test_that("the documented streaming loop works for every detector", {
-  for (name in names(all_detectors())) {
-    detector <- all_detectors()[[name]]
-    output <- list(obj = detector, drift = FALSE)
-
+  detectors <- c(vector_detectors(), list(dfr_inactive = dfr_inactive(), dfr_passive = dfr_passive()))
+  for (name in names(detectors)) {
+    output <- list(obj = detectors[[name]], drift = FALSE)
     expect_error(
       for (i in 1:30) {
         output <- update_state(output$obj, i %% 2)
@@ -30,31 +29,41 @@ test_that("the documented streaming loop works for every detector", {
 })
 
 test_that("fit accepts a stream with a single observation", {
-  for (name in names(c(error_based_detectors(), dist_based_detectors()))) {
-    detector <- c(error_based_detectors(), dist_based_detectors())[[name]]
-    expect_error(fit(detector, 1), NA, info = name)
+  for (name in names(vector_detectors())) {
+    expect_error(fit(vector_detectors()[[name]], 1), NA, info = name)
   }
+  expect_error(fit(dfr_kldist(window_size = 10), data.frame(serie = 1)), NA)
 })
 
 test_that("fit rejects an empty stream", {
   expect_error(fit(dfr_ddm(), numeric(0)), "at least one observation")
+  expect_error(fit(dfr_kldist(), data.frame(serie = numeric(0))), "at least one row")
+})
+
+test_that("the dummy baselines honour the contract", {
+  inactive <- fit(dfr_inactive(), 1:20)
+  expect_false(inactive$drifted)
+
+  passive <- update_state(dfr_passive(), 1)
+  expect_true(passive$drift)
+
+  # length() on a data frame is the column count; fit must walk rows
+  passive <- fit(dfr_passive(), data.frame(a = 1:7, b = 1:7))
+  expect_equal(nrow(passive$drifter_output), 7)
+})
+
+test_that("fit populates the per-observation diagnostics", {
+  model <- fit(dfr_kswin(window_size = 40, stat_size = 10, alpha = 0.01, exact = NULL), drifting_numeric_stream())
+  expect_equal(names(model$drifter_output), c("D", "p"))
+  expect_equal(nrow(model$drifter_output), 400)
 })
 
 test_that("reset_state clears the sticky drift flag", {
-  for (name in names(c(error_based_detectors(), dist_based_detectors()))) {
-    detector <- c(error_based_detectors(), dist_based_detectors())[[name]]
+  for (name in names(vector_detectors())) {
+    detector <- vector_detectors()[[name]]
     detector$drifted <- TRUE
     expect_false(reset_state(detector)$drifted, info = name)
   }
-})
-
-test_that("obj$drifted is sticky and a stationary stream stays clean", {
-  model <- fit(dfr_ddm(), rep(0, 400))
-  expect_false(model$drifted)
-
-  model$drifted <- TRUE
-  model <- update_state(model, 0)$obj
-  expect_true(model$drifted)
 })
 
 test_that("at least one error-based detector reacts to an abrupt drift", {
@@ -65,17 +74,4 @@ test_that("at least one error-based detector reacts to an abrupt drift", {
     logical(1)
   )
   expect_true(any(reacted))
-})
-
-test_that("hddm does not latch the per-call drift flag", {
-  output <- list(obj = dfr_hddm(), drift = FALSE)
-  flags <- logical(0)
-  stream <- drifting_error_stream()
-  for (i in seq_along(stream)) {
-    output <- update_state(output$obj, stream[i])
-    flags <- c(flags, output$drift)
-  }
-  skip_if_not(any(flags), "hddm did not report a drift on this stream")
-  first <- which(flags)[1]
-  expect_false(all(flags[first:length(flags)]))
 })

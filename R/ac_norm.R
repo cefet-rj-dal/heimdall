@@ -15,7 +15,8 @@ nrm_base <- function(norm_class) {
   obj <- dal_base()
 
   obj$model <- norm_class
-  obj$data <- NULL
+
+  obj$data <- data.frame()
 
   class(obj) <- append("norm", class(obj))
   return(obj)
@@ -86,8 +87,9 @@ transform.nrm_memory <- function(obj, data, ...) {
 }
 
 #'@export
-inverse_transform.nrm_memory <- function(obj, data, ...) {
+inverse_transform.nrm_memory <- function(obj, data, ...){
+  
   tf_data <- inverse_transform(obj$model, as.data.frame(data))
-
+  
   return(tf_data)
 }

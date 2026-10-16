@@ -5,7 +5,7 @@
 \alias{st_drift_examples}
 \title{Synthetic time series for concept drift detection}
 \format{
-A list of three data frames with 500 rows each.
+A list of six data frames with 500 rows each.
 }
 \source{
 \href{https://github.com/cefet-rj-dal/heimdall}{heimdall package}
@@ -14,18 +14,28 @@ A list of three data frames with 500 rows each.
 data(st_drift_examples)
 }
 \description{
-A list of time series for drift detection:
+A list of univariate and multivariate time series for drift
+detection. Each element is a data frame:
 \itemize{
-\item \code{dataset1}: two numeric series (\code{serie1}, \code{serie2}), a logical
-\code{target}, the index \code{i} and a \code{drift} column flagging the change point;
-\item \code{dataset2}: the same series without the target;
-\item \code{univariate}: a univariate series (\code{serie}) with four known change
-points flagged in \code{event}.
+\item \code{uv_virtual_drift}: univariate series (\code{serie}) with a change in the
+feature distribution at four known points, flagged in \code{event};
+\item \code{uv_vct_real_drift}: univariate series with a virtual change followed
+by a real drift;
+\item \code{uv_vdp_real_drift}: univariate series with a real drift and no change
+in the feature distribution;
+\item \code{mv_real_drift}: bivariate series with a real drift;
+\item \code{mv_vct_real_drift}: bivariate series with a virtual change followed
+by a real drift;
+\item \code{mv_vdp_real_drift}: bivariate series with a real drift and no change
+in the feature distribution.
 }
+Except for \code{uv_virtual_drift}, every data frame holds the series (\code{serie},
+or \code{serie1} and \code{serie2}), a logical \code{target}, the index \code{i} and a \code{drift}
+column flagging the change point.
 }
 \examples{
 data(st_drift_examples)
-dataset <- st_drift_examples$dataset1
+dataset <- st_drift_examples$mv_real_drift
 which(dataset$drift == 1)
 }
 \references{

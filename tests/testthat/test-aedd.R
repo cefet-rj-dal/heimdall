@@ -4,7 +4,7 @@
 mean_autoencoder <- function(input_size, encoding_size, batch_size, num_epochs, learning_rate) {
   obj <- daltoolbox::dal_base()
   obj$input_size <- input_size
-  class(obj) <- append("mean_autoencoder", class(obj))
+  class(obj) <- append(c("mean_autoencoder", "autoenc_ed"), class(obj))
   obj
 }
 
@@ -38,7 +38,10 @@ test_that("aedd follows the obj/drift contract", {
 
 test_that("aedd stays quiet on a stable stream and reacts to a shift", {
   stream <- aedd_stream()
-  output <- list(obj = new_aedd(), drift = FALSE)
+  # A 20-row window compares only 10 reconstruction errors per half, which is
+  # too few to keep 180 tests at alpha = 0.01 free of false alarms.
+  model <- dfr_aedd(encoding_size = 1, ae_class = mean_autoencoder, window_size = 40, monitoring_step = 1)
+  output <- list(obj = model, drift = FALSE)
   flags <- logical(nrow(stream))
   for (i in seq_len(nrow(stream))) {
     output <- update_state(output$obj, stream[i, , drop = FALSE])
@@ -79,7 +82,7 @@ test_that("aedd reset clears the drift flag and keeps the configuration", {
 
 test_that("every aedd criterion runs end to end", {
   stream <- aedd_stream()
-  for (criteria in c("mann_whitney", "kolmogorov_smirnov", "levene",
+  for (criteria in c("mann_whitney", "kolmogorov_smirnov", "levene", "psi", "diff_threshold",
                      "parametric_threshold", "nonparametric_threshold")) {
     expect_error(fit(new_aedd(criteria = criteria), stream), NA, info = criteria)
   }

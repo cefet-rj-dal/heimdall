@@ -73,14 +73,14 @@ detect <- function(model, stream) {
 
 ## Virtual drift: monitoring a feature
 
-`st_drift_examples$univariate` is a synthetic series whose behaviour changes
+`st_drift_examples$uv_virtual_drift` is a synthetic series whose behaviour changes
 at the observations flagged in the `event` column. ADWIN keeps a window of
 adaptive size and shrinks it whenever its older and newer parts have
 significantly different means.
 
 ```{r}
 data(st_drift_examples)
-serie <- st_drift_examples$univariate
+serie <- st_drift_examples$uv_virtual_drift
 
 drifts <- detect(dfr_adwin(), serie$serie)
 drifts

@@ -24,7 +24,7 @@ gen_data <- function() {
 }
 
 
-if (FALSE) {
+if (TRUE) {
   #plot_examples <- function(st_real_examples) {
   #  for (i in 1:length(st_real_examples)) {
   #    data <- st__drift_examples[[i]]
@@ -41,7 +41,6 @@ if (FALSE) {
   }
 
   st_real_examples <- gen_data()
-  #plot_examples(st_real_examples)
   save_examples(st_real_examples)
 }
 

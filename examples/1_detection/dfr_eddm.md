@@ -1,0 +1,101 @@
+---
+title: "dfr_eddm Example"
+output:
+  html_document: 
+    self_contained: true
+---
+# EDDM Example
+
+EDDM extends DDM by monitoring the distance between classification errors instead of only the error rate. This makes it especially useful when **real concept drift** is gradual rather than abrupt.
+
+Reference: Baena-Garcia, M., del Campo-Avila, J., Fidalgo, R., Bifet, A., Gavaldà, R., and Morales-Bueno, R. (2006). *Early drift detection method*. Fourth International Workshop on Knowledge Discovery from Data Streams.
+
+## Learning goal
+
+This example is a practical template for users who want to monitor gradual degradation in predictive behavior.
+
+
+
+``` r
+# Load Heimdall and the built-in synthetic stream.
+library(heimdall)
+```
+
+
+
+``` r
+# Fix the seed so the results are reproducible.
+seed <- 1
+set.seed(seed)
+```
+
+
+
+``` r
+# Load the stream and derive the binary monitored signal.
+data(st_drift_examples)
+data <- st_drift_examples$uv_virtual_drift
+data$prediction <- st_drift_examples$uv_virtual_drift$serie > 4
+```
+
+
+
+``` r
+# Visualize the binary stream that EDDM will monitor.
+plot(x=seq_len(nrow(data)), y=data$prediction)
+```
+
+![plot of chunk unnamed-chunk-4](fig/dfr_eddm/unnamed-chunk-4-1.png)
+
+
+``` r
+# Instantiate the EDDM detector.
+model <- dfr_eddm()
+```
+
+
+
+``` r
+# Process the stream sequentially and store each detected alarm.
+detection <- NULL
+output <- list(obj=model, drift=FALSE)
+for (i in seq_len(nrow(data))){
+  output <- update_state(output$obj, data$prediction[i])
+  if (output$drift){
+    type <- 'drift'
+    output$obj <- reset_state(output$obj)
+  } else {
+    type <- ''
+  }
+  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
+}
+```
+
+
+
+``` r
+# Print the drift alarms returned by EDDM.
+detection[detection$type == 'drift',]
+```
+
+```
+##     idx event  type
+## 231 231  TRUE drift
+```
+
+```
+##     idx event  type
+## 231 231  TRUE drift
+```
+
+
+
+``` r
+# Show those alarms on top of the original numeric series.
+plot(x=seq_len(nrow(data)), y=data$serie)
+for (drift_index in detection[detection$type == 'drift', 'idx']) {
+  abline(v=drift_index, col='red', lty=2)
+}
+```
+
+![plot of chunk unnamed-chunk-8](fig/dfr_eddm/unnamed-chunk-8-1.png)

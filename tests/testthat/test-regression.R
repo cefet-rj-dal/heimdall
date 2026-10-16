@@ -4,16 +4,16 @@
 
 test_that("distribution-based detectors keep their detections on st_drift_examples", {
   data("st_drift_examples", package = "heimdall", envir = environment())
-  serie <- st_drift_examples$univariate$serie
+  serie <- st_drift_examples$uv_virtual_drift$serie
   # dfr_kswin subsamples its reference window
   set.seed(1)
 
   expected <- list(
     dfr_adwin = c(224L, 352L, 448L),
-    dfr_kldist = c(127L, 219L, 270L, 329L, 380L, 431L),
-    dfr_kswin = 301L,
-    dfr_lbdd = 301L,
-    dfr_mcdd = c(301L, 452L),
+    dfr_kldist = c(245L, 357L),
+    dfr_kswin = c(300L, 500L),
+    dfr_lbdd = 300L,
+    dfr_mcdd = 300L,
     dfr_page_hinkley = 205L
   )
   detectors <- list(

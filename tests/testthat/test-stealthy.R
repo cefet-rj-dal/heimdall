@@ -95,24 +95,24 @@ test_that("update_state on stealthy follows the obj/drift contract", {
   expect_true(output$obj$drifted)
 })
 
-test_that("reporting exposes the drift input", {
+test_that("reporting accumulates the drifter inputs and outputs", {
   model <- stealthy(sign_classifier(), dfr_page_hinkley(target_feat = "x"), warmup_size = 100, reporting = TRUE)
   for (i in 1:3) {
     x <- batch(50, 0, i)
     model <- fit(model, x, labels_for(x))
   }
-  expect_equal(length(model$drift_input), 50)
+  expect_equal(nrow(model$drifter_input), 150)
+  expect_equal(nrow(model$drifter_output), 150)
 })
 
 test_that("target_uni_drifter works with a factor target", {
   model <- stealthy(sign_classifier(), dfr_page_hinkley(target_feat = "x"), target_uni_drifter = TRUE,
-                    warmup_size = 100, reporting = TRUE)
+                    warmup_size = 100)
   for (i in 1:3) {
     x <- batch(50, 0, i)
     y <- data.frame(y = factor(x$x > 0, levels = c(FALSE, TRUE)))
     model <- fit(model, x, y)
   }
-  expect_true(all(model$drift_input %in% c(0, 1)))
   expect_gt(model$drift_method$state$sample_count, 1)
 })
 
@@ -121,18 +121,18 @@ test_that("monitored_features restricts what the drifter receives", {
   make_x <- function(shift) data.frame(a = stats::rnorm(50), b = stats::rnorm(50, mean = shift))
   run <- function(features) {
     model <- stealthy(sign_classifier(), dfr_page_hinkley(), monitored_features = features,
-                      warmup_size = 100, reporting = TRUE)
-    for (i in 1:2) {
+                      warmup_size = 100)
+    # Two batches of warmup and one stable batch seen by the drifter.
+    for (i in 1:3) {
       x <- make_x(0)
       model <- fit(model, x, data.frame(y = x$a > 0))
     }
     x <- make_x(5)
     fit(model, x, data.frame(y = x$a > 0))
   }
-  only_a <- run("a")
-  both <- run(NULL)
-  expect_equal(only_a$drift_input, only_a$norm_x_oh$a)
-  expect_false(isTRUE(all.equal(only_a$drift_input, both$drift_input)))
+  # Only the unmonitored column b shifts.
+  expect_false(run("a")$drifted)
+  expect_true(run(NULL)$drifted)
 })
 
 test_that("monitored_features must exist in the data", {

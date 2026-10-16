@@ -3,7 +3,7 @@
 
 test_that("fit uses only the monitored column of a data frame", {
   data <- data.frame(a = rep(0, 300), b = c(rep(0, 150), rep(100, 150)))
-  for (make in list(dfr_page_hinkley, dfr_adwin, dfr_kldist, dfr_mcdd)) {
+  for (make in list(dfr_page_hinkley, dfr_adwin, dfr_mcdd)) {
     expect_false(fit(make(target_feat = "a"), data)$drifted)
   }
   model <- fit(dfr_page_hinkley(target_feat = "a", threshold = 1e9), data)
@@ -56,7 +56,7 @@ test_that("warm-start data never exceeds the window", {
   expect_length(dfr_kswin(window_size = 20, stat_size = 5, data = 1:100)$state$window, 20)
   expect_lte(length(fit(dfr_mcdd(window_size = 20, data = 1:100), 1:10)$state$window), 20)
   expect_equal(dfr_lbdd(window_size = 5, data = 1:100)$state$window, 96:100)
-  expect_length(dfr_kldist(window_size = 10, data = c(1, NA, Inf, 2))$state$window, 2)
+  expect_equal(nrow(dfr_kldist(window_size = 10, data = data.frame(a = 1:100))$state$window), 10)
 })
 
 test_that("parameters are validated", {

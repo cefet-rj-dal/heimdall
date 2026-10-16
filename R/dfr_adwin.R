@@ -18,7 +18,7 @@
 #'library(heimdall)
 #'
 #'data(st_drift_examples)
-#'data <- st_drift_examples$univariate
+#'data <- st_drift_examples$uv_virtual_drift
 #'data$event <- NULL
 #'
 #'model <- dfr_adwin(target_feat='serie')
@@ -45,6 +45,8 @@ dfr_adwin <- function(target_feat = NULL, delta = 2e-05) {
 
   obj$drifted <- FALSE
   obj$state <- .adwin_state(delta)
+  obj$last_drifter_output <- NULL
+  obj$drifter_output <- NULL
   class(obj) <- append("dfr_adwin", class(obj))
   return(obj)
 }
@@ -225,6 +227,7 @@ update_state.dfr_adwin <- function(obj, value, ...) {
   detection <- .adwin_detect(state)
 
   obj$state <- detection$state
+  obj$last_drifter_output <- detection$state$width
   has_drift <- detection$change
   if (has_drift) {
     obj$drifted <- TRUE
@@ -234,7 +237,7 @@ update_state.dfr_adwin <- function(obj, value, ...) {
 
 #'@export
 fit.dfr_adwin <- function(obj, data, ...) {
-  return(.fit_vector_stream(obj, data))
+  return(.fit_vector_stream(obj, data, output_names = "width"))
 }
 
 #'@export

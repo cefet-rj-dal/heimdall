@@ -1,5 +1,5 @@
 #'@title Adapted Page Hinkley method
-#'@description The Page-Hinkley test is a sequential change-point detector that monitors cumulative deviations from a running mean and signals a change when those deviations grow persistently. In this package, the implementation is primarily used for **virtual concept drift** when it monitors a numeric feature stream, although the same statistic can also be applied to error streams to detect **real concept drift**. The method is based on Page (1954) and the later streaming adaptation popularized in data-stream mining.
+#'@description The Page-Hinkley test is a sequential change-point detector that monitors the cumulative deviation of a signal from its running mean and signals a change when that deviation departs from its running minimum by more than a threshold. In this package, the implementation is primarily used for **virtual concept drift** when it monitors a numeric feature stream, although the same statistic can also be applied to error streams to detect **real concept drift**. The method is based on Page (1954).
 #'@param target_feat Feature to be monitored.
 #'@param min_instances The minimum number of instances before detecting change
 #'@param delta The delta factor for the Page Hinkley test
@@ -12,33 +12,7 @@
 #Page Hinkley detection implementation: Scikit-Multiflow, https://github.com/scikit-multiflow/scikit-multiflow/blob/a7e316d/src/skmultiflow/drift_detection/page_hinkley.py#L4
 #'@references Page, E. S. (1954). Continuous inspection schemes. *Biometrika*, 41(1/2), 100-115. <doi:10.2307/2333009>
 #'@return `dfr_page_hinkley` object
-#'@examples
-#'library(daltoolbox)
-#'library(heimdall)
-#'
-#'# This example assumes a model residual where 1 is an error and 0 is a
-#'# correct prediction.
-#'
-#'data(st_drift_examples)
-#'data <- st_drift_examples$univariate
-#'data$event <- NULL
-#'
-#'model <- dfr_page_hinkley(target_feat='serie')
-#'
-#'detection <- NULL
-#'output <- list(obj=model, drift=FALSE)
-#'for (i in seq_along(data$serie)){
-#'  output <- update_state(output$obj, data$serie[i])
-#'  if (output$drift){
-#'    type <- 'drift'
-#'    output$obj <- reset_state(output$obj)
-#'  }else{
-#'    type <- ''
-#'  }
-#'  detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
-#'}
-#'
-#'detection[detection$type == 'drift',]
+#'@example examples/1_detection/r/dfr_page_hinkley.R
 #'@export
 dfr_page_hinkley <- function(target_feat = NULL, min_instances = 30, delta = 0.005, threshold = 50, alpha = 1 - 1e-04, direction = "increase") {
   .check_positive_integer(min_instances, "min_instances", min_value = 1L)
@@ -51,6 +25,8 @@ dfr_page_hinkley <- function(target_feat = NULL, min_instances = 30, delta = 0.0
 
   obj$state <- .page_hinkley_state(min_instances, delta, threshold, alpha, direction)
   obj$drifted <- FALSE
+  obj$last_drifter_output <- NULL
+  obj$drifter_output <- NULL
 
   class(obj) <- append("dfr_page_hinkley", class(obj))
   return(obj)
@@ -81,6 +57,8 @@ update_state.dfr_page_hinkley <- function(obj, value, ...) {
 
   value <- .as_scalar(value, obj$target_feat)
   if (is.na(value)) {
+    obj$last_drifter_output <- NA_real_
+    obj$state <- state
     return(list(obj = obj, drift = FALSE))
   }
 
@@ -91,13 +69,22 @@ update_state.dfr_page_hinkley <- function(obj, value, ...) {
   state$min_sum_down <- min(state$min_sum_down, state$sum_down)
   state$sample_count <- state$sample_count + 1
 
+  stat_up <- state$sum_up - state$min_sum_up
+  stat_down <- state$sum_down - state$min_sum_down
+  obj$last_drifter_output <- switch(
+    state$direction,
+    increase = stat_up,
+    decrease = stat_down,
+    both = max(stat_up, stat_down)
+  )
+
   if (state$sample_count < state$min_instances) {
     obj$state <- state
     return(list(obj = obj, drift = FALSE))
   }
 
-  up <- (state$sum_up - state$min_sum_up) > state$threshold
-  down <- (state$sum_down - state$min_sum_down) > state$threshold
+  up <- stat_up > state$threshold
+  down <- stat_down > state$threshold
   has_drift <- switch(state$direction, increase = up, decrease = down, both = up || down)
 
   if (has_drift) {
@@ -112,7 +99,7 @@ update_state.dfr_page_hinkley <- function(obj, value, ...) {
 
 #'@export
 fit.dfr_page_hinkley <- function(obj, data, ...) {
-  return(.fit_vector_stream(obj, data))
+  return(.fit_vector_stream(obj, data, output_names = "ph_statistic"))
 }
 
 #'@export
