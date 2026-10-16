@@ -26,14 +26,9 @@ Missing values are treated as correct predictions (\code{0}).
 # Load Heimdall and the built-in synthetic data stream.
 library(heimdall)
 
-<<<<<<< HEAD
 # Fix the seed to make the example reproducible.
 seed <- 1
 set.seed(seed)
-=======
-# This example uses an error-based drift detector with a synthetic
-# model residual where 1 is an error and 0 is a correct prediction.
->>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 
 # Load the univariate stream and derive the binary monitored signal.
 data(st_drift_examples)
@@ -49,7 +44,6 @@ model <- dfr_ddm()
 # Process the stream sequentially and store the drift alarms.
 detection <- NULL
 output <- list(obj=model, drift=FALSE)
-<<<<<<< HEAD
 for (i in seq_len(nrow(data))){
   output <- update_state(output$obj, data$prediction[i])
   if (output$drift){
@@ -59,17 +53,6 @@ for (i in seq_len(nrow(data))){
     type <- ''
   }
   detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
-=======
-for (i in seq_along(data$prediction)){
- output <- update_state(output$obj, data$prediction[i])
- if (output$drift){
-   type <- 'drift'
-   output$obj <- reset_state(output$obj)
- }else{
-   type <- ''
- }
- detection <- rbind(detection, data.frame(idx=i, event=output$drift, type=type))
->>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 }
 
 # Print the positions where DDM detected drift.

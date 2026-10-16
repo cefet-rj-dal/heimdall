@@ -13,7 +13,6 @@
 #'@references Giusti, L., Carvalho, L., Gomes, A. T., Coutinho, R., Soares, J., and Ogasawara, E. (2021). Analysing flight delay under concept drift. *Evolving Systems*. <doi:10.1007/s12530-021-09415-z>
 #'@return `dfr_lbdd` object
 #'@importFrom utils head tail
-<<<<<<< HEAD
 #'@example examples/1_detection/r/dfr_lbdd.R
 #'@export
 dfr_lbdd <- function(target_feat=NULL, alpha=0.05, window_size=1500, window_type="sliding", monitoring_step=1, data=NULL) {

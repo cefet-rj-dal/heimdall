@@ -51,8 +51,8 @@ dfr_adwin <- function(target_feat = NULL, delta = 2e-05) {
 
   state$delta <- delta
   
-  reticulate::source_python(system.file("python", "adwin.py", package="heimdall"))
-  state$adwin <- ADWIN(delta = delta)
+  # reticulate::source_python(system.file("python", "adwin.py", package="heimdall"))
+  state$adwin <- .adwin_module()
 
   obj$drifted <- FALSE
   obj$state <- state

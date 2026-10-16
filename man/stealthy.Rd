@@ -51,7 +51,6 @@ Stealthy object
 Ancestor class for drift adaptive models. It wraps a predictive
 model and a drift detector, retraining the model whenever a drift is
 reported.
-<<<<<<< HEAD
 }
 \details{
 The batch is evaluated before the model is updated: error-based
@@ -63,9 +62,4 @@ once per call.
 # See ?dfr_ddm for a drift detector that can be plugged here, and the
 # online prediction walkthroughs at
 # https://github.com/cefet-rj-dal/heimdall/tree/main/examples/2_online_prediction
-=======
-}
-\examples{
-# See ?dfr_ddm for an example of a drift detector that can be plugged here.
->>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 }

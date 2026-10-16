@@ -1,12 +1,4 @@
-<<<<<<< HEAD
 # Internal helpers shared by the heimdall detectors. Not exported.
-
-=======
-# Internal helpers shared by the heimdall detectors.
-# These functions are not exported.
-
-#' Validate a probability-like parameter
->>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 #' @noRd
 .check_probability <- function(value, name) {
   if (!is.numeric(value) || (length(value) != 1L) || is.na(value)) {
@@ -18,10 +10,6 @@
   invisible(TRUE)
 }
 
-<<<<<<< HEAD
-=======
-#' Validate a positive integer-like parameter
->>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 #' @noRd
 .check_positive_integer <- function(value, name, min_value = 1L) {
   if (!is.numeric(value) || (length(value) != 1L) || is.na(value)) {
@@ -33,7 +21,6 @@
   invisible(TRUE)
 }
 
-<<<<<<< HEAD
 # Canonical window policies. 'sliding' keeps at most window_size observations;
 # 'anchored' keeps every observation, so the reference half stays pinned to the
 # beginning of the stream. The legacy dfr_aedd values are mapped here so that
@@ -77,16 +64,6 @@
 
 # Levene's test for homogeneity of variance, Brown-Forsythe variant (group
 # spread centred on the median, which is what car::leveneTest does by default).
-=======
-#' Levene's test for homogeneity of variance (Brown-Forsythe variant)
-#'
-#' Replaces the previous dependency on `car::leveneTest`. Group spread is
-#' centred on the median, which is the same default used by `car`.
-#'
-#' @param values numeric vector of observations
-#' @param group grouping factor with the same length as `values`
-#' @return the p-value of the test, or `NA_real_` when it cannot be computed
->>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 #' @noRd
 .levene_pvalue <- function(values, group) {
   values <- as.numeric(values)
@@ -120,7 +97,6 @@
   stats::pf(f_stat, df1 = k - 1, df2 = n - k, lower.tail = FALSE)
 }
 
-<<<<<<< HEAD
 # Levene's test applied column by column, combined with a Bonferroni
 # correction. Returns a single p-value for the whole (possibly multivariate)
 # reconstruction error.
@@ -152,37 +128,6 @@
   min(1, min(p_values) * length(p_values))
 }
 
-=======
-#' Feed a univariate stream to a detector, one observation at a time
-#' @noRd
-.fit_vector_stream <- function(obj, data) {
-  data <- unlist(data, use.names = FALSE)
-  if (length(data) == 0L) {
-    stop("fit: 'data' must contain at least one observation", call. = FALSE)
-  }
-  output <- list(obj = obj, drift = FALSE)
-  for (i in seq_along(data)) {
-    output <- update_state(output$obj, data[i])
-  }
-  return(output$obj)
-}
-
-#' Feed a multivariate stream to a detector, one row at a time
-#' @noRd
-.fit_row_stream <- function(obj, data) {
-  data <- as.data.frame(data)
-  if (nrow(data) == 0L) {
-    stop("fit: 'data' must contain at least one row", call. = FALSE)
-  }
-  output <- list(obj = obj, drift = FALSE)
-  for (i in seq_len(nrow(data))) {
-    output <- update_state(output$obj, data[i, , drop = FALSE])
-  }
-  return(output$obj)
-}
-
-#' Coerce an incoming observation to a single numeric value
->>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
 #' @noRd
 .as_scalar <- function(value) {
   if (is.data.frame(value) || is.matrix(value)) {
@@ -190,7 +135,6 @@
   }
   suppressWarnings(as.numeric(unlist(value, use.names = FALSE))[1L])
 }
-<<<<<<< HEAD
 
 # Feeds a univariate stream to a detector, one observation at a time, keeping
 # the per-observation diagnostics exposed through drifter_output.
@@ -249,5 +193,3 @@
   rownames(collected) <- seq_len(nrow(collected))
   return(collected)
 }
-=======
->>>>>>> 264a2e411549c065608d2ace35dec5ebfba3725e
