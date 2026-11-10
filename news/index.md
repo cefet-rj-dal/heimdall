@@ -31,6 +31,18 @@
   and `"diff_threshold"` criteria, and no longer has a `reporting`
   argument.
 - [`dfr_aedd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_aedd.md)
+  `"mann_whitney"` and `"kolmogorov_smirnov"` criteria now test every
+  monitored column separately and combine the p-values with a Bonferroni
+  correction (as `"levene"` already did), instead of pooling all latent
+  dimensions of an encoder into one sample.
+- `dfr_aedd(ae_params = list(error_function = "rmse"))` now computes the
+  root mean squared reconstruction error. It previously returned the
+  mean absolute error.
+- [`dfr_aedd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_aedd.md)
+  gained `column_threshold`: when set, the criterion is evaluated on
+  every column and a drift is signalled only when the proportion of
+  changed columns is greater than `column_threshold`.
+- [`dfr_aedd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_aedd.md)
   no longer accepts an autoencoder class that is neither an encoder nor
   an encoder-decoder; it fails with an explicit message instead of
   reaching an undefined variable.

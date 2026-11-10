@@ -71,8 +71,8 @@ stealthy(
 
   Strategy used by [`predict()`](https://rdrr.io/r/stats/predict.html)
   while no model is fitted. One of `"null"` (default, returns all
-  `FALSE`), `"majority"` (majority class classifier) or `"last_model"`
-  (keeps using the previous model).
+  `FALSE`), `"majority"` (majority class of the data the previous model
+  was trained on) or `"last_model"` (keeps using the previous model).
 
 - reporting:
 

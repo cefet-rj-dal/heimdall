@@ -21,6 +21,7 @@ dfr_aedd(
   criteria = "mann_whitney",
   alpha = 0.01,
   threshold = 0.01,
+  column_threshold = NULL,
   target_feat = NULL
 )
 ```
@@ -79,6 +80,17 @@ dfr_aedd(
   compared directly against the divergence or the median error
   difference. It is a raw threshold, not a probability.
 
+- column_threshold:
+
+  `NULL` (the default) or a proportion between 0 and 1. When set, the
+  criterion is evaluated separately on every monitored column (one per
+  latent dimension for an encoder, a single one for an encoder-decoder),
+  and a drift is signalled only when the proportion of columns flagged
+  as changed is strictly greater than `column_threshold`. For example,
+  with `column_threshold = 0.5`, 3 changed columns out of 5 (60%) signal
+  a drift. The hypothesis tests flag a column when its uncorrected
+  p-value is below `alpha`.
+
 - target_feat:
 
   Names of the columns to be monitored. `NULL` (the default) monitors
@@ -103,9 +115,15 @@ The autoencoder is trained on the reference window the first time the
 window is full, and again after every drift or whenever new columns
 appear.
 
-The `"levene"` criterion tests every reconstructed feature and combines
-the per-feature p-values with a Bonferroni correction, instead of
-looking at the first feature only.
+With an encoder-decoder, the reconstruction error of each row is
+summarised into a single value, so every criterion sees one column. With
+an encoder, the latent representation is monitored directly and there is
+one column per latent dimension (`encoding_size`).
+
+When `column_threshold` is `NULL`, the hypothesis-test criteria
+(`"mann_whitney"`, `"kolmogorov_smirnov"` and `"levene"`) test every
+column and combine the per-column p-values with a Bonferroni correction,
+instead of pooling all columns into a single sample.
 
 ## References
 
