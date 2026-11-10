@@ -188,31 +188,54 @@
   stats::pf(f_stat, df1 = k - 1, df2 = n - k, lower.tail = FALSE)
 }
 
-#' Levene's test applied column by column
+#' Two-sample p-values computed column by column
 #'
-#' The column p-values are combined with a Bonferroni correction, giving a
-#' single p-value for the whole (possibly multivariate) reconstruction error.
+#' Applies a two-sample test to every column shared by `history` and `recent`.
+#' Columns whose p-value cannot be computed are reported as `NA`.
+#'
+#' @param test one of `"mann_whitney"`, `"kolmogorov_smirnov"` or `"levene"`
+#' @return a named numeric vector with one p-value per column
 #' @noRd
-.levene_pvalue_mv <- function(history, recent) {
+.column_pvalues <- function(history, recent, test) {
   history <- as.data.frame(history)
   recent <- as.data.frame(recent)
-
   features <- intersect(names(history), names(recent))
-  if (length(features) == 0L) {
-    return(NA_real_)
-  }
 
-  p_values <- vapply(
+  pvalue_fn <- switch(test,
+    mann_whitney = function(h, r) suppressWarnings(stats::wilcox.test(h, r)$p.value),
+    kolmogorov_smirnov = function(h, r) suppressWarnings(stats::ks.test(h, r)$p.value),
+    levene = function(h, r) {
+      .levene_pvalue(
+        values = c(h, r),
+        group = rep(c("History", "Recent"), c(length(h), length(r)))
+      )
+    },
+    stop(sprintf("unknown test '%s'", test), call. = FALSE)
+  )
+
+  vapply(
     features,
     function(feat) {
-      .levene_pvalue(
-        values = c(history[[feat]], recent[[feat]]),
-        group = rep(c("History", "Recent"), c(nrow(history), nrow(recent)))
-      )
+      h <- history[[feat]]
+      r <- recent[[feat]]
+      h <- h[!is.na(h)]
+      r <- r[!is.na(r)]
+      if ((length(h) == 0L) || (length(r) == 0L)) {
+        return(NA_real_)
+      }
+      p_value <- tryCatch(pvalue_fn(h, r), error = function(e) NA_real_)
+      if (length(p_value) != 1L) NA_real_ else as.numeric(p_value)
     },
     numeric(1)
   )
+}
 
+#' Combine column p-values with a Bonferroni correction
+#'
+#' Gives a single p-value for a (possibly multivariate) sample, or `NA_real_`
+#' when no column p-value could be computed.
+#' @noRd
+.bonferroni_pvalue <- function(p_values) {
   p_values <- p_values[!is.na(p_values)]
   if (length(p_values) == 0L) {
     return(NA_real_)

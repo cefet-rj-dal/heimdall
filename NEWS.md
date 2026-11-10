@@ -16,6 +16,16 @@
 * `dfr_aedd()` takes the autoencoder settings through `ae_params` (a named
   list forwarded to `ae_class`, plus `error_function`), gained the `"psi"` and
   `"diff_threshold"` criteria, and no longer has a `reporting` argument.
+* `dfr_aedd()` `"mann_whitney"` and `"kolmogorov_smirnov"` criteria now test
+  every monitored column separately and combine the p-values with a Bonferroni
+  correction (as `"levene"` already did), instead of pooling all latent
+  dimensions of an encoder into one sample.
+* `dfr_aedd(ae_params = list(error_function = "rmse"))` now computes the root
+  mean squared reconstruction error. It previously returned the mean absolute
+  error.
+* `dfr_aedd()` gained `column_threshold`: when set, the criterion is evaluated
+  on every column and a drift is signalled only when the proportion of changed
+  columns is greater than `column_threshold`.
 * `dfr_aedd()` no longer accepts an autoencoder class that is neither an
   encoder nor an encoder-decoder; it fails with an explicit message instead of
   reaching an undefined variable.

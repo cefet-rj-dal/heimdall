@@ -13,6 +13,7 @@
 #' @param criteria The method used to check for a drift. One of `"mann_whitney"` (default), `"kolmogorov_smirnov"`, `"levene"`, `"psi"`, `"parametric_threshold"`, `"nonparametric_threshold"` or `"diff_threshold"`.
 #' @param alpha Significance level of the hypothesis-test criteria (`"mann_whitney"`, `"kolmogorov_smirnov"` and `"levene"`).
 #' @param threshold Drift threshold of the `"psi"` and `"diff_threshold"` criteria, compared directly against the divergence or the median error difference. It is a raw threshold, not a probability.
+#' @param column_threshold `NULL` (the default) or a proportion between 0 and 1. When set, the criterion is evaluated separately on every monitored column (one per latent dimension for an encoder, a single one for an encoder-decoder), and a drift is signalled only when the proportion of columns flagged as changed is strictly greater than `column_threshold`. For example, with `column_threshold = 0.5`, 3 changed columns out of 5 (60%) signal a drift. The hypothesis tests flag a column when its uncorrected p-value is below `alpha`.
 #' @param target_feat Names of the columns to be monitored. `NULL` (the default) monitors every numeric column.
 #' @details The autoencoder expects inputs in the `[0, 1]` range. Values
 #' outside that range are clipped to it, and the detector warns the first time
@@ -24,9 +25,15 @@
 #' The autoencoder is trained on the reference window the first time the
 #' window is full, and again after every drift or whenever new columns appear.
 #'
-#' The `"levene"` criterion tests every reconstructed feature and
-#' combines the per-feature p-values with a Bonferroni correction, instead of
-#' looking at the first feature only.
+#' With an encoder-decoder, the reconstruction error of each row is summarised
+#' into a single value, so every criterion sees one column. With an encoder,
+#' the latent representation is monitored directly and there is one column per
+#' latent dimension (`encoding_size`).
+#'
+#' When `column_threshold` is `NULL`, the hypothesis-test criteria
+#' (`"mann_whitney"`, `"kolmogorov_smirnov"` and `"levene"`) test every column
+#' and combine the per-column p-values with a Bonferroni correction, instead of
+#' pooling all columns into a single sample.
 # AEDD detection: Daniil Kaminskyi, Bin Li and Emmanuel Muller. "Reconstruction-based unsupervised drift detection over multivariate streaming data." 2022 IEEE International Conference on Data Mining Workshops (ICDMW).
 #' @references Kaminskyi, D., Li, B., and Muller, E. (2022). Reconstruction-based unsupervised drift detection over multivariate streaming data. In *2022 IEEE International Conference on Data Mining Workshops (ICDMW)*. <doi:10.1109/ICDMW58026.2022.00109>
 #' @return `dfr_aedd` object
@@ -37,7 +44,7 @@
 #' # walkthrough is available at
 #' # https://github.com/cefet-rj-dal/heimdall/blob/main/examples/1_detection/dfr_aedd.md
 #' @export
-dfr_aedd <- function(encoding_size, ae_class = NULL, ae_params = list(batch_size = 32, num_epochs = 1000, learning_rate = 0.001, error_function = "mae"), window_size = 100, window_type = "sliding", monitoring_step = floor(window_size / 2), criteria = "mann_whitney", alpha = 0.01, threshold = 0.01, target_feat = NULL) {
+dfr_aedd <- function(encoding_size, ae_class = NULL, ae_params = list(batch_size = 32, num_epochs = 1000, learning_rate = 0.001, error_function = "mae"), window_size = 100, window_type = "sliding", monitoring_step = floor(window_size / 2), criteria = "mann_whitney", alpha = 0.01, threshold = 0.01, column_threshold = NULL, target_feat = NULL) {
   criteria <- match.arg(
     criteria,
     c(
@@ -47,6 +54,9 @@ dfr_aedd <- function(encoding_size, ae_class = NULL, ae_params = list(batch_size
   )
   .check_probability(alpha, "alpha")
   .check_number(threshold, "threshold", min_value = 0)
+  if (!is.null(column_threshold)) {
+    .check_probability(column_threshold, "column_threshold")
+  }
   .check_positive_integer(encoding_size, "encoding_size", min_value = 1L)
   .check_positive_integer(window_size, "window_size", min_value = 2L)
   .check_positive_integer(monitoring_step, "monitoring_step", min_value = 1L)
@@ -70,6 +80,7 @@ dfr_aedd <- function(encoding_size, ae_class = NULL, ae_params = list(batch_size
   obj$ae_params <- ae_params
   obj$alpha <- alpha
   obj$threshold <- threshold
+  obj$column_threshold <- column_threshold
   obj$encoding_size <- encoding_size
   obj$window_type <- window_type
 
@@ -175,25 +186,28 @@ update_state.dfr_aedd <- function(obj, value, ...) {
   history_window_output <- transform(state$autoencoder, history_window)
   recent_window_output <- transform(state$autoencoder, recent_window)
 
-  if (any(c("autoenc_ed", "autoenc_variational_ed") %in% class(state$autoencoder))) {
+  # Reconstruction (encoder-decoder) or latent space (encoder) output. Every
+  # daltoolboxdp autoencoder inherits from autoenc_base_ed or autoenc_base_e
+  # (dense, denoising, adversarial, variational, LSTM, ...).
+  if (any(c("autoenc_base_ed", "autoenc_ed", "autoenc_variational_ed") %in% class(state$autoencoder))) {
     history_rec_marker <- history_window_output - history_window
     recent_rec_marker <- recent_window_output - recent_window
     obj$last_drifter_output <- as.data.frame(utils::tail(recent_rec_marker, 1))
 
     if (obj$error_function == "rmse") {
-      history_rec_marker <- as.data.frame(rowMeans(sqrt(as.matrix(history_rec_marker)^2)))
-      recent_rec_marker <- as.data.frame(rowMeans(sqrt(as.matrix(recent_rec_marker)^2)))
+      history_rec_marker <- as.data.frame(sqrt(rowMeans(as.matrix(history_rec_marker)^2)))
+      recent_rec_marker <- as.data.frame(sqrt(rowMeans(as.matrix(recent_rec_marker)^2)))
     } else {
       history_rec_marker <- as.data.frame(rowMeans(abs(as.matrix(history_rec_marker))))
       recent_rec_marker <- as.data.frame(rowMeans(abs(as.matrix(recent_rec_marker))))
     }
-  } else if (any(c("autoenc_e", "autoenc_variational_e") %in% class(state$autoencoder))) {
+  } else if (any(c("autoenc_base_e", "autoenc_e", "autoenc_variational_e") %in% class(state$autoencoder))) {
     history_rec_marker <- as.data.frame(history_window_output)
     recent_rec_marker <- as.data.frame(recent_window_output)
     obj$last_drifter_output <- as.data.frame(utils::tail(recent_rec_marker, 1))
   } else {
     stop(
-      "dfr_aedd(): unsupported autoencoder class. Expected one of autoenc_ed, autoenc_variational_ed, autoenc_e or autoenc_variational_e.",
+      "dfr_aedd(): unsupported autoencoder class. Expected an encoder-decoder (autoenc_base_ed) or an encoder (autoenc_base_e) autoencoder.",
       call. = FALSE
     )
   }
@@ -201,20 +215,20 @@ update_state.dfr_aedd <- function(obj, value, ...) {
   names(history_rec_marker) <- paste0("V", seq_len(ncol(history_rec_marker)))
   names(recent_rec_marker) <- paste0("V", seq_len(ncol(recent_rec_marker)))
 
-  history_values <- unlist(as.vector(t(history_rec_marker)), use.names = FALSE)
-  recent_values <- unlist(as.vector(t(recent_rec_marker)), use.names = FALSE)
+  hypothesis_tests <- c("mann_whitney", "kolmogorov_smirnov", "levene")
+  breaks <- max(2, floor(state$window_size / 5))
 
-  if (state$criteria == "mann_whitney") {
-    p_value <- suppressWarnings(stats::wilcox.test(history_values, recent_values)$p.value)
-    has_drift <- !is.na(p_value) && (p_value < obj$alpha)
-  } else if (state$criteria == "kolmogorov_smirnov") {
-    p_value <- suppressWarnings(stats::ks.test(history_values, recent_values)$p.value)
-    has_drift <- !is.na(p_value) && (p_value < obj$alpha)
-  } else if (state$criteria == "levene") {
-    p_value <- .levene_pvalue_mv(history_rec_marker, recent_rec_marker)
+  if (!is.null(obj$column_threshold)) {
+    column_flags <- .aedd_column_flags(
+      history_rec_marker, recent_rec_marker, state$criteria,
+      alpha = obj$alpha, threshold = obj$threshold, breaks = breaks
+    )
+    evaluated <- column_flags[!is.na(column_flags)]
+    has_drift <- (length(evaluated) > 0L) && (mean(evaluated) > obj$column_threshold)
+  } else if (state$criteria %in% hypothesis_tests) {
+    p_value <- .bonferroni_pvalue(.column_pvalues(history_rec_marker, recent_rec_marker, state$criteria))
     has_drift <- !is.na(p_value) && (p_value < obj$alpha)
   } else if (state$criteria == "psi") {
-    breaks <- max(2, floor(state$window_size / 5))
     divergence <- .kldist_divergence(history_rec_marker, recent_rec_marker, breaks)
     has_drift <- !is.na(divergence) && (divergence >= obj$threshold)
   } else if (state$criteria == "parametric_threshold") {
@@ -224,6 +238,7 @@ update_state.dfr_aedd <- function(obj, value, ...) {
 
     has_drift <- mean_recent >= (mean_history + (3 * sd_history))
   } else if (state$criteria == "nonparametric_threshold") {
+    history_values <- unlist(history_rec_marker, use.names = FALSE)
     top_limit <- as.vector(stats::quantile(history_values, 0.99, na.rm = TRUE))
     median_recent <- abs(stats::median(apply(recent_rec_marker, 2, stats::median, na.rm = TRUE)))
 
@@ -241,6 +256,52 @@ update_state.dfr_aedd <- function(obj, value, ...) {
 
   obj$state <- state
   return(list(obj = obj, drift = has_drift))
+}
+
+# Evaluates the criterion separately on every column of the monitored signal.
+# Returns one logical per column (TRUE when that column changed), with NA for
+# the columns where the criterion cannot be computed.
+#' @noRd
+.aedd_column_flags <- function(history, recent, criteria, alpha, threshold, breaks) {
+  history <- as.data.frame(history)
+  recent <- as.data.frame(recent)
+
+  if (criteria %in% c("mann_whitney", "kolmogorov_smirnov", "levene")) {
+    p_values <- .column_pvalues(history, recent, criteria)
+    return(unname(p_values < alpha))
+  }
+
+  features <- intersect(names(history), names(recent))
+  flags <- vapply(
+    features,
+    function(feat) {
+      h <- history[[feat]]
+      r <- recent[[feat]]
+      if (all(is.na(h)) || all(is.na(r))) {
+        return(NA)
+      }
+      if (criteria == "psi") {
+        divergence <- .kldist_divergence(history[feat], recent[feat], breaks)
+        return(if (is.na(divergence)) NA else divergence >= threshold)
+      }
+      if (criteria == "parametric_threshold") {
+        sd_history <- stats::sd(h, na.rm = TRUE)
+        if (is.na(sd_history)) {
+          return(NA)
+        }
+        return(abs(mean(r, na.rm = TRUE)) >= (abs(mean(h, na.rm = TRUE)) + (3 * sd_history)))
+      }
+      if (criteria == "nonparametric_threshold") {
+        top_limit <- as.vector(stats::quantile(h, 0.99, na.rm = TRUE))
+        return(abs(stats::median(r, na.rm = TRUE)) >= top_limit)
+      }
+      # diff_threshold
+      error_diff <- stats::median(r - h, na.rm = TRUE)
+      return(if (is.na(error_diff)) NA else error_diff >= threshold)
+    },
+    logical(1)
+  )
+  return(unname(flags))
 }
 
 #' @export
@@ -270,6 +331,7 @@ reset_state.dfr_aedd <- function(obj) {
     criteria = obj$state$criteria,
     alpha = obj$alpha,
     threshold = obj$threshold,
+    column_threshold = obj$column_threshold,
     target_feat = obj$target_feat
   )$state
   return(obj)

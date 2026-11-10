@@ -162,3 +162,104 @@ test_that("aedd runs end to end with the default daltoolboxdp autoencoder", {
   # torch leaves a compilation cache in the temporary directory.
   unlink(Sys.glob(file.path(dirname(tempdir()), "torchinductor_*")), recursive = TRUE)
 })
+
+# A minimal encoder whose latent representation is the input itself, so every
+# input column becomes one latent dimension.
+identity_encoder <- function(input_size, encoding_size, batch_size, num_epochs, learning_rate) {
+  obj <- daltoolbox::dal_base()
+  class(obj) <- append(c("identity_encoder", "autoenc_e"), class(obj))
+  obj
+}
+
+registerS3method("fit", "identity_encoder", function(obj, data, ...) obj, envir = asNamespace("daltoolbox"))
+
+registerS3method("transform", "identity_encoder", function(obj, data, ...) {
+  as.data.frame(data)
+}, envir = asNamespace("daltoolbox"))
+
+# Four latent dimensions; only the first one shifts after row 200.
+encoder_stream <- function() {
+  set.seed(21)
+  data <- as.data.frame(matrix(stats::runif(300 * 4, 0.4, 0.6), ncol = 4))
+  data$V1[201:300] <- stats::runif(100, 0.85, 0.95)
+  data
+}
+
+new_encoder_aedd <- function(...) {
+  dfr_aedd(encoding_size = 4, ae_class = identity_encoder, window_size = 40, monitoring_step = 1, ...)
+}
+
+test_that("aedd tests every latent dimension separately for every hypothesis test", {
+  stream <- encoder_stream()
+  for (criteria in c("mann_whitney", "kolmogorov_smirnov")) {
+    model <- fit(new_encoder_aedd(criteria = criteria), stream)
+    expect_true(model$drifted, info = criteria)
+  }
+})
+
+test_that("aedd column_threshold signals a drift only above the changed-column proportion", {
+  stream <- encoder_stream()
+  # One changed dimension out of four is 25%.
+  quiet <- fit(new_encoder_aedd(criteria = "mann_whitney", column_threshold = 0.25), stream)
+  expect_false(quiet$drifted)
+  loud <- fit(new_encoder_aedd(criteria = "mann_whitney", column_threshold = 0.2), stream)
+  expect_true(loud$drifted)
+})
+
+test_that("aedd column flags count the changed columns", {
+  history <- data.frame(a = (1:20) / 100, b = (1:20) / 100, c = (1:20) / 100)
+  recent <- data.frame(a = (1:20) / 100 + 0.5, b = (1:20) / 100 + 0.5, c = (1:20) / 100)
+  flags <- heimdall:::.aedd_column_flags(history, recent, "diff_threshold", alpha = 0.01, threshold = 0.1, breaks = 4)
+  expect_equal(flags, c(TRUE, TRUE, FALSE))
+  flags <- heimdall:::.aedd_column_flags(history, recent, "mann_whitney", alpha = 0.01, threshold = 0.1, breaks = 4)
+  expect_equal(flags, c(TRUE, TRUE, FALSE))
+})
+
+test_that("every aedd criterion runs end to end with column_threshold", {
+  stream <- encoder_stream()
+  for (criteria in c(
+    "mann_whitney", "kolmogorov_smirnov", "levene", "psi", "diff_threshold",
+    "parametric_threshold", "nonparametric_threshold"
+  )) {
+    expect_error(fit(new_encoder_aedd(criteria = criteria, column_threshold = 0.5), stream), NA, info = criteria)
+  }
+})
+
+test_that("aedd validates and keeps column_threshold", {
+  expect_error(new_aedd(column_threshold = 50), "column_threshold")
+  model <- reset_state(fit(new_aedd(column_threshold = 0.5), aedd_stream()[1:30, ]))
+  expect_equal(model$column_threshold, 0.5)
+})
+
+test_that("aedd rmse is the root of the mean squared reconstruction error", {
+  # Errors of 0 and 0.4 on the two columns: MAE = 0.2, RMSE = sqrt(0.08).
+  constant_autoencoder <- function(input_size, encoding_size, batch_size, num_epochs, learning_rate) {
+    obj <- daltoolbox::dal_base()
+    class(obj) <- append(c("constant_autoencoder", "autoenc_ed"), class(obj))
+    obj
+  }
+  registerS3method("fit", "constant_autoencoder", function(obj, data, ...) obj, envir = asNamespace("daltoolbox"))
+  registerS3method("transform", "constant_autoencoder", function(obj, data, ...) {
+    data <- as.data.frame(data)
+    data[[2]] <- data[[2]] + 0.4
+    data
+  }, envir = asNamespace("daltoolbox"))
+
+  captured <- NULL
+  local_mocked_bindings(
+    .kldist_divergence = function(history, recent, breaks) {
+      captured <<- history
+      0
+    }
+  )
+  data <- data.frame(x = rep(0.5, 10), y = rep(0.5, 10))
+  for (error_function in c("mae", "rmse")) {
+    model <- dfr_aedd(
+      encoding_size = 1, ae_class = constant_autoencoder, window_size = 10, monitoring_step = 10,
+      criteria = "psi", ae_params = list(batch_size = 1, num_epochs = 1, learning_rate = 0.1, error_function = error_function)
+    )
+    fit(model, data)
+    expected <- if (error_function == "mae") 0.2 else sqrt(0.08)
+    expect_equal(unique(captured[[1]]), expected, info = error_function)
+  }
+})
