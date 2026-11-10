@@ -189,7 +189,7 @@ update_state.dfr_aedd <- function(obj, value, ...) {
   # Reconstruction (encoder-decoder) or latent space (encoder) output. Every
   # daltoolboxdp autoencoder inherits from autoenc_base_ed or autoenc_base_e
   # (dense, denoising, adversarial, variational, LSTM, ...).
-  if (any(c("autoenc_base_ed", "autoenc_ed", "autoenc_variational_ed") %in% class(state$autoencoder))) {
+  if (any(c("autoenc_base_ed", "autoenc_ed", "autoenc_variational_ed", "autoenc_lstm_ed") %in% class(state$autoencoder))) {
     history_rec_marker <- history_window_output - history_window
     recent_rec_marker <- recent_window_output - recent_window
     obj$last_drifter_output <- as.data.frame(utils::tail(recent_rec_marker, 1))
@@ -201,13 +201,14 @@ update_state.dfr_aedd <- function(obj, value, ...) {
       history_rec_marker <- as.data.frame(rowMeans(abs(as.matrix(history_rec_marker))))
       recent_rec_marker <- as.data.frame(rowMeans(abs(as.matrix(recent_rec_marker))))
     }
-  } else if (any(c("autoenc_base_e", "autoenc_e", "autoenc_variational_e") %in% class(state$autoencoder))) {
+  } else if (any(c("autoenc_base_e", "autoenc_e", "autoenc_variational_e", "autoenc_lstm_e") %in% class(state$autoencoder))) {
     history_rec_marker <- as.data.frame(history_window_output)
     recent_rec_marker <- as.data.frame(recent_window_output)
     obj$last_drifter_output <- as.data.frame(utils::tail(recent_rec_marker, 1))
   } else {
     stop(
-      "dfr_aedd(): unsupported autoencoder class. Expected an encoder-decoder (autoenc_base_ed) or an encoder (autoenc_base_e) autoencoder.",
+      "dfr_aedd(): unsupported autoencoder class. Expected one of autoenc_ed, autoenc_variational_ed, autoenc_lstm_ed, autoenc_e or autoenc_variational_e, autoenc_lstm_e.",
+
       call. = FALSE
     )
   }
