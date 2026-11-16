@@ -226,6 +226,26 @@
   moving average leaves the reference band of the concept or when its
   first derivative changes. Detections match the reference
   implementation.
+- New
+  [`mmqt()`](https://cefet-rj-dal.github.io/heimdall/reference/mmqt.md)
+  batch-wise change detector for multimodal stationary conditions
+  (Multimodal QuantTree, Stucchi et al., 2023). It builds one QuantTree
+  histogram over the training batches, estimates the number of
+  modalities by clustering their bin-probability vectors and controlling
+  the false positive rate, calibrates the bin probabilities of each
+  modality and tests each batch against the closest modality
+  ([`mmqt_test()`](https://cefet-rj-dal.github.io/heimdall/reference/mmqt_test.md)).
+  [`dfr_mmqt()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_mmqt.md)
+  monitors a stream batch by batch with it.
+- New
+  [`eikmeans()`](https://cefet-rj-dal.github.io/heimdall/reference/eikmeans.md)
+  histogram two-sample test (equal intensity k-means space partitioning,
+  Liu et al., 2021). Its bins are k-means clusters of nearly equal
+  intensity, and samples are compared with the training sample by
+  Pearson’s chi-square test
+  ([`eikmeans_test()`](https://cefet-rj-dal.github.io/heimdall/reference/eikmeans_test.md)).
+  [`dfr_eikmeans()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_eikmeans.md)
+  tests consecutive windows of a stream against a training sample.
 
 ### Bug fixes
 

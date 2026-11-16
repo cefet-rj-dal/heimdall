@@ -262,6 +262,28 @@ Detectors that monitor the distribution of the observed features
 - [`dfr_qts()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_qts.md)
   : Quadtree spatial mapping drift detector (QTS)
 
+## Batch-wise multimodal change detection
+
+Multimodal QuantTree (Stucchi et al., 2023).
+
+- [`mmqt()`](https://cefet-rj-dal.github.io/heimdall/reference/mmqt.md)
+  : Multimodal QuantTree (MMQT)
+- [`mmqt_test()`](https://cefet-rj-dal.github.io/heimdall/reference/mmqt_test.md)
+  : Test batches with a Multimodal QuantTree
+- [`dfr_mmqt()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_mmqt.md)
+  : Multimodal QuantTree stream detector
+
+## Histogram two-sample tests
+
+Equal intensity k-means space partitioning (Liu et al., 2021).
+
+- [`eikmeans()`](https://cefet-rj-dal.github.io/heimdall/reference/eikmeans.md)
+  : Equal intensity k-means space partitioning (EI-kMeans)
+- [`eikmeans_test()`](https://cefet-rj-dal.github.io/heimdall/reference/eikmeans_test.md)
+  : Test a sample with an EI-kMeans partitioning
+- [`dfr_eikmeans()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_eikmeans.md)
+  : EI-kMeans stream detector
+
 ## Feature drift with the domino drift effect
 
 Predicts which unmonitored features drift from their correlation with
