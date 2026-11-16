@@ -27,6 +27,18 @@ reference:
       - dfr_multi_criteria
       - dfr_proton
       - dfr_qts
+  - title: Batch-wise multimodal change detection
+    desc: Multimodal QuantTree (Stucchi et al., 2023).
+    contents:
+      - mmqt
+      - mmqt_test
+      - dfr_mmqt
+  - title: Histogram two-sample tests
+    desc: Equal intensity k-means space partitioning (Liu et al., 2021).
+    contents:
+      - eikmeans
+      - eikmeans_test
+      - dfr_eikmeans
   - title: Feature drift with the domino drift effect
     desc: Predicts which unmonitored features drift from their correlation with the drifting monitored ones (Szűcs and Németh, 2025).
     contents:
