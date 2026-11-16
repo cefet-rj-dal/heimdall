@@ -175,6 +175,57 @@
   is about three times faster: the window is kept as a numeric matrix
   and the histograms are built with
   [`tabulate()`](https://rdrr.io/r/base/tabulate.html).
+- New
+  [`dfr_proton()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_proton.md)
+  detector (PROTON, Das et al., 2026): online out-of-distribution
+  detection for the outputs of a frozen model with an embedding space,
+  such as a medical vision-language model. It keeps a bank of confident
+  embeddings per class and fuses the distance to the nearest class
+  prototype with the MCM score, weighted by the running variance of the
+  MCM score. The per-sample OOD scores are reported in `drifter_output`,
+  and a `threshold` turns them into alarms.
+- New benchmark streams with controlled real and virtual drift (Hinder
+  et al., 2026).
+  [`dsg_source_data()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_source_data.md)
+  turns a real-world stream into concepts that combine the feature
+  distribution of one time segment with labels sampled from a model of
+  `P(y | segment, x)` for another segment, so virtual and real drift can
+  be induced separately.
+  [`dsg_sea()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_synthetic.md),
+  [`dsg_agrawal()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_synthetic.md),
+  [`dsg_sine()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_synthetic.md)
+  and
+  [`dsg_mixed()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_synthetic.md)
+  build synthetic sources with regional sub-sampling.
+  [`dsg_drift()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_drift.md)
+  induces and verifies a drift (kernel two-sample test,
+  [`dsg_mmd_test()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_mmd_test.md),
+  for virtual drift; share of changed labels for real drift), and
+  [`dsg_stream()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_stream.md)
+  builds a stream from a pattern such as `"--v--r"`, with the true drift
+  of every segment.
+- New
+  [`dfr_dde()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_dde.md)
+  feature drift detector (domino drift effect, Szűcs and Németh, 2025).
+  After an initialization drift in which every feature is tested, it
+  monitors only a subset of the features and predicts a drift score for
+  the others from their correlation with the drifting monitored
+  features.
+  [`dde_curve()`](https://cefet-rj-dal.github.io/heimdall/reference/dde_curve.md)
+  computes the DDE probability and lift curves of a drift,
+  [`dde_score()`](https://cefet-rj-dal.github.io/heimdall/reference/dde_score.md)
+  the scores of unmonitored features, and
+  [`dde_feature_drift()`](https://cefet-rj-dal.github.io/heimdall/reference/dde_feature_drift.md)
+  the feature-wise Jensen-Shannon, Kolmogorov-Smirnov and Wasserstein
+  window tests.
+- New
+  [`dfr_qts()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_qts.md)
+  unsupervised drift detector (quadtree spatial mapping, Ramos et al.,
+  2024). It maps a sliding window onto a height-limited quadtree and
+  monitors the number of occupied leaves, signalling a drift when its
+  moving average leaves the reference band of the concept or when its
+  first derivative changes. Detections match the reference
+  implementation.
 
 ### Bug fixes
 

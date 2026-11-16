@@ -40,6 +40,24 @@ Detectors that monitor the distribution of the observed features
   : KL Distance method
 - [`dfr_multi_criteria()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_multi_criteria.md)
   : Multi Criteria Drifter sub-class
+- [`dfr_proton()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_proton.md)
+  : PROTON: prototype-based test-time online OOD detection
+- [`dfr_qts()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_qts.md)
+  : Quadtree spatial mapping drift detector (QTS)
+
+## Feature drift with the domino drift effect
+
+Predicts which unmonitored features drift from their correlation with
+the drifting monitored ones (Szűcs and Németh, 2025).
+
+- [`dfr_dde()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_dde.md)
+  : Domino drift effect (DDE) detector
+- [`dde_curve()`](https://cefet-rj-dal.github.io/heimdall/reference/dde_curve.md)
+  : DDE probability curve
+- [`dde_score()`](https://cefet-rj-dal.github.io/heimdall/reference/dde_score.md)
+  : DDE drift scores
+- [`dde_feature_drift()`](https://cefet-rj-dal.github.io/heimdall/reference/dde_feature_drift.md)
+  : Feature-wise drift tests between two windows
 
 ## Baselines
 
@@ -98,3 +116,28 @@ Detectors that monitor the distribution of the observed features
 
 - [`st_drift_examples`](https://cefet-rj-dal.github.io/heimdall/reference/st_drift_examples.md)
   : Synthetic time series for concept drift detection
+
+## Benchmark streams with controlled drift
+
+Realistic streams with verified real and virtual drift (Hinder et al.,
+2026).
+
+- [`dsg_source()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_source.md)
+  : Drift benchmark source
+- [`dsg_source_data()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_source_data.md)
+  : Benchmark source from a real-world stream
+- [`dsg_source_regions()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_source_regions.md)
+  : Benchmark source from a synthetic generator
+- [`dsg_sea()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_synthetic.md)
+  [`dsg_agrawal()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_synthetic.md)
+  [`dsg_sine()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_synthetic.md)
+  [`dsg_mixed()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_synthetic.md)
+  : Synthetic benchmark sources
+- [`dsg_take()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_take.md)
+  : Draw samples from a drift benchmark source
+- [`dsg_drift()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_drift.md)
+  : Induce a drift in a benchmark source
+- [`dsg_stream()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_stream.md)
+  : Generate a benchmark stream with controlled drift
+- [`dsg_mmd_test()`](https://cefet-rj-dal.github.io/heimdall/reference/dsg_mmd_test.md)
+  : Kernel two-sample test (MMD)
