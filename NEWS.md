@@ -114,6 +114,36 @@
   the global random state while it runs, and gains a `seed` argument.
 * `dfr_kldist()` is about three times faster: the window is kept as a numeric
   matrix and the histograms are built with `tabulate()`.
+* New `dfr_proton()` detector (PROTON, Das et al., 2026): online
+  out-of-distribution detection for the outputs of a frozen model with an
+  embedding space, such as a medical vision-language model. It keeps a bank of
+  confident embeddings per class and fuses the distance to the nearest class
+  prototype with the MCM score, weighted by the running variance of the MCM
+  score. The per-sample OOD scores are reported in `drifter_output`, and a
+  `threshold` turns them into alarms.
+* New benchmark streams with controlled real and virtual drift (Hinder et al.,
+  2026). `dsg_source_data()` turns a real-world stream into concepts that
+  combine the feature distribution of one time segment with labels sampled
+  from a model of `P(y | segment, x)` for another segment, so virtual and real
+  drift can be induced separately. `dsg_sea()`, `dsg_agrawal()`, `dsg_sine()`
+  and `dsg_mixed()` build synthetic sources with regional sub-sampling.
+  `dsg_drift()` induces and verifies a drift (kernel two-sample test,
+  `dsg_mmd_test()`, for virtual drift; share of changed labels for real drift),
+  and `dsg_stream()` builds a stream from a pattern such as `"--v--r"`, with
+  the true drift of every segment.
+* New `dfr_dde()` feature drift detector (domino drift effect, Szűcs and
+  Németh, 2025). After an initialization drift in which every feature is
+  tested, it monitors only a subset of the features and predicts a drift score
+  for the others from their correlation with the drifting monitored features.
+  `dde_curve()` computes the DDE probability and lift curves of a drift,
+  `dde_score()` the scores of unmonitored features, and
+  `dde_feature_drift()` the feature-wise Jensen-Shannon, Kolmogorov-Smirnov and
+  Wasserstein window tests.
+* New `dfr_qts()` unsupervised drift detector (quadtree spatial mapping,
+  Ramos et al., 2024). It maps a sliding window onto a height-limited
+  quadtree and monitors the number of occupied leaves, signalling a drift when
+  its moving average leaves the reference band of the concept or when its
+  first derivative changes. Detections match the reference implementation.
 
 ## Bug fixes
 

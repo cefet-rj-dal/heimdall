@@ -1,0 +1,5 @@
+"dataset","samples","occupancy_equal","max_occupancy_difference","detections_r","detections_reference","detections_equal","seconds_r"
+"Toy",19998,TRUE,0,"5039 10047 13735 15427","5039 10047 13735 15427",TRUE,26
+"RBF",19998,TRUE,0,"10669","10669",TRUE,33.2
+"Electricity",45310,TRUE,0,"18395 26512 32028 36218","18395 26512 32028 36218",TRUE,67.3
+"Weather",18156,TRUE,0,"3542 15531 18030","3542 15531 18030",TRUE,28.2

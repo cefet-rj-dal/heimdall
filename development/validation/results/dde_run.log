@@ -1,0 +1,100 @@
+Top 16 features: Elevation, Horizontal_Distance_To_Roadways, Wilderness_Area1, Horizontal_Distance_To_Fire_Points, Wilderness_Area3, Hillshade_Noon, Horizontal_Distance_To_Hydrology, Wilderness_Area4, Aspect, Hillshade_3pm, Vertical_Distance_To_Hydrology, Hillshade_9am, Soil_Type29, Slope, Soil_Type22, Soil_Type23 
+A. 29 induced drifts with at least two drifting features
+B. 465 natural drift points out of 580 window pairs
+
+DDE lift curves (pooled over drift points, and median per drift point)
+          setting threshold pairs drifting_pairs pooled_lift lift.median
+ A. induced drift       0.0  3480            393       1.000       1.000
+ A. induced drift       0.1  1798            216       1.063       1.121
+ A. induced drift       0.2   941            123       1.141       1.143
+ A. induced drift       0.3   498             64       1.146       1.190
+ A. induced drift       0.4   323             41       1.116       1.200
+ A. induced drift       0.5   255             31       1.078       1.270
+ A. induced drift       0.6   150             20       1.164       0.952
+ A. induced drift       0.7    58              5       0.763       0.000
+ A. induced drift       0.8    10              1       0.938       0.000
+ B. natural drift       0.0 55800           6755       1.000       1.000
+ B. natural drift       0.1 27853           4895       1.452       1.493
+ B. natural drift       0.2 18015           3440       1.564       1.587
+ B. natural drift       0.3 11345           2361       1.669       1.633
+ B. natural drift       0.4  7213           1649       1.777       1.714
+ B. natural drift       0.5  4806           1155       1.824       1.607
+ B. natural drift       0.6  3303            797       1.824       1.455
+ B. natural drift       0.7  1831            457       1.845       0.592
+ B. natural drift       0.8   939            230       1.710       0.000
+ B. natural drift       0.9   333             88       1.646       0.000
+ lift.mean
+     1.000
+     1.134
+     1.271
+     1.446
+     1.529
+     1.562
+     2.252
+     2.724
+     0.571
+     1.000
+     1.586
+     1.719
+     1.836
+     2.020
+     2.131
+     2.037
+     2.047
+     1.727
+     1.849
+
+Prediction of the next drift (mean over drift pairs and folds)
+          setting             method monitored recall precision    f1   auc
+ A. induced drift                DDE        16 1.0000     1.000 1.000   NaN
+ A. induced drift                DDE        13 0.8370     0.961 0.883 0.572
+ A. induced drift                DDE        10 0.6637     0.935 0.744 0.556
+ A. induced drift                DDE         7 0.4921     0.908 0.583 0.541
+ A. induced drift                DDE         4 0.3096     0.847 0.386 0.517
+ A. induced drift                DDE         2 0.1723     0.838 0.219 0.514
+ A. induced drift                DDE         1 0.0971     0.818 0.127 0.507
+ A. induced drift Reduced monitoring        16 1.0000     1.000 1.000   NaN
+ A. induced drift Reduced monitoring        13 0.8096     1.000 0.887   NaN
+ A. induced drift Reduced monitoring        10 0.6129     1.000 0.741   NaN
+ A. induced drift Reduced monitoring         7 0.4324     1.000 0.577   NaN
+ A. induced drift Reduced monitoring         4 0.2524     1.000 0.375   NaN
+ A. induced drift Reduced monitoring         2 0.1257     1.000 0.201   NaN
+ A. induced drift Reduced monitoring         1 0.0672     1.000 0.112   NaN
+ A. induced drift     Reduced random        16 1.0000     1.000 1.000   NaN
+ A. induced drift     Reduced random        13 0.8756     0.896 0.874   NaN
+ A. induced drift     Reduced random        10 0.7195     0.779 0.716   NaN
+ A. induced drift     Reduced random         7 0.6145     0.648 0.585   NaN
+ A. induced drift     Reduced random         4 0.4710     0.514 0.424   NaN
+ A. induced drift     Reduced random         2 0.3846     0.420 0.280   NaN
+ A. induced drift     Reduced random         1 0.3679     0.382 0.200   NaN
+ B. natural drift                DDE        16 1.0000     1.000 1.000   NaN
+ B. natural drift                DDE        13 0.8764     0.937 0.888 0.674
+ B. natural drift                DDE        10 0.7507     0.881 0.767 0.649
+ B. natural drift                DDE         7 0.6244     0.824 0.637 0.630
+ B. natural drift                DDE         4 0.4685     0.768 0.468 0.600
+ B. natural drift                DDE         2 0.2898     0.742 0.290 0.560
+ B. natural drift                DDE         1 0.1877     0.690 0.178 0.539
+ B. natural drift Reduced monitoring        16 1.0000     1.000 1.000   NaN
+ B. natural drift Reduced monitoring        13 0.8122     1.000 0.885   NaN
+ B. natural drift Reduced monitoring        10 0.6185     1.000 0.739   NaN
+ B. natural drift Reduced monitoring         7 0.4332     1.000 0.572   NaN
+ B. natural drift Reduced monitoring         4 0.2507     1.000 0.365   NaN
+ B. natural drift Reduced monitoring         2 0.1206     1.000 0.189   NaN
+ B. natural drift Reduced monitoring         1 0.0619     1.000 0.101   NaN
+ B. natural drift     Reduced random        16 1.0000     1.000 1.000   NaN
+ B. natural drift     Reduced random        13 0.8637     0.898 0.863   NaN
+ B. natural drift     Reduced random        10 0.7263     0.780 0.713   NaN
+ B. natural drift     Reduced random         7 0.6053     0.669 0.578   NaN
+ B. natural drift     Reduced random         4 0.4712     0.526 0.409   NaN
+ B. natural drift     Reduced random         2 0.3603     0.449 0.269   NaN
+ B. natural drift     Reduced random         1 0.3380     0.418 0.193   NaN
+
+C. dfr_dde on 200000 records: 122 drifts, the first being the initialization
+Monitored: Wilderness_Area1, Hillshade_Noon, Horizontal_Distance_To_Hydrology, Wilderness_Area4, Vertical_Distance_To_Hydrology, Soil_Type29, Slope 
+   recall precision        f1       auc 
+    0.912     0.503     0.625     0.652 
+null device 
+          1 
+null device 
+          1 
+DDE_DONE

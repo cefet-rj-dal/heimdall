@@ -1,0 +1,31 @@
+1. dfr_qts against the reference loop
+     dataset samples occupancy_equal max_occupancy_difference
+         Toy   19998            TRUE                        0
+         RBF   19998            TRUE                        0
+ Electricity   45310            TRUE                        0
+     Weather   18156            TRUE                        0
+            detections_r    detections_reference detections_equal seconds_r
+  5039 10047 13735 15427  5039 10047 13735 15427             TRUE      26.0
+                   10669                   10669             TRUE      33.2
+ 18395 26512 32028 36218 18395 26512 32028 36218             TRUE      67.3
+        3542 15531 18030        3542 15531 18030             TRUE      28.2
+
+2. Table 1 (delay range 1000)
+ dataset  rule recall precision     f1 detections drifts
+     Toy  code 0.8290    0.9996 0.9063          4    3/3
+     Toy paper 0.8173    0.9996 0.8993          4    3/3
+     RBF  code 0.3310    1.0000 0.4974          1    1/1
+     RBF paper 0.3310    1.0000 0.4974          1    1/1
+
+3. Detections (sample positions)
+Toy         code  5039(der) 10047(der) 13735(occ) 15427(der)
+Toy         paper 5039(der) 10047(der) 13735(occ) 15462(der)
+RBF         code  10669(occ)
+RBF         paper 10669(occ)
+Electricity code  18395(occ) 26512(occ) 32028(der) 36218(occ)
+Electricity paper 18395(occ) 26512(occ) 32028(der) 36218(occ)
+Weather     code  3542(occ) 15531(occ) 18030(der)
+Weather     paper 3542(occ) 15531(occ) 18030(der)
+null device 
+          1 
+QTS_DONE

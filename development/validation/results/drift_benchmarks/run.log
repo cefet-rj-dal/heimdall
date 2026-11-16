@@ -1,0 +1,88 @@
+HttpFlip: 756 valid streams of 1000 (0 with an unverified drift), 24204 s
+Agrawal: already scored
+CreditCardFlip: already scored
+Electricity: already scored
+ElectricityFlip: already scored
+ForestCover: already scored
+ForestCoverFlip: already scored
+HttpFlip: 756 streams scored
+Mixed: already scored
+SEA: already scored
+Sine: already scored
+Weather: already scored
+WeatherFlip: already scored
+
+Fig. 2a: P(decrease) between training and drifted test, median over sources
+ model source_type effect.r effect.v
+   kNN  real-world    0.967    0.636
+    LR  real-world    0.852    0.986
+   MLP  real-world    0.901    0.948
+    RF  real-world    0.947    0.595
+   SVM  real-world    0.804    0.926
+
+Fig. 2b: P(decrease) from adding drifted samples to the training set, median over sources
+ model source_type effect.r effect.v
+   kNN  real-world    0.718    0.292
+    LR  real-world    0.952    0.983
+   MLP  real-world    0.824    0.901
+    RF  real-world    0.761    0.375
+   SVM  real-world    0.908    0.953
+null device 
+          1 
+null device 
+          1 
+Agrawal: streams already generated
+Mixed: streams already generated
+SEA: streams already generated
+Sine: streams already generated
+Electricity: streams already generated
+ForestCover: streams already generated
+Weather: streams already generated
+ElectricityFlip: streams already generated
+CreditCardFlip: streams already generated
+ForestCoverFlip: streams already generated
+HttpFlip: streams already generated
+WeatherFlip: streams already generated
+Agrawal: already scored
+CreditCardFlip: already scored
+Electricity: already scored
+ElectricityFlip: already scored
+ForestCover: already scored
+ForestCoverFlip: already scored
+HttpFlip: already scored
+Mixed: already scored
+SEA: already scored
+Sine: already scored
+Weather: already scored
+WeatherFlip: already scored
+
+Fig. 2a: P(decrease) between training and drifted test, median over sources
+ model source_type effect.r effect.v
+   kNN  real-world    0.539    0.707
+    LR  real-world    0.566    0.678
+   MLP  real-world    0.572    0.612
+    RF  real-world    0.602    0.618
+   SVM  real-world    0.570    0.626
+   kNN   synthetic    0.968    0.930
+    LR   synthetic    0.969    0.685
+   MLP   synthetic    0.987    0.777
+    RF   synthetic    0.996    0.919
+   SVM   synthetic    0.957    0.658
+
+Fig. 2b: P(decrease) from adding drifted samples to the training set, median over sources
+ model source_type effect.r effect.v
+   kNN  real-world    0.418    0.422
+    LR  real-world    0.468    0.476
+   MLP  real-world    0.481    0.467
+    RF  real-world    0.464    0.417
+   SVM  real-world    0.394    0.503
+   kNN   synthetic    0.852    0.572
+    LR   synthetic    0.905    0.685
+   MLP   synthetic    0.846    0.551
+    RF   synthetic    0.968    0.402
+   SVM   synthetic    0.856    0.634
+null device 
+          1 
+null device 
+          1 
+ALL_DONE

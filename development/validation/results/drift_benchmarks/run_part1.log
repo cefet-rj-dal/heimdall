@@ -1,0 +1,162 @@
+ElectricityFlip: 1000 valid streams of 1000 (0 with an unverified drift), 965 s
+Agrawal: 838 streams scored
+Electricity: 997 streams scored
+ElectricityFlip: 1000 streams scored
+ForestCover: 520 streams scored
+Mixed: 1000 streams scored
+SEA: 995 streams scored
+Sine: 1000 streams scored
+Weather: 985 streams scored
+
+Fig. 2a: P(decrease) between training and drifted test, median over sources
+ model source_type effect.r effect.v
+   kNN  real-world    0.594    0.684
+    LR  real-world    0.574    0.586
+   MLP  real-world    0.640    0.588
+    RF  real-world    0.644    0.640
+   SVM  real-world    0.572    0.590
+
+Fig. 2b: P(decrease) from adding drifted samples to the training set, median over sources
+ model source_type effect.r effect.v
+   kNN  real-world    0.402    0.466
+    LR  real-world    0.468    0.436
+   MLP  real-world    0.460    0.436
+    RF  real-world    0.538    0.470
+   SVM  real-world    0.300    0.254
+null device 
+          1 
+null device 
+          1 
+WeatherFlip: 1000 valid streams of 1000 (0 with an unverified drift), 1187 s
+Agrawal: already scored
+Electricity: already scored
+ElectricityFlip: already scored
+ForestCover: already scored
+Mixed: already scored
+SEA: already scored
+Sine: already scored
+Weather: already scored
+WeatherFlip: 1000 streams scored
+
+Fig. 2a: P(decrease) between training and drifted test, median over sources
+ model source_type effect.r effect.v
+   kNN  real-world    0.522    0.564
+    LR  real-world    0.490    0.502
+   MLP  real-world    0.522    0.542
+    RF  real-world    0.536    0.572
+   SVM  real-world    0.496    0.516
+
+Fig. 2b: P(decrease) from adding drifted samples to the training set, median over sources
+ model source_type effect.r effect.v
+   kNN  real-world    0.440    0.444
+    LR  real-world    0.410    0.484
+   MLP  real-world    0.590    0.518
+    RF  real-world    0.390    0.428
+   SVM  real-world    0.438    0.516
+null device 
+          1 
+null device 
+          1 
+ForestCoverFlip: 563 valid streams of 1000 (0 with an unverified drift), 2220 s
+Agrawal: already scored
+Electricity: already scored
+ElectricityFlip: already scored
+ForestCover: already scored
+ForestCoverFlip: 563 streams scored
+Mixed: already scored
+SEA: already scored
+Sine: already scored
+Weather: already scored
+WeatherFlip: already scored
+
+Fig. 2a: P(decrease) between training and drifted test, median over sources
+ model source_type effect.r effect.v
+   kNN  real-world    0.502    0.889
+    LR  real-world    0.608    0.825
+   MLP  real-world    0.511    0.821
+    RF  real-world    0.559    0.769
+   SVM  real-world    0.602    0.803
+
+Fig. 2b: P(decrease) from adding drifted samples to the training set, median over sources
+ model source_type effect.r effect.v
+   kNN  real-world    0.164    0.235
+    LR  real-world    0.325    0.342
+   MLP  real-world    0.413    0.427
+    RF  real-world    0.359    0.321
+   SVM  real-world    0.350    0.393
+null device 
+          1 
+null device 
+          1 
+/tmp/run_all.sh: line 5: 36052 Killed                  Rscript development/validation/drift_benchmarks/run_benchmarks.R 500 8 $s
+FAILED HttpFlip
+/tmp/run_all.sh: line 5: 36087 Killed                  Rscript development/validation/drift_benchmarks/run_benchmarks.R 500 8 $s
+FAILED CreditCardFlip
+Agrawal: streams already generated
+Mixed: streams already generated
+SEA: streams already generated
+Sine: streams already generated
+Electricity: streams already generated
+ForestCover: streams already generated
+Weather: streams already generated
+ElectricityFlip: streams already generated
+Error in sendMaster(try(eval(expr, env), silent = TRUE), FALSE) : 
+  ignoring SIGPIPE signal
+Calls: run -> <Anonymous> -> mcparallel -> sendMaster
+Error in sendMaster(try(eval(expr, env), silent = TRUE), FALSE) : 
+  ignoring SIGPIPE signal
+Calls: run -> <Anonymous> -> mcparallel -> sendMaster
+/tmp/run_all.sh: line 8: 36764 Killed                  Rscript development/validation/drift_benchmarks/run_benchmarks.R 500 8
+ALL_DONE
+Error in sendMaster(try(eval(expr, env), silent = TRUE), FALSE) : 
+  ignoring SIGPIPE signal
+Calls: run -> <Anonymous> -> mcparallel -> sendMaster
+Error in sendMaster(try(eval(expr, env), silent = TRUE), FALSE) : 
+  ignoring SIGPIPE signal
+Calls: run -> <Anonymous> -> mcparallel -> sendMaster
+/tmp/run_all.sh: line 5: 37469 Killed                  Rscript development/validation/drift_benchmarks/run_benchmarks.R 500 8 $s
+FAILED HttpFlip
+CreditCardFlip: 995 valid streams of 1000 (0 with an unverified drift), 4374 s
+Agrawal: already scored
+CreditCardFlip: 995 streams scored
+Electricity: already scored
+ElectricityFlip: already scored
+ForestCover: already scored
+ForestCoverFlip: already scored
+Mixed: already scored
+SEA: already scored
+Sine: already scored
+Weather: already scored
+WeatherFlip: already scored
+
+Fig. 2a: P(decrease) between training and drifted test, median over sources
+ model source_type effect.r effect.v
+   kNN  real-world    0.791    0.730
+    LR  real-world    0.896    0.891
+   MLP  real-world    0.639    0.602
+    RF  real-world    0.653    0.658
+   SVM  real-world    0.580    0.592
+
+Fig. 2b: P(decrease) from adding drifted samples to the training set, median over sources
+ model source_type effect.r effect.v
+   kNN  real-world    0.592    0.493
+    LR  real-world    0.865    0.887
+   MLP  real-world    0.494    0.493
+    RF  real-world    0.637    0.614
+   SVM  real-world    0.612    0.640
+null device 
+          1 
+null device 
+          1 
+Agrawal: streams already generated
+Mixed: streams already generated
+SEA: streams already generated
+Sine: streams already generated
+Electricity: streams already generated
+ForestCover: streams already generated
+Weather: streams already generated
+ElectricityFlip: streams already generated
+CreditCardFlip: streams already generated
+ForestCoverFlip: streams already generated
+/tmp/run_all.sh: line 8: 38999 Killed                  Rscript development/validation/drift_benchmarks/run_benchmarks.R 500 8
+ALL_DONE

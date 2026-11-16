@@ -22,6 +22,7 @@ tests/testthat/testthat-problems.rds
 data-real/
 *.rdata
 !data/*.RData
+development/validation/results/drift_benchmarks/streams/
 
 # Example conversion logs
 examples/logs/

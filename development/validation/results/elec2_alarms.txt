@@ -1,0 +1,4 @@
+paper: 22293 26581 28597 31669 35893 43957
+importance = sum_sq alarms: 19860 21876 23956 26964 35156 40020 42548 44596 | first: 19860 | distance of each paper alarm to the nearest one: 417 383 1633 3487 737 639
+importance = sd     alarms: 19316 21332 24276 28372 37588 41556 44628 | first: 19316 | distance of each paper alarm to the nearest one: 961 1791 225 3297 1695 671
+prequential accuracy: 0.7858

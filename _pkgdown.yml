@@ -25,6 +25,15 @@ reference:
       - dfr_aedd
       - dfr_kldist
       - dfr_multi_criteria
+      - dfr_proton
+      - dfr_qts
+  - title: Feature drift with the domino drift effect
+    desc: Predicts which unmonitored features drift from their correlation with the drifting monitored ones (Szűcs and Németh, 2025).
+    contents:
+      - dfr_dde
+      - dde_curve
+      - dde_score
+      - dde_feature_drift
   - title: Baselines
     contents:
       - dummy
@@ -57,3 +66,14 @@ reference:
   - title: Data
     contents:
       - st_drift_examples
+  - title: Benchmark streams with controlled drift
+    desc: Realistic streams with verified real and virtual drift (Hinder et al., 2026).
+    contents:
+      - dsg_source
+      - dsg_source_data
+      - dsg_source_regions
+      - dsg_synthetic
+      - dsg_take
+      - dsg_drift
+      - dsg_stream
+      - dsg_mmd_test

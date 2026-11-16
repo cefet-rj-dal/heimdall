@@ -1,0 +1,1 @@
+NN test R2 = 0.8164, MAE = 0.0754; variance slope = 1.107

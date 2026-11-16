@@ -1,0 +1,12 @@
+NN on the test split: R2 = 0.816, MAE = 0.075 (paper: R2 = 0.806, MAE = 0.077)
+  alpha updates  seconds mae_at_grid max_abs_at_grid  pd_range correlation
+1  0.01   20620 7.429683   0.0233378      0.03155077 0.6675168   0.9995169
+null device 
+          1 
+  alpha mean_variance variance_over_alpha mae_to_batch
+1 0.002  5.693479e-05          0.02846740   0.00617073
+2 0.005  2.376582e-04          0.04753163   0.01191175
+3 0.010  4.711632e-04          0.04711632   0.01604668
+4 0.020  8.105703e-04          0.04052852   0.02037687
+5 0.050  2.290781e-03          0.04581562   0.03518597
+log-log slope of variance vs alpha: 1.11 (Theorem 4 predicts 1)
