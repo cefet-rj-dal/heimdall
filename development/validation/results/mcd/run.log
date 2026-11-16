@@ -1,0 +1,63 @@
+Change points: profile of the data by blocks of 1000 observations
+GM_Sud         0.32 0.33 0.28 0.29 0.28 0.32 0.29 0.30 0.30 0.29 0.30 0.27 0.28 0.28 0.30 0.31 0.28 0.30 0.30 0.28 0.28 0.83 0.81 0.83 0.83 0.84 0.82 0.85 0.83 0.83
+GM_Rec         0.81 0.83 0.83 0.83 0.81 0.83 0.84 0.81 0.83 0.82 0.84 0.80 0.80 0.81 0.81 0.31 0.28 0.30 0.30 0.28 0.28 0.31 0.30 0.31 0.32 0.84 0.82 0.85 0.83 0.83
+GM_Grad        0.32 0.33 0.28 0.29 0.28 0.32 0.29 0.30 0.30 0.29 0.84 0.27 0.80 0.81 0.81 0.31 0.28 0.30 0.83 0.81 0.83 0.31 0.30 0.31 0.83 0.84 0.82 0.85 0.83 0.83
+GM_Inc         0.81 0.79 0.84 0.83 0.84 0.82 0.85 0.82 0.82 0.83 0.83 0.84 0.48 0.31 0.31 0.30 0.29 0.32 0.48 0.83 0.83 0.81 0.83 0.83 0.63 0.29 0.28 0.29 0.30 0.28
+GamLog_Sud     29.19 29.86 30.06 30.37 30.22 29.94 29.57 29.69 30.39 30.20 30.84 30.68 29.78 30.18 30.15 29.79 30.29 29.92 29.60 29.62 30.58 20.52 20.41 20.66 20.63 20.74 20.47 20.40 20.50 20.62
+LogGamWei_Sud  20.54 20.58 20.61 20.57 20.80 20.72 20.77 20.69 20.60 20.56 20.61 20.54 20.55 20.64 20.65 30.17 30.06 30.26 30.05 30.13 29.98 30.11 30.01 30.32 18.10 18.11 17.98 18.11 18.25 18.06
+GamGM_SudGrad  1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 0.20 0.79 0.78 0.79 0.20 0.21 0.20 0.81 0.79 0.82 0.18 0.19 0.20 0.81 0.82 0.81 0.80 0.81 0.81
+
+Table 2 (MCD-DD): mean (sd) over 20 runs
+    implementation       dataset precision precision_sd   f1 f1_sd  mcc mcc_sd
+           dfr_mcd        GM_Sud      1.00        0.000 1.00 0.000 1.00  0.000
+         reference        GM_Sud      1.00        0.000 1.00 0.000 1.00  0.000
+             paper        GM_Sud      1.00           NA 1.00    NA 1.00     NA
+           dfr_mcd        GM_Rec      0.95        0.122 0.97 0.073 0.97  0.069
+         reference        GM_Rec      0.97        0.103 0.95 0.114 0.95  0.103
+ reference_float64        GM_Rec      1.00        0.000 0.97 0.103 0.97  0.091
+             paper        GM_Rec      1.00           NA 0.79    NA 0.81     NA
+           dfr_mcd       GM_Grad      0.87        0.068 0.79 0.031 0.77  0.037
+         reference       GM_Grad      0.90        0.081 0.80 0.041 0.80  0.044
+             paper       GM_Grad      1.00           NA 0.79    NA 0.79     NA
+           dfr_mcd        GM_Inc      0.91        0.251 0.29 0.126 0.37  0.130
+         reference        GM_Inc      1.00        0.000 0.28 0.126 0.38  0.102
+             paper        GM_Inc      0.99           NA 0.44    NA 0.51     NA
+           dfr_mcd    GamLog_Sud      1.00        0.000 1.00 0.000 1.00  0.000
+         reference    GamLog_Sud      1.00        0.000 1.00 0.000 1.00  0.000
+             paper    GamLog_Sud      1.00           NA 1.00    NA 1.00     NA
+           dfr_mcd LogGamWei_Sud      0.96        0.131 0.83 0.179 0.85  0.167
+         reference LogGamWei_Sud      0.98        0.075 0.96 0.109 0.96  0.098
+ reference_float64 LogGamWei_Sud      0.98        0.075 0.92 0.139 0.93  0.124
+             paper LogGamWei_Sud      0.98           NA 0.94    NA 0.95     NA
+           dfr_mcd GamGM_SudGrad      0.85        0.024 0.92 0.024 0.91  0.026
+         reference GamGM_SudGrad      0.84        0.039 0.91 0.024 0.91  0.024
+             paper GamGM_SudGrad      0.98           NA 0.99    NA 0.99     NA
+ detections true_detections
+        1.0             1.0
+        1.0             1.0
+         NA              NA
+        2.1             2.0
+        2.0             1.9
+        1.9             1.9
+         NA              NA
+        5.8             5.0
+        5.7             5.1
+         NA              NA
+        1.9             1.8
+        1.7             1.7
+         NA              NA
+        1.0             1.0
+        1.0             1.0
+         NA              NA
+        1.6             1.6
+        1.9             1.9
+        1.9             1.8
+         NA              NA
+        7.0             6.0
+        7.2             6.0
+         NA              NA
+
+Drift sub-windows per data set: GM_Sud = 1, GM_Rec = 2, GM_Grad = 7, GM_Inc = 10, GamLog_Sud = 1, LogGamWei_Sud = 2, GamGM_SudGrad = 6 
+Seconds per run of dfr_mcd: 71.9 
+MCD_DONE
+EXIT 0

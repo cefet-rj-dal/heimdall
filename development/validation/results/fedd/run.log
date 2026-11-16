@@ -1,0 +1,165 @@
+skipped 4WELL1_3 (member series of different lengths: 10773, 10768, 10768, 10768, 10768, 10768 )
+1. ensemble_vote() against the reference ensembles ( 29 examples )
+                       ensemble examples identical mismatched_steps detections
+                      CEDD EFER       28        28                0        771
+                        CEDD MV       28        28                0          0
+           CEDD TV (lambda = 2)       21        21                0         60
+             FEDD MV (k = 4000)       28         3              273        162
+ FEDD TV (k = 4000, lambda = 4)       21         3              115         71
+ reference_detections
+                  771
+                    0
+                   60
+                  121
+                   48
+
+Examples with differences
+   example                       ensemble   rows member_detections
+    1WELL1             FEDD MV (k = 4000)  12503                13
+    1WELL2             FEDD MV (k = 4000)  10749                13
+    1WELL2 FEDD TV (k = 4000, lambda = 4)  10749                13
+  1WELL6_1             FEDD MV (k = 4000)  49392                58
+  1WELL6_1 FEDD TV (k = 4000, lambda = 4)  49392                58
+  1WELL6_2             FEDD MV (k = 4000)  28677                41
+  1WELL6_2 FEDD TV (k = 4000, lambda = 4)  28677                41
+    2WELL2             FEDD MV (k = 4000)   9119                11
+  2WELL3_1             FEDD MV (k = 4000)   9483                12
+  2WELL3_1 FEDD TV (k = 4000, lambda = 4)   9483                12
+  2WELL3_2             FEDD MV (k = 4000)   7039                 8
+  2WELL3_2 FEDD TV (k = 4000, lambda = 4)   7039                 8
+    3WELL1             FEDD MV (k = 4000)  21574                31
+ 3WELL14_1             FEDD MV (k = 4000)  21560                31
+ 3WELL14_1 FEDD TV (k = 4000, lambda = 4)  21560                31
+ 3WELL14_2             FEDD MV (k = 4000)  21374                35
+ 3WELL14_2 FEDD TV (k = 4000, lambda = 4)  21374                35
+ 3WELL14_3             FEDD MV (k = 4000)  21525                27
+ 3WELL14_3 FEDD TV (k = 4000, lambda = 4)  21525                27
+  4WELL1_1             FEDD MV (k = 4000)  10676                16
+  4WELL1_2             FEDD MV (k = 4000)  10747                16
+  4WELL1_2 FEDD TV (k = 4000, lambda = 4)  10747                16
+ 5WELL15_1             FEDD MV (k = 4000)  11180                17
+ 5WELL15_2             FEDD MV (k = 4000)   7752                11
+ 5WELL15_2 FEDD TV (k = 4000, lambda = 4)   7752                11
+  6WELL2_1             FEDD MV (k = 4000)  24368                28
+  6WELL2_2             FEDD MV (k = 4000)  11476                14
+  6WELL2_2 FEDD TV (k = 4000, lambda = 4)  11476                14
+  6WELL2_3             FEDD MV (k = 4000)  12019                16
+  6WELL2_3 FEDD TV (k = 4000, lambda = 4)  12019                16
+  6WELL4_1             FEDD MV (k = 4000)   3584                 5
+  6WELL4_1 FEDD TV (k = 4000, lambda = 4)   3584                 5
+    7WELL1             FEDD MV (k = 4000)  44148                59
+  7WELL6_1             FEDD MV (k = 4000) 126261               160
+  7WELL6_1 FEDD TV (k = 4000, lambda = 4) 126261               160
+  7WELL6_2             FEDD MV (k = 4000)  69126                84
+  7WELL6_2 FEDD TV (k = 4000, lambda = 4)  69126                84
+   8WELL19             FEDD MV (k = 4000)  51197                80
+   8WELL19 FEDD TV (k = 4000, lambda = 4)  51197                80
+   8WELL20             FEDD MV (k = 4000)  15686                24
+   8WELL20 FEDD TV (k = 4000, lambda = 4)  15686                24
+   8WELL21             FEDD MV (k = 4000)  24202                35
+   8WELL21 FEDD TV (k = 4000, lambda = 4)  24202                35
+ reference_detections detections same_length mismatches
+                    0          2        TRUE          2
+                    2          2        TRUE          4
+                    2          2        TRUE          4
+                   13         11        TRUE         22
+                    9          2        TRUE         11
+                    8          8        TRUE         10
+                    7          6        TRUE         11
+                    2          2        TRUE          4
+                    2          2        TRUE          4
+                    2          2        TRUE          4
+                    1          1        TRUE          2
+                    1          1        TRUE          2
+                    1          6        TRUE          7
+                    6          6        TRUE         12
+                    3          5        TRUE          8
+                    6          6        TRUE         12
+                    3          5        TRUE          8
+                    5          5        TRUE         10
+                    1          3        TRUE          4
+                    2          3        TRUE          5
+                    3          3        TRUE          6
+                    1          2        TRUE          3
+                    1          3        TRUE          4
+                    2          2        TRUE          4
+                    0          2        TRUE          2
+                    4          6        TRUE         10
+                    2          3        TRUE          5
+                    1          1        TRUE          2
+                    3          3        TRUE          6
+                    0          2        TRUE          2
+                    1          1        TRUE          2
+                    1          1        TRUE          2
+                    1         12        TRUE         13
+                   22         33        TRUE         55
+                    4         12        TRUE         16
+                   10         17        TRUE         27
+                    0          6        TRUE          6
+                   13         14        TRUE         27
+                    5         10        TRUE         15
+                    4          4        TRUE          8
+                    3          4        TRUE          7
+                    6          6        TRUE         12
+                    4          4        TRUE          8
+FEDD_PART1_DONE
+
+2. Table IV: SoftED (k = 4000) on the test examples
+                         method        source examples precision recall   F1
+               dfr_page_hinkley     reference       20      0.46  0.599 0.46
+               dfr_page_hinkley         paper       NA      0.46  0.600 0.46
+                     dfr_kldist     reference       20      0.28  0.093 0.45
+                     dfr_kldist         paper       NA      0.28  0.090 0.45
+                       dfr_mcdd     reference       20      0.38  0.645 0.42
+                       dfr_mcdd         paper       NA      0.38  0.650 0.41
+                       dfr_aedd     reference       20      0.39  0.655 0.40
+                       dfr_aedd         paper       NA      0.39  0.660 0.40
+                      dfr_kswin     reference       20      0.37  0.643 0.41
+                      dfr_kswin         paper       NA      0.34  0.650 0.38
+                      dfr_adwin     reference       20      0.36  0.645 0.38
+                      dfr_adwin         paper       NA      0.35  0.640 0.38
+           CEDD TV (lambda = 2)     reference       20      0.45  0.526 0.49
+           CEDD TV (lambda = 2) ensemble_vote       20      0.45  0.526 0.49
+           CEDD TV (lambda = 2)         paper       NA      0.45  0.530 0.49
+ FEDD TV (k = 4000, lambda = 4)     reference       20      0.41  0.351 0.44
+ FEDD TV (k = 4000, lambda = 4) ensemble_vote       20      0.40  0.465 0.42
+ FEDD TV (k = 4000, lambda = 4)         paper       NA      0.38  0.280 0.41
+             FEDD MV (k = 4000)     reference       20      0.36  0.529 0.37
+             FEDD MV (k = 4000) ensemble_vote       20      0.33  0.539 0.34
+             FEDD MV (k = 4000)         paper       NA      0.38  0.550 0.39
+                      CEDD EFER     reference       20      0.15  0.844 0.23
+                      CEDD EFER ensemble_vote       20      0.15  0.844 0.23
+                      CEDD EFER         paper       NA      0.14  0.830 0.21
+                        CEDD MV     reference       20       NaN  0.000  NaN
+                        CEDD MV ensemble_vote       20       NaN  0.000  NaN
+                        CEDD MV         paper       NA      0.00  0.000   NA
+ coverage
+     0.90
+     0.90
+     0.15
+     0.15
+     0.90
+     0.91
+     0.95
+     0.95
+     0.90
+     0.91
+     0.95
+     0.95
+     0.75
+     0.75
+     0.75
+     0.65
+     0.85
+     0.55
+     0.90
+     0.90
+     0.90
+     0.95
+     0.95
+     0.95
+     0.00
+     0.00
+     0.00
+FEDD_DONE
+EXIT 0

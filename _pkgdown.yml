@@ -25,6 +25,8 @@ reference:
       - dfr_aedd
       - dfr_kldist
       - dfr_multi_criteria
+      - dfr_ensemble
+      - ensemble_vote
       - dfr_proton
       - dfr_qts
   - title: Batch-wise multimodal change detection
@@ -39,6 +41,15 @@ reference:
       - eikmeans
       - eikmeans_test
       - dfr_eikmeans
+  - title: Population Stability Index
+    desc: PSI on quantile bins of a baseline (Kurian and Allali, 2024).
+    contents:
+      - psi
+      - dfr_psi
+  - title: Maximum Concept Discrepancy
+    desc: Unsupervised detector with a contrastively trained set encoder (Wan et al., 2024).
+    contents:
+      - dfr_mcd
   - title: Feature drift with the domino drift effect
     desc: Predicts which unmonitored features drift from their correlation with the drifting monitored ones (Szűcs and Németh, 2025).
     contents:

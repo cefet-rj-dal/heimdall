@@ -1,0 +1,142 @@
+Tables 4-6: total PSI, mean over 20 seeds, against the paper
+       field bins     psi   psi_sd psi_min psi_max       level gaps_mean
+  AdResponse   10 0.06722 0.001099 0.06514 0.06899      little       0.0
+ SalesVolume   10 0.12488 0.002437 0.12111 0.13143    moderate      13.9
+    Deposits   10 0.22598 0.003064 0.22166 0.23571    moderate       0.0
+         CBM   10 0.17689 0.002341 0.17038 0.18277    moderate       0.0
+  AdResponse   20 0.11112 0.001860 0.10755 0.11525    moderate       0.0
+ SalesVolume   20 0.13496 0.002717 0.12999 0.14186    moderate      33.1
+    Deposits   20 0.34126 0.004059 0.33631 0.35387 significant       0.0
+         CBM   20 0.23570 0.003383 0.22659 0.24258    moderate       0.0
+   paper difference        z
+ 0.06724 -2.431e-05 -0.02212
+ 0.12452  3.610e-04  0.14812
+ 0.22527  7.146e-04  0.23320
+ 0.17107  5.817e-03  2.48440
+ 0.11105  7.338e-05  0.03944
+ 0.13430  6.607e-04  0.24314
+ 0.34083  4.346e-04  0.10707
+ 0.22762  8.082e-03  2.38909
+
+Parts per bin: largest absolute difference from the paper
+       field bins max_abs_difference at_bin    part   paper  part_sd
+  AdResponse   10           0.000118     10 0.00104 0.00116 5.03e-05
+         CBM   10           0.003344      1 0.10025 0.09691 1.31e-03
+    Deposits   10           0.000555      1 0.18570 0.18514 2.38e-03
+ SalesVolume   10           0.001185     10 0.04180 0.04062 9.81e-04
+  AdResponse   20           0.000148      1 0.10112 0.10097 1.66e-03
+         CBM   20           0.005980      1 0.14911 0.14313 2.21e-03
+    Deposits   20           0.000369      1 0.29869 0.29832 3.37e-03
+ SalesVolume   20           0.000881      5 0.01650 0.01562 9.93e-04
+
+PSI predicted for the share of moved records of the paper's draw
+      field bins moved_mean  moved_sd paper_moved predicted residual_sd   paper
+ AdResponse   10     0.0999 0.0009783      0.1002   0.06753   0.0005781 0.06724
+   Deposits   10     0.2003 0.0014816      0.1999   0.22518   0.0008772 0.22527
+        CBM   10     0.1255 0.0010456      0.1229   0.17131   0.0007956 0.17107
+ AdResponse   20     0.0999 0.0009783      0.1002   0.11171   0.0006315 0.11105
+   Deposits   20     0.2003 0.0014816      0.1999   0.34018   0.0009440 0.34083
+        CBM   20     0.1255 0.0010456      0.1229   0.22792   0.0014310 0.22762
+ difference
+  2.909e-04
+ -9.306e-05
+  2.403e-04
+  6.598e-04
+ -6.504e-04
+  3.015e-04
+
+Decile ranges of the first seed (Appendix, Tables 7-10)
+     feature bin  lower  upper expected  actual
+  AdResponse   1   4090   6980  0.10053 0.18994
+  AdResponse   2   6990   7320  0.09937 0.08998
+  AdResponse   3   7330   7580  0.10163 0.09134
+  AdResponse   4   7590   7790  0.09708 0.08746
+  AdResponse   5   7800   8000  0.10304 0.09251
+  AdResponse   6   8010   8200  0.09988 0.08990
+  AdResponse   7   8210   8410  0.09759 0.08814
+  AdResponse   8   8420   8670  0.10193 0.09175
+  AdResponse   9   8680   9020  0.09943 0.08974
+  AdResponse  10   9030  11540  0.09952 0.08924
+ SalesVolume   1 290950 333300  0.10005 0.05118
+ SalesVolume   2 333310 338970  0.10000 0.05096
+ SalesVolume   3 338980 343110  0.09985 0.07493
+ SalesVolume   4 343120 346710  0.09997 0.10101
+ SalesVolume   5 346720 350000  0.10000 0.10179
+ SalesVolume   6 350010 353340  0.10019 0.10311
+ SalesVolume   7 353350 356780  0.10003 0.10542
+ SalesVolume   8 356790 360940  0.09987 0.11082
+ SalesVolume   9 360950 366650  0.09999 0.12608
+ SalesVolume  10 366660 406080  0.10005 0.17470
+    Deposits   1  -9360  49220  0.10000 0.27998
+    Deposits   2  49230  58170  0.09994 0.07957
+    Deposits   3  58180  64520  0.10003 0.08032
+    Deposits   4  64530  69960  0.10000 0.08003
+    Deposits   5  69970  75050  0.09995 0.08068
+    Deposits   6  75060  80120  0.10010 0.07953
+    Deposits   7  80130  85530  0.09997 0.07976
+    Deposits   8  85540  91900  0.10008 0.08032
+    Deposits   9  91910 100590  0.09995 0.07988
+    Deposits  10 100600 159880  0.09998 0.07993
+         CBM   1    393    545  0.09894 0.22265
+         CBM   2    546    567  0.09979 0.10107
+         CBM   3    568    583  0.10022 0.10037
+         CBM   4    584    597  0.10208 0.10219
+         CBM   5    598    610  0.10267 0.10271
+         CBM   6    611    622  0.09483 0.09484
+         CBM   7    623    636  0.10370 0.10370
+         CBM   8    637    652  0.09972 0.07328
+         CBM   9    653    673  0.09682 0.04880
+         CBM  10    674    843  0.10123 0.05039
+
+3. PSI of windows from the base sample (no drift) and from the TTD sample, baseline of 10,000
+ window       field phase psi_mean psi_p95 above_0.1 above_0.25 expected_noise
+    100  AdResponse  base  0.09577 0.18344    0.4100     0.0075         0.0909
+    250  AdResponse  base  0.03752 0.07320    0.0075     0.0000         0.0369
+    500  AdResponse  base  0.01900 0.03537    0.0000     0.0000         0.0189
+   1000  AdResponse  base  0.00947 0.01800    0.0000     0.0000         0.0099
+   5000  AdResponse  base  0.00253 0.00496    0.0000     0.0000         0.0027
+    100 SalesVolume  base  0.09688 0.17906    0.4075     0.0025         0.0909
+    250 SalesVolume  base  0.03734 0.06655    0.0000     0.0000         0.0369
+    500 SalesVolume  base  0.01913 0.03529    0.0000     0.0000         0.0189
+   1000 SalesVolume  base  0.01002 0.01918    0.0000     0.0000         0.0099
+   5000 SalesVolume  base  0.00270 0.00509    0.0000     0.0000         0.0027
+    100    Deposits  base  0.09645 0.19723    0.4175     0.0100         0.0909
+    250    Deposits  base  0.03896 0.07036    0.0075     0.0000         0.0369
+    500    Deposits  base  0.01987 0.03808    0.0000     0.0000         0.0189
+   1000    Deposits  base  0.01024 0.01893    0.0000     0.0000         0.0099
+   5000    Deposits  base  0.00283 0.00478    0.0000     0.0000         0.0027
+    100         CBM  base  0.09721 0.18851    0.4025     0.0075         0.0909
+    250         CBM  base  0.03772 0.07046    0.0025     0.0000         0.0369
+    500         CBM  base  0.01947 0.03555    0.0000     0.0000         0.0189
+   1000         CBM  base  0.01015 0.01933    0.0000     0.0000         0.0099
+   5000         CBM  base  0.00274 0.00459    0.0000     0.0000         0.0027
+    100  AdResponse   ttd  0.16141 0.29389    0.8050     0.1100             NA
+    250  AdResponse   ttd  0.10590 0.17021    0.5050     0.0000             NA
+    500  AdResponse   ttd  0.08604 0.13298    0.2925     0.0000             NA
+   1000  AdResponse   ttd  0.07844 0.10838    0.1125     0.0000             NA
+   5000  AdResponse   ttd  0.07036 0.08347    0.0000     0.0000             NA
+    100 SalesVolume   ttd  0.22118 0.38116    0.9325     0.3375             NA
+    250 SalesVolume   ttd  0.17086 0.27000    0.9050     0.0975             NA
+    500 SalesVolume   ttd  0.14342 0.20113    0.8950     0.0000             NA
+   1000 SalesVolume   ttd  0.13181 0.17082    0.9000     0.0000             NA
+   5000 SalesVolume   ttd  0.12736 0.14835    0.9944     0.0000             NA
+    100    Deposits   ttd  0.33601 0.54714    0.9925     0.7500             NA
+    250    Deposits   ttd  0.26998 0.36960    0.9975     0.6000             NA
+    500    Deposits   ttd  0.24342 0.31810    1.0000     0.4375             NA
+   1000    Deposits   ttd  0.23949 0.29347    1.0000     0.3550             NA
+   5000    Deposits   ttd  0.23108 0.25494    1.0000     0.0944             NA
+    100         CBM   ttd  0.29399 0.47811    0.9850     0.6350             NA
+    250         CBM   ttd  0.22074 0.31912    0.9950     0.3025             NA
+    500         CBM   ttd  0.19657 0.26578    1.0000     0.0900             NA
+   1000         CBM   ttd  0.19139 0.24451    1.0000     0.0300             NA
+   5000         CBM   ttd  0.18265 0.20529    1.0000     0.0000             NA
+
+dfr_psi on a stream of 10,000 + 2 x 1,000 base + 2 x 1,000 TTD records
+   row psi_AdResponse psi_SalesVolume psi_Deposits psi_CBM
+ 11000         0.0066          0.0098       0.0073  0.0157
+ 12000         0.0133          0.0110       0.0095  0.0085
+ 13000         0.1009          0.1369       0.2172  0.1795
+ 14000         0.0745          0.1512       0.1619  0.2071
+Same values as psi(): TRUE ; drift reported: FALSE 
+PSI_DONE
+EXIT 0

@@ -156,6 +156,21 @@
   equal intensity, and samples are compared with the training sample by
   Pearson's chi-square test (`eikmeans_test()`). `dfr_eikmeans()` tests
   consecutive windows of a stream against a training sample.
+* New `psi()`, the Population Stability Index of Kurian and Allali (2024):
+  the symmetrised Kullback-Leibler divergence between a baseline and a new
+  sample, feature by feature, on quantile bins of the baseline (deciles or
+  demi-deciles), with the per-bin contributions and the paper's drift levels.
+  `dfr_psi()` compares consecutive windows of a stream with a baseline.
+* New `dfr_mcd()`, the Maximum Concept Discrepancy drift detector (MCD-DD, Wan,
+  Liang and Yoon, 2024): sample sets of sub-windows are embedded by a small
+  network trained online by contrastive learning, and a drift is reported when
+  the distance between the last two sub-windows exceeds a quantile of the
+  distances within sub-windows. The network, its gradients and Adam are written
+  in R.
+* New `dfr_ensemble()`, an ensemble drifter that runs several detectors and
+  votes on their detections: EFER, majority or threshold voting, crisp (CEDD)
+  or with fuzzy time tolerance (FEDD, Giusti Tavares et al., 2025), and
+  `ensemble_vote()`, the same vote on detection series computed beforehand.
 
 ## Bug fixes
 

@@ -1,0 +1,321 @@
+"example","events","event_source","method","source","precision","recall","F1","detections"
+"1WELL2","1181 7823","event","dfr_adwin","reference",0.430333333333333,0.6455,0.5164,3
+"1WELL2","1181 7823","event","dfr_kldist","reference",NA,0,NA,0
+"1WELL2","1181 7823","event","dfr_kswin","reference",0.40475,0.607125,0.4857,3
+"1WELL2","1181 7823","event","dfr_mcdd","reference",0.607125,0.607125,0.607125,2
+"1WELL2","1181 7823","event","dfr_page_hinkley","reference",0.6535,0.6535,0.6535,2
+"1WELL2","1181 7823","event","dfr_aedd","reference",0.550166666666667,0.82525,0.6602,3
+"1WELL2","1181 7823","event","FEDD MV (k = 4000)","reference",0.5745,0.5745,0.5745,2
+"1WELL2","1181 7823","event","FEDD MV (k = 4000)","ensemble_vote",0.587125,0.587125,0.587125,2
+"1WELL2","1181 7823","event","FEDD TV (k = 4000, lambda = 4)","reference",0.59825,0.59825,0.59825,2
+"1WELL2","1181 7823","event","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.721,0.721,0.721,2
+"1WELL2","1181 7823","event","CEDD EFER","reference",0.127403846153846,0.828125,0.220833333333333,13
+"1WELL2","1181 7823","event","CEDD EFER","ensemble_vote",0.127403846153846,0.828125,0.220833333333333,13
+"1WELL2","1181 7823","event","CEDD MV","reference",NA,0,NA,0
+"1WELL2","1181 7823","event","CEDD MV","ensemble_vote",NA,0,NA,0
+"1WELL2","1181 7823","event","CEDD TV (lambda = 2)","reference",NA,0,NA,0
+"1WELL2","1181 7823","event","CEDD TV (lambda = 2)","ensemble_vote",NA,0,NA,0
+"1WELL6_2","7261 28381","event","dfr_adwin","reference",0.188277777777778,0.84725,0.308090909090909,9
+"1WELL6_2","7261 28381","event","dfr_kldist","reference",NA,0,NA,0
+"1WELL6_2","7261 28381","event","dfr_kswin","reference",0.24078125,0.963125,0.38525,8
+"1WELL6_2","7261 28381","event","dfr_mcdd","reference",0.2393125,0.95725,0.3829,8
+"1WELL6_2","7261 28381","event","dfr_page_hinkley","reference",0.19584375,0.783375,0.31335,8
+"1WELL6_2","7261 28381","event","dfr_aedd","reference",0.2360625,0.94425,0.3777,8
+"1WELL6_2","7261 28381","event","FEDD MV (k = 4000)","reference",0.17071875,0.682875,0.27315,8
+"1WELL6_2","7261 28381","event","FEDD MV (k = 4000)","ensemble_vote",0.17071875,0.682875,0.27315,8
+"1WELL6_2","7261 28381","event","FEDD TV (k = 4000, lambda = 4)","reference",0.176071428571429,0.61625,0.273888888888889,7
+"1WELL6_2","7261 28381","event","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.232083333333333,0.69625,0.348125,6
+"1WELL6_2","7261 28381","event","CEDD EFER","reference",0.0535069444444444,0.963125,0.101381578947368,36
+"1WELL6_2","7261 28381","event","CEDD EFER","ensemble_vote",0.0535069444444444,0.963125,0.101381578947368,36
+"1WELL6_2","7261 28381","event","CEDD MV","reference",NA,0,NA,0
+"1WELL6_2","7261 28381","event","CEDD MV","ensemble_vote",NA,0,NA,0
+"1WELL6_2","7261 28381","event","CEDD TV (lambda = 2)","reference",0.18695,0.467375,0.267071428571429,5
+"1WELL6_2","7261 28381","event","CEDD TV (lambda = 2)","ensemble_vote",0.18695,0.467375,0.267071428571429,5
+"2WELL3_1","2447 9330","event","dfr_adwin","reference",0.607583333333333,0.911375,0.7291,3
+"2WELL3_1","2447 9330","event","dfr_kldist","reference",NA,0,NA,0
+"2WELL3_1","2447 9330","event","dfr_kswin","reference",0.577,0.577,0.577,2
+"2WELL3_1","2447 9330","event","dfr_mcdd","reference",0.577,0.577,0.577,2
+"2WELL3_1","2447 9330","event","dfr_page_hinkley","reference",0.615,0.615,0.615,2
+"2WELL3_1","2447 9330","event","dfr_aedd","reference",0.542916666666667,0.814375,0.6515,3
+"2WELL3_1","2447 9330","event","FEDD MV (k = 4000)","reference",0.371625,0.371625,0.371625,2
+"2WELL3_1","2447 9330","event","FEDD MV (k = 4000)","ensemble_vote",0.377125,0.377125,0.377125,2
+"2WELL3_1","2447 9330","event","FEDD TV (k = 4000, lambda = 4)","reference",0.4445,0.4445,0.4445,2
+"2WELL3_1","2447 9330","event","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.6155,0.6155,0.6155,2
+"2WELL3_1","2447 9330","event","CEDD EFER","reference",0.182275,0.911375,0.303791666666667,10
+"2WELL3_1","2447 9330","event","CEDD EFER","ensemble_vote",0.182275,0.911375,0.303791666666667,10
+"2WELL3_1","2447 9330","event","CEDD MV","reference",NA,0,NA,0
+"2WELL3_1","2447 9330","event","CEDD MV","ensemble_vote",NA,0,NA,0
+"2WELL3_1","2447 9330","event","CEDD TV (lambda = 2)","reference",0.577,0.577,0.577,2
+"2WELL3_1","2447 9330","event","CEDD TV (lambda = 2)","ensemble_vote",0.577,0.577,0.577,2
+"2WELL3_2","2476 6781","event","dfr_adwin","reference",0.83975,0.83975,0.83975,2
+"2WELL3_2","2476 6781","event","dfr_kldist","reference",NA,0,NA,0
+"2WELL3_2","2476 6781","event","dfr_kswin","reference",0.8445,0.8445,0.8445,2
+"2WELL3_2","2476 6781","event","dfr_mcdd","reference",0.8445,0.8445,0.8445,2
+"2WELL3_2","2476 6781","event","dfr_page_hinkley","reference",0.68025,0.340125,0.4535,1
+"2WELL3_2","2476 6781","event","dfr_aedd","reference",0.9935,0.49675,0.662333333333333,1
+"2WELL3_2","2476 6781","event","FEDD MV (k = 4000)","reference",0.7685,0.38425,0.512333333333333,1
+"2WELL3_2","2476 6781","event","FEDD MV (k = 4000)","ensemble_vote",0.76925,0.384625,0.512833333333333,1
+"2WELL3_2","2476 6781","event","FEDD TV (k = 4000, lambda = 4)","reference",0.935,0.4675,0.623333333333333,1
+"2WELL3_2","2476 6781","event","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.96925,0.484625,0.646166666666667,1
+"2WELL3_2","2476 6781","event","CEDD EFER","reference",0.323125,0.969375,0.4846875,6
+"2WELL3_2","2476 6781","event","CEDD EFER","ensemble_vote",0.323125,0.969375,0.4846875,6
+"2WELL3_2","2476 6781","event","CEDD MV","reference",NA,0,NA,0
+"2WELL3_2","2476 6781","event","CEDD MV","ensemble_vote",NA,0,NA,0
+"2WELL3_2","2476 6781","event","CEDD TV (lambda = 2)","reference",0.8445,0.8445,0.8445,2
+"2WELL3_2","2476 6781","event","CEDD TV (lambda = 2)","ensemble_vote",0.8445,0.8445,0.8445,2
+"2WELL3_3","647 4543","event","dfr_adwin","reference",0.5165,0.25825,0.344333333333333,1
+"2WELL3_3","647 4543","event","dfr_kldist","reference",NA,0,NA,0
+"2WELL3_3","647 4543","event","dfr_kswin","reference",0.7395,0.36975,0.493,1
+"2WELL3_3","647 4543","event","dfr_mcdd","reference",0.7395,0.36975,0.493,1
+"2WELL3_3","647 4543","event","dfr_page_hinkley","reference",0.5445,0.27225,0.363,1
+"2WELL3_3","647 4543","event","dfr_aedd","reference",0.53625,0.268125,0.3575,1
+"2WELL3_3","647 4543","event","FEDD MV (k = 4000)","reference",0.8205,0.41025,0.547,1
+"2WELL3_3","647 4543","event","FEDD MV (k = 4000)","ensemble_vote",0.8205,0.41025,0.547,1
+"2WELL3_3","647 4543","event","FEDD TV (k = 4000, lambda = 4)","reference",0.6205,0.31025,0.413666666666667,1
+"2WELL3_3","647 4543","event","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.6205,0.31025,0.413666666666667,1
+"2WELL3_3","647 4543","event","CEDD EFER","reference",0.3189375,0.637875,0.42525,4
+"2WELL3_3","647 4543","event","CEDD EFER","ensemble_vote",0.3189375,0.637875,0.42525,4
+"2WELL3_3","647 4543","event","CEDD MV","reference",NA,0,NA,0
+"2WELL3_3","647 4543","event","CEDD MV","ensemble_vote",NA,0,NA,0
+"2WELL3_3","647 4543","event","CEDD TV (lambda = 2)","reference",0.7395,0.36975,0.493,1
+"2WELL3_3","647 4543","event","CEDD TV (lambda = 2)","ensemble_vote",0.7395,0.36975,0.493,1
+"3WELL14_1","3601","class","dfr_adwin","reference",0.104,0.728,0.182,7
+"3WELL14_1","3601","class","dfr_kldist","reference",NA,0,NA,0
+"3WELL14_1","3601","class","dfr_kswin","reference",0.1625,0.975,0.278571428571429,6
+"3WELL14_1","3601","class","dfr_mcdd","reference",0.1625,0.975,0.278571428571429,6
+"3WELL14_1","3601","class","dfr_page_hinkley","reference",0.147583333333333,0.8855,0.253,6
+"3WELL14_1","3601","class","dfr_aedd","reference",0.120875,0.72525,0.207214285714286,6
+"3WELL14_1","3601","class","FEDD MV (k = 4000)","reference",0.117208333333333,0.70325,0.200928571428571,6
+"3WELL14_1","3601","class","FEDD MV (k = 4000)","ensemble_vote",0.125625,0.75375,0.215357142857143,6
+"3WELL14_1","3601","class","FEDD TV (k = 4000, lambda = 4)","reference",0.319333333333333,0.958,0.479,3
+"3WELL14_1","3601","class","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.14065,0.70325,0.234416666666667,5
+"3WELL14_1","3601","class","CEDD EFER","reference",0.039,0.975,0.075,25
+"3WELL14_1","3601","class","CEDD EFER","ensemble_vote",0.039,0.975,0.075,25
+"3WELL14_1","3601","class","CEDD MV","reference",NA,0,NA,0
+"3WELL14_1","3601","class","CEDD MV","ensemble_vote",NA,0,NA,0
+"3WELL14_1","3601","class","CEDD TV (lambda = 2)","reference",0.1625,0.975,0.278571428571429,6
+"3WELL14_1","3601","class","CEDD TV (lambda = 2)","ensemble_vote",0.1625,0.975,0.278571428571429,6
+"3WELL14_2","3601","class","dfr_adwin","reference",0.093,0.744,0.165333333333333,8
+"3WELL14_2","3601","class","dfr_kldist","reference",0.369125,0.73825,0.492166666666667,2
+"3WELL14_2","3601","class","dfr_kswin","reference",0.1625,0.975,0.278571428571429,6
+"3WELL14_2","3601","class","dfr_mcdd","reference",0.1625,0.975,0.278571428571429,6
+"3WELL14_2","3601","class","dfr_page_hinkley","reference",0.14275,0.8565,0.244714285714286,6
+"3WELL14_2","3601","class","dfr_aedd","reference",0.105392857142857,0.73775,0.1844375,7
+"3WELL14_2","3601","class","FEDD MV (k = 4000)","reference",0.0979166666666667,0.5875,0.167857142857143,6
+"3WELL14_2","3601","class","FEDD MV (k = 4000)","ensemble_vote",0.13375,0.8025,0.229285714285714,6
+"3WELL14_2","3601","class","FEDD TV (k = 4000, lambda = 4)","reference",0.223583333333333,0.67075,0.335375,3
+"3WELL14_2","3601","class","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.10955,0.54775,0.182583333333333,5
+"3WELL14_2","3601","class","CEDD EFER","reference",0.0295454545454545,0.975,0.0573529411764706,33
+"3WELL14_2","3601","class","CEDD EFER","ensemble_vote",0.0295454545454545,0.975,0.0573529411764706,33
+"3WELL14_2","3601","class","CEDD MV","reference",NA,0,NA,0
+"3WELL14_2","3601","class","CEDD MV","ensemble_vote",NA,0,NA,0
+"3WELL14_2","3601","class","CEDD TV (lambda = 2)","reference",0.4875,0.975,0.65,2
+"3WELL14_2","3601","class","CEDD TV (lambda = 2)","ensemble_vote",0.4875,0.975,0.65,2
+"3WELL14_2","3601","class","dfr_adwin","reference",0.093,0.744,0.165333333333333,8
+"3WELL14_2","3601","class","dfr_kldist","reference",0.369125,0.73825,0.492166666666667,2
+"3WELL14_2","3601","class","dfr_kswin","reference",0.1625,0.975,0.278571428571429,6
+"3WELL14_2","3601","class","dfr_mcdd","reference",0.1625,0.975,0.278571428571429,6
+"3WELL14_2","3601","class","dfr_page_hinkley","reference",0.14275,0.8565,0.244714285714286,6
+"3WELL14_2","3601","class","dfr_aedd","reference",0.105392857142857,0.73775,0.1844375,7
+"3WELL14_2","3601","class","FEDD MV (k = 4000)","reference",0.0979166666666667,0.5875,0.167857142857143,6
+"3WELL14_2","3601","class","FEDD MV (k = 4000)","ensemble_vote",0.13375,0.8025,0.229285714285714,6
+"3WELL14_2","3601","class","FEDD TV (k = 4000, lambda = 4)","reference",0.223583333333333,0.67075,0.335375,3
+"3WELL14_2","3601","class","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.10955,0.54775,0.182583333333333,5
+"3WELL14_2","3601","class","CEDD EFER","reference",0.0295454545454545,0.975,0.0573529411764706,33
+"3WELL14_2","3601","class","CEDD EFER","ensemble_vote",0.0295454545454545,0.975,0.0573529411764706,33
+"3WELL14_2","3601","class","CEDD MV","reference",NA,0,NA,0
+"3WELL14_2","3601","class","CEDD MV","ensemble_vote",NA,0,NA,0
+"3WELL14_2","3601","class","CEDD TV (lambda = 2)","reference",0.4875,0.975,0.65,2
+"3WELL14_2","3601","class","CEDD TV (lambda = 2)","ensemble_vote",0.4875,0.975,0.65,2
+"4WELL1_2","3601","class","dfr_adwin","reference",0.206,0.824,0.3296,4
+"4WELL1_2","3601","class","dfr_kldist","reference",NA,0,NA,0
+"4WELL1_2","3601","class","dfr_kswin","reference",0.325,0.975,0.4875,3
+"4WELL1_2","3601","class","dfr_mcdd","reference",0.325,0.975,0.4875,3
+"4WELL1_2","3601","class","dfr_page_hinkley","reference",0.2875,0.575,0.383333333333333,2
+"4WELL1_2","3601","class","dfr_aedd","reference",0.1813125,0.72525,0.2901,4
+"4WELL1_2","3601","class","FEDD MV (k = 4000)","reference",0.258,0.774,0.387,3
+"4WELL1_2","3601","class","FEDD MV (k = 4000)","ensemble_vote",0.2055,0.6165,0.30825,3
+"4WELL1_2","3601","class","FEDD TV (k = 4000, lambda = 4)","reference",0,0,NA,1
+"4WELL1_2","3601","class","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.412625,0.82525,0.550166666666667,2
+"4WELL1_2","3601","class","CEDD EFER","reference",0.075,0.975,0.139285714285714,13
+"4WELL1_2","3601","class","CEDD EFER","ensemble_vote",0.075,0.975,0.139285714285714,13
+"4WELL1_2","3601","class","CEDD MV","reference",NA,0,NA,0
+"4WELL1_2","3601","class","CEDD MV","ensemble_vote",NA,0,NA,0
+"4WELL1_2","3601","class","CEDD TV (lambda = 2)","reference",0.325,0.975,0.4875,3
+"4WELL1_2","3601","class","CEDD TV (lambda = 2)","ensemble_vote",0.325,0.975,0.4875,3
+"5WELL15_2","1769 5369","event","dfr_adwin","reference",0.594583333333333,0.891875,0.7135,3
+"5WELL15_2","1769 5369","event","dfr_kldist","reference",NA,0,NA,0
+"5WELL15_2","1769 5369","event","dfr_kswin","reference",0.579625,0.579625,0.579625,2
+"5WELL15_2","1769 5369","event","dfr_mcdd","reference",0.579625,0.579625,0.579625,2
+"5WELL15_2","1769 5369","event","dfr_page_hinkley","reference",0.87975,0.87975,0.87975,2
+"5WELL15_2","1769 5369","event","dfr_aedd","reference",0.887375,0.887375,0.887375,2
+"5WELL15_2","1769 5369","event","FEDD MV (k = 4000)","reference",0.945375,0.945375,0.945375,2
+"5WELL15_2","1769 5369","event","FEDD MV (k = 4000)","ensemble_vote",0.79125,0.79125,0.79125,2
+"5WELL15_2","1769 5369","event","FEDD TV (k = 4000, lambda = 4)","reference",NA,0,NA,0
+"5WELL15_2","1769 5369","event","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.94525,0.94525,0.94525,2
+"5WELL15_2","1769 5369","event","CEDD EFER","reference",0.203111111111111,0.914,0.332363636363636,9
+"5WELL15_2","1769 5369","event","CEDD EFER","ensemble_vote",0.203111111111111,0.914,0.332363636363636,9
+"5WELL15_2","1769 5369","event","CEDD MV","reference",NA,0,NA,0
+"5WELL15_2","1769 5369","event","CEDD MV","ensemble_vote",NA,0,NA,0
+"5WELL15_2","1769 5369","event","CEDD TV (lambda = 2)","reference",0.579625,0.579625,0.579625,2
+"5WELL15_2","1769 5369","event","CEDD TV (lambda = 2)","ensemble_vote",0.579625,0.579625,0.579625,2
+"5WELL16_1","1174 3227","class","dfr_adwin","reference",0.7975,0.39875,0.531666666666667,1
+"5WELL16_1","1174 3227","class","dfr_kldist","reference",NA,0,NA,0
+"5WELL16_1","1174 3227","class","dfr_kswin","reference",NA,0,NA,0
+"5WELL16_1","1174 3227","class","dfr_mcdd","reference",NA,0,NA,0
+"5WELL16_1","1174 3227","class","dfr_page_hinkley","reference",0.816,0.408,0.544,1
+"5WELL16_1","1174 3227","class","dfr_aedd","reference",0.81875,0.409375,0.545833333333333,1
+"5WELL16_1","1174 3227","class","FEDD MV (k = 4000)","reference",NA,0,NA,0
+"5WELL16_1","1174 3227","class","FEDD MV (k = 4000)","ensemble_vote",NA,0,NA,0
+"5WELL16_1","1174 3227","class","FEDD TV (k = 4000, lambda = 4)","reference",NA,0,NA,0
+"5WELL16_1","1174 3227","class","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",NA,0,NA,0
+"5WELL16_1","1174 3227","class","CEDD EFER","reference",0.502666666666667,0.754,0.6032,3
+"5WELL16_1","1174 3227","class","CEDD EFER","ensemble_vote",0.502666666666667,0.754,0.6032,3
+"5WELL16_1","1174 3227","class","CEDD MV","reference",NA,0,NA,0
+"5WELL16_1","1174 3227","class","CEDD MV","ensemble_vote",NA,0,NA,0
+"5WELL16_1","1174 3227","class","CEDD TV (lambda = 2)","reference",NA,0,NA,0
+"5WELL16_1","1174 3227","class","CEDD TV (lambda = 2)","ensemble_vote",NA,0,NA,0
+"5WELL16_2","337","class","dfr_adwin","reference",NA,0,NA,0
+"5WELL16_2","337","class","dfr_kldist","reference",NA,0,NA,0
+"5WELL16_2","337","class","dfr_kswin","reference",NA,0,NA,0
+"5WELL16_2","337","class","dfr_mcdd","reference",NA,0,NA,0
+"5WELL16_2","337","class","dfr_page_hinkley","reference",NA,0,NA,0
+"5WELL16_2","337","class","dfr_aedd","reference",NA,0,NA,0
+"5WELL16_2","337","class","FEDD MV (k = 4000)","reference",NA,0,NA,0
+"5WELL16_2","337","class","FEDD MV (k = 4000)","ensemble_vote",NA,0,NA,0
+"5WELL16_2","337","class","FEDD TV (k = 4000, lambda = 4)","reference",NA,0,NA,0
+"5WELL16_2","337","class","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",NA,0,NA,0
+"5WELL16_2","337","class","CEDD EFER","reference",NA,0,NA,0
+"5WELL16_2","337","class","CEDD EFER","ensemble_vote",NA,0,NA,0
+"5WELL16_2","337","class","CEDD MV","reference",NA,0,NA,0
+"5WELL16_2","337","class","CEDD MV","ensemble_vote",NA,0,NA,0
+"5WELL16_2","337","class","CEDD TV (lambda = 2)","reference",NA,0,NA,0
+"5WELL16_2","337","class","CEDD TV (lambda = 2)","ensemble_vote",NA,0,NA,0
+"6WELL2_2","9914 10696","event","dfr_adwin","reference",0.393083333333333,0.589625,0.4717,3
+"6WELL2_2","9914 10696","event","dfr_kldist","reference",NA,0,NA,0
+"6WELL2_2","9914 10696","event","dfr_kswin","reference",0.407416666666667,0.611125,0.4889,3
+"6WELL2_2","9914 10696","event","dfr_mcdd","reference",0.407416666666667,0.611125,0.4889,3
+"6WELL2_2","9914 10696","event","dfr_page_hinkley","reference",0.92375,0.461875,0.615833333333333,1
+"6WELL2_2","9914 10696","event","dfr_aedd","reference",0.3680625,0.736125,0.49075,4
+"6WELL2_2","9914 10696","event","FEDD MV (k = 4000)","reference",0.435875,0.435875,0.435875,2
+"6WELL2_2","9914 10696","event","FEDD MV (k = 4000)","ensemble_vote",0.286333333333333,0.4295,0.3436,3
+"6WELL2_2","9914 10696","event","FEDD TV (k = 4000, lambda = 4)","reference",0.93375,0.466875,0.6225,1
+"6WELL2_2","9914 10696","event","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.27825,0.139125,0.1855,1
+"6WELL2_2","9914 10696","event","CEDD EFER","reference",0.177181818181818,0.9745,0.299846153846154,11
+"6WELL2_2","9914 10696","event","CEDD EFER","ensemble_vote",0.177181818181818,0.9745,0.299846153846154,11
+"6WELL2_2","9914 10696","event","CEDD MV","reference",NA,0,NA,0
+"6WELL2_2","9914 10696","event","CEDD MV","ensemble_vote",NA,0,NA,0
+"6WELL2_2","9914 10696","event","CEDD TV (lambda = 2)","reference",0.407416666666667,0.611125,0.4889,3
+"6WELL2_2","9914 10696","event","CEDD TV (lambda = 2)","ensemble_vote",0.407416666666667,0.611125,0.4889,3
+"6WELL2_3","5695 7085","event","dfr_adwin","reference",0.3979375,0.795875,0.530583333333333,4
+"6WELL2_3","5695 7085","event","dfr_kldist","reference",NA,0,NA,0
+"6WELL2_3","5695 7085","event","dfr_kswin","reference",0.47675,0.715125,0.5721,3
+"6WELL2_3","5695 7085","event","dfr_mcdd","reference",0.47675,0.715125,0.5721,3
+"6WELL2_3","5695 7085","event","dfr_page_hinkley","reference",0.825375,0.825375,0.825375,2
+"6WELL2_3","5695 7085","event","dfr_aedd","reference",0.4181875,0.836375,0.557583333333333,4
+"6WELL2_3","5695 7085","event","FEDD MV (k = 4000)","reference",0.374333333333333,0.5615,0.4492,3
+"6WELL2_3","5695 7085","event","FEDD MV (k = 4000)","ensemble_vote",0.386166666666667,0.57925,0.4634,3
+"6WELL2_3","5695 7085","event","FEDD TV (k = 4000, lambda = 4)","reference",NA,0,NA,0
+"6WELL2_3","5695 7085","event","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.561375,0.561375,0.561375,2
+"6WELL2_3","5695 7085","event","CEDD EFER","reference",0.147923076923077,0.9615,0.2564,13
+"6WELL2_3","5695 7085","event","CEDD EFER","ensemble_vote",0.147923076923077,0.9615,0.2564,13
+"6WELL2_3","5695 7085","event","CEDD MV","reference",NA,0,NA,0
+"6WELL2_3","5695 7085","event","CEDD MV","ensemble_vote",NA,0,NA,0
+"6WELL2_3","5695 7085","event","CEDD TV (lambda = 2)","reference",0.47675,0.715125,0.5721,3
+"6WELL2_3","5695 7085","event","CEDD TV (lambda = 2)","ensemble_vote",0.47675,0.715125,0.5721,3
+"6WELL4_1","2707 3342","event","dfr_adwin","reference",0.9765,0.48825,0.651,1
+"6WELL4_1","2707 3342","event","dfr_kldist","reference",NA,0,NA,0
+"6WELL4_1","2707 3342","event","dfr_kswin","reference",0.96025,0.480125,0.640166666666667,1
+"6WELL4_1","2707 3342","event","dfr_mcdd","reference",0.96025,0.480125,0.640166666666667,1
+"6WELL4_1","2707 3342","event","dfr_page_hinkley","reference",0.974,0.487,0.649333333333333,1
+"6WELL4_1","2707 3342","event","dfr_aedd","reference",0.94875,0.474375,0.6325,1
+"6WELL4_1","2707 3342","event","FEDD MV (k = 4000)","reference",0.87875,0.439375,0.585833333333333,1
+"6WELL4_1","2707 3342","event","FEDD MV (k = 4000)","ensemble_vote",0.67875,0.339375,0.4525,1
+"6WELL4_1","2707 3342","event","FEDD TV (k = 4000, lambda = 4)","reference",0.99875,0.499375,0.665833333333333,1
+"6WELL4_1","2707 3342","event","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.87875,0.439375,0.585833333333333,1
+"6WELL4_1","2707 3342","event","CEDD EFER","reference",0.4841875,0.968375,0.645583333333333,4
+"6WELL4_1","2707 3342","event","CEDD EFER","ensemble_vote",0.4841875,0.968375,0.645583333333333,4
+"6WELL4_1","2707 3342","event","CEDD MV","reference",NA,0,NA,0
+"6WELL4_1","2707 3342","event","CEDD MV","ensemble_vote",NA,0,NA,0
+"6WELL4_1","2707 3342","event","CEDD TV (lambda = 2)","reference",0.96025,0.480125,0.640166666666667,1
+"6WELL4_1","2707 3342","event","CEDD TV (lambda = 2)","ensemble_vote",0.96025,0.480125,0.640166666666667,1
+"7WELL6_1","1472","event","dfr_adwin","reference",0.00716911764705882,0.24375,0.0139285714285714,34
+"7WELL6_1","1472","event","dfr_kldist","reference",0,0,NA,2
+"7WELL6_1","1472","event","dfr_kswin","reference",0.0136875,0.49275,0.0266351351351351,36
+"7WELL6_1","1472","event","dfr_mcdd","reference",0.0140785714285714,0.49275,0.027375,35
+"7WELL6_1","1472","event","dfr_page_hinkley","reference",0,0,NA,15
+"7WELL6_1","1472","event","dfr_aedd","reference",0.0195394736842105,0.7425,0.0380769230769231,38
+"7WELL6_1","1472","event","FEDD MV (k = 4000)","reference",0.0235681818181818,0.5185,0.0450869565217391,22
+"7WELL6_1","1472","event","FEDD MV (k = 4000)","ensemble_vote",0.0225227272727273,0.74325,0.0437205882352941,33
+"7WELL6_1","1472","event","FEDD TV (k = 4000, lambda = 4)","reference",0,0,NA,4
+"7WELL6_1","1472","event","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0,0,NA,12
+"7WELL6_1","1472","event","CEDD EFER","reference",0.00482142857142857,0.7425,0.00958064516129032,154
+"7WELL6_1","1472","event","CEDD EFER","ensemble_vote",0.00482142857142857,0.7425,0.00958064516129032,154
+"7WELL6_1","1472","event","CEDD MV","reference",NA,0,NA,0
+"7WELL6_1","1472","event","CEDD MV","ensemble_vote",NA,0,NA,0
+"7WELL6_1","1472","event","CEDD TV (lambda = 2)","reference",0.082125,0.49275,0.140785714285714,6
+"7WELL6_1","1472","event","CEDD TV (lambda = 2)","ensemble_vote",0.082125,0.49275,0.140785714285714,6
+"7WELL6_2","6356","event","dfr_adwin","reference",0.0415263157894737,0.789,0.0789,19
+"7WELL6_2","6356","event","dfr_kldist","reference",NA,0,NA,0
+"7WELL6_2","6356","event","dfr_kswin","reference",0.0441578947368421,0.839,0.0839,19
+"7WELL6_2","6356","event","dfr_mcdd","reference",0.0441578947368421,0.839,0.0839,19
+"7WELL6_2","6356","event","dfr_page_hinkley","reference",0.108083333333333,0.6485,0.185285714285714,6
+"7WELL6_2","6356","event","dfr_aedd","reference",0.0338690476190476,0.71125,0.0646590909090909,21
+"7WELL6_2","6356","event","FEDD MV (k = 4000)","reference",0.08955,0.8955,0.162818181818182,10
+"7WELL6_2","6356","event","FEDD MV (k = 4000)","ensemble_vote",0.0535588235294118,0.9105,0.101166666666667,17
+"7WELL6_2","6356","event","FEDD TV (k = 4000, lambda = 4)","reference",NA,0,NA,0
+"7WELL6_2","6356","event","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.0265833333333333,0.1595,0.0455714285714286,6
+"7WELL6_2","6356","event","CEDD EFER","reference",0.0104875,0.839,0.0207160493827161,80
+"7WELL6_2","6356","event","CEDD EFER","ensemble_vote",0.0104875,0.839,0.0207160493827161,80
+"7WELL6_2","6356","event","CEDD MV","reference",NA,0,NA,0
+"7WELL6_2","6356","event","CEDD MV","ensemble_vote",NA,0,NA,0
+"7WELL6_2","6356","event","CEDD TV (lambda = 2)","reference",0.20975,0.839,0.3356,4
+"7WELL6_2","6356","event","CEDD TV (lambda = 2)","ensemble_vote",0.20975,0.839,0.3356,4
+"8WELL19","4962 49873","event","dfr_adwin","reference",0.0809761904761905,0.85025,0.147869565217391,21
+"8WELL19","4962 49873","event","dfr_kldist","reference",NA,0,NA,0
+"8WELL19","4962 49873","event","dfr_kswin","reference",0.102214285714286,0.7155,0.178875,14
+"8WELL19","4962 49873","event","dfr_mcdd","reference",0.101732142857143,0.712125,0.17803125,14
+"8WELL19","4962 49873","event","dfr_page_hinkley","reference",0.128857142857143,0.902,0.2255,14
+"8WELL19","4962 49873","event","dfr_aedd","reference",0.102558823529412,0.87175,0.183526315789474,17
+"8WELL19","4962 49873","event","FEDD MV (k = 4000)","reference",0.123403846153846,0.802125,0.2139,13
+"8WELL19","4962 49873","event","FEDD MV (k = 4000)","ensemble_vote",0.0911785714285714,0.63825,0.1595625,14
+"8WELL19","4962 49873","event","FEDD TV (k = 4000, lambda = 4)","reference",0.11085,0.277125,0.158357142857143,5
+"8WELL19","4962 49873","event","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.1279,0.6395,0.213166666666667,10
+"8WELL19","4962 49873","event","CEDD EFER","reference",0.02255,0.902,0.044,80
+"8WELL19","4962 49873","event","CEDD EFER","ensemble_vote",0.02255,0.902,0.044,80
+"8WELL19","4962 49873","event","CEDD MV","reference",NA,0,NA,0
+"8WELL19","4962 49873","event","CEDD MV","ensemble_vote",NA,0,NA,0
+"8WELL19","4962 49873","event","CEDD TV (lambda = 2)","reference",NA,0,NA,0
+"8WELL19","4962 49873","event","CEDD TV (lambda = 2)","ensemble_vote",NA,0,NA,0
+"8WELL20","202 14580","event","dfr_adwin","reference",0.2121,0.53025,0.303,5
+"8WELL20","202 14580","event","dfr_kldist","reference",0.37525,0.37525,0.37525,2
+"8WELL20","202 14580","event","dfr_kswin","reference",0.2574375,0.514875,0.34325,4
+"8WELL20","202 14580","event","dfr_mcdd","reference",0.2789375,0.557875,0.371916666666667,4
+"8WELL20","202 14580","event","dfr_page_hinkley","reference",0.3225625,0.645125,0.430083333333333,4
+"8WELL20","202 14580","event","dfr_aedd","reference",0.2209,0.55225,0.315571428571429,5
+"8WELL20","202 14580","event","FEDD MV (k = 4000)","reference",0.264625,0.52925,0.352833333333333,4
+"8WELL20","202 14580","event","FEDD MV (k = 4000)","ensemble_vote",0.264625,0.52925,0.352833333333333,4
+"8WELL20","202 14580","event","FEDD TV (k = 4000, lambda = 4)","reference",0.352833333333333,0.52925,0.4234,3
+"8WELL20","202 14580","event","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.3031875,0.606375,0.40425,4
+"8WELL20","202 14580","event","CEDD EFER","reference",0.0576145833333333,0.691375,0.106365384615385,24
+"8WELL20","202 14580","event","CEDD EFER","ensemble_vote",0.0576145833333333,0.691375,0.106365384615385,24
+"8WELL20","202 14580","event","CEDD MV","reference",NA,0,NA,0
+"8WELL20","202 14580","event","CEDD MV","ensemble_vote",NA,0,NA,0
+"8WELL20","202 14580","event","CEDD TV (lambda = 2)","reference",NA,0,NA,0
+"8WELL20","202 14580","event","CEDD TV (lambda = 2)","ensemble_vote",NA,0,NA,0
+"8WELL21","3572 23741","event","dfr_adwin","reference",0.172444444444444,0.776,0.282181818181818,9
+"8WELL21","3572 23741","event","dfr_kldist","reference",NA,0,NA,0
+"8WELL21","3572 23741","event","dfr_kswin","reference",0.216,0.648,0.324,6
+"8WELL21","3572 23741","event","dfr_mcdd","reference",0.216,0.648,0.324,6
+"8WELL21","3572 23741","event","dfr_page_hinkley","reference",0.291791666666667,0.875375,0.4376875,6
+"8WELL21","3572 23741","event","dfr_aedd","reference",0.152625,0.6105,0.2442,8
+"8WELL21","3572 23741","event","FEDD MV (k = 4000)","reference",0.12325,0.36975,0.184875,6
+"8WELL21","3572 23741","event","FEDD MV (k = 4000)","ensemble_vote",0.132041666666667,0.396125,0.1980625,6
+"8WELL21","3572 23741","event","FEDD TV (k = 4000, lambda = 4)","reference",0.254625,0.50925,0.3395,4
+"8WELL21","3572 23741","event","FEDD TV (k = 4000, lambda = 4)","ensemble_vote",0.1786875,0.357375,0.23825,4
+"8WELL21","3572 23741","event","CEDD EFER","reference",0.0633965517241379,0.91925,0.118612903225806,29
+"8WELL21","3572 23741","event","CEDD EFER","ensemble_vote",0.0633965517241379,0.91925,0.118612903225806,29
+"8WELL21","3572 23741","event","CEDD MV","reference",NA,0,NA,0
+"8WELL21","3572 23741","event","CEDD MV","ensemble_vote",NA,0,NA,0
+"8WELL21","3572 23741","event","CEDD TV (lambda = 2)","reference",0.216,0.648,0.324,6
+"8WELL21","3572 23741","event","CEDD TV (lambda = 2)","ensemble_vote",0.216,0.648,0.324,6
