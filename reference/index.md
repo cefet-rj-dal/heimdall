@@ -40,6 +40,10 @@ Detectors that monitor the distribution of the observed features
   : KL Distance method
 - [`dfr_multi_criteria()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_multi_criteria.md)
   : Multi Criteria Drifter sub-class
+- [`dfr_ensemble()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_ensemble.md)
+  : Ensemble drift detector (CEDD and FEDD)
+- [`ensemble_vote()`](https://cefet-rj-dal.github.io/heimdall/reference/ensemble_vote.md)
+  : Ensemble vote over detection series
 - [`dfr_proton()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_proton.md)
   : PROTON: prototype-based test-time online OOD detection
 - [`dfr_qts()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_qts.md)
@@ -66,6 +70,23 @@ Equal intensity k-means space partitioning (Liu et al., 2021).
   : Test a sample with an EI-kMeans partitioning
 - [`dfr_eikmeans()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_eikmeans.md)
   : EI-kMeans stream detector
+
+## Population Stability Index
+
+PSI on quantile bins of a baseline (Kurian and Allali, 2024).
+
+- [`psi()`](https://cefet-rj-dal.github.io/heimdall/reference/psi.md) :
+  Population Stability Index (PSI)
+- [`dfr_psi()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_psi.md)
+  : PSI stream detector
+
+## Maximum Concept Discrepancy
+
+Unsupervised detector with a contrastively trained set encoder (Wan et
+al., 2024).
+
+- [`dfr_mcd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_mcd.md)
+  : Maximum Concept Discrepancy drift detector (MCD-DD)
 
 ## Feature drift with the domino drift effect
 
