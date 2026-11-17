@@ -270,6 +270,34 @@
   fuzzy time tolerance (FEDD, Giusti Tavares et al., 2025), and
   [`ensemble_vote()`](https://cefet-rj-dal.github.io/heimdall/reference/ensemble_vote.md),
   the same vote on detection series computed beforehand.
+- New
+  [`indid()`](https://cefet-rj-dal.github.io/heimdall/reference/indid.md),
+  the sequence-to-sequence change point detector of Romanenkova et
+  al. (2022): an LSTM that outputs the probability of change at every
+  step, trained on labelled sequences with the InDiD loss (expected
+  detection delay and time to false alarm), BCE or both in turn;
+  [`indid_predict()`](https://cefet-rj-dal.github.io/heimdall/reference/indid_predict.md)
+  and the stream detector
+  [`dfr_indid()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_indid.md).
+  The network, backpropagation through time and Adam are written in R.
+- New
+  [`dfr_llr2()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_llr2.md),
+  the LLR2 detector of Sojo et al. (2027): a semiparametric Bayesian
+  network
+  ([`spbn()`](https://cefet-rj-dal.github.io/heimdall/reference/spbn.md),
+  [`spbn_loglik()`](https://cefet-rj-dal.github.io/heimdall/reference/spbn_loglik.md);
+  linear Gaussian and conditional KDE nodes) learned on a baseline, and
+  a chi-square test per node of the difference of mean log-likelihoods
+  between a sliding and a reference window, with optional
+  Benjamini-Hochberg correction (LLR2-BH) and update of the network
+  after a drift.
+- New
+  [`online_bcp()`](https://cefet-rj-dal.github.io/heimdall/reference/online_bcp.md),
+  the online Bayesian change point detection of onlineBcp (Yigiter et
+  al., 2015; Xu et al., 2022) for normal data, with the segment summary
+  of the package and stable (log-scale) numerics, and the stream
+  detector
+  [`dfr_onlinebcp()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_onlinebcp.md).
 
 ### Bug fixes
 

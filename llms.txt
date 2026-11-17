@@ -246,6 +246,10 @@ Detectors that monitor the distribution of the observed features
   : Levene Based Drift Detection Method method
 - [`dfr_mcdd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_mcdd.md)
   : Mean Comparison Distance method
+- [`dfr_onlinebcp()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_onlinebcp.md)
+  : onlineBcp stream detector
+- [`online_bcp()`](https://cefet-rj-dal.github.io/heimdall/reference/online_bcp.md)
+  : Online Bayesian change point detection (onlineBcp)
 - [`dfr_page_hinkley()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_page_hinkley.md)
   : Adapted Page Hinkley method
 
@@ -304,6 +308,30 @@ al., 2024).
 
 - [`dfr_mcd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_mcd.md)
   : Maximum Concept Discrepancy drift detector (MCD-DD)
+
+## Supervised change point detection (InDiD)
+
+Sequence-to-sequence detector trained with the InDiD loss (Romanenkova
+et al., 2022).
+
+- [`indid()`](https://cefet-rj-dal.github.io/heimdall/reference/indid.md)
+  : InDiD change point detection model
+- [`indid_predict()`](https://cefet-rj-dal.github.io/heimdall/reference/indid_predict.md)
+  : Probabilities of change of an InDiD model
+- [`dfr_indid()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_indid.md)
+  : InDiD stream detector
+
+## Bayesian network log-likelihood ratio (LLR2)
+
+Fully unsupervised detector with a semiparametric Bayesian network (Sojo
+et al., 2027).
+
+- [`spbn()`](https://cefet-rj-dal.github.io/heimdall/reference/spbn.md)
+  : Semiparametric Bayesian network
+- [`spbn_loglik()`](https://cefet-rj-dal.github.io/heimdall/reference/spbn_loglik.md)
+  : Log-likelihood of each node of a semiparametric Bayesian network
+- [`dfr_llr2()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_llr2.md)
+  : LLR2 drift detector
 
 ## Feature drift with the domino drift effect
 
