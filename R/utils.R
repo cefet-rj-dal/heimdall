@@ -638,3 +638,20 @@
   attr(encoded, "origin") <- origin
   return(encoded)
 }
+
+# Adam step with the defaults of torch.optim.Adam (betas 0.9 and 0.999, eps
+# 1e-8). `net` holds the parameters (`params`) and the state of Adam (`adam`:
+# first and second moments m and v, step t). Used by dfr_mcd() and indid().
+#' @noRd
+.adam_step <- function(net, grads, learning_rate, beta1 = 0.9, beta2 = 0.999, eps = 1e-8) {
+  adam <- net$adam
+  adam$t <- adam$t + 1L
+  for (name in names(net$params)) {
+    adam$m[[name]] <- beta1 * adam$m[[name]] + (1 - beta1) * grads[[name]]
+    adam$v[[name]] <- beta2 * adam$v[[name]] + (1 - beta2) * grads[[name]]^2
+    denominator <- sqrt(adam$v[[name]]) / sqrt(1 - beta2^adam$t) + eps
+    net$params[[name]] <- net$params[[name]] - (learning_rate / (1 - beta1^adam$t)) * adam$m[[name]] / denominator
+  }
+  net$adam <- adam
+  net
+}

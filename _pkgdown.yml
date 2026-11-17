@@ -19,6 +19,8 @@ reference:
       - dfr_kswin
       - dfr_lbdd
       - dfr_mcdd
+      - dfr_onlinebcp
+      - online_bcp
       - dfr_page_hinkley
   - title: Multivariate and combined detectors
     contents:
@@ -50,6 +52,18 @@ reference:
     desc: Unsupervised detector with a contrastively trained set encoder (Wan et al., 2024).
     contents:
       - dfr_mcd
+  - title: Supervised change point detection (InDiD)
+    desc: Sequence-to-sequence detector trained with the InDiD loss (Romanenkova et al., 2022).
+    contents:
+      - indid
+      - indid_predict
+      - dfr_indid
+  - title: Bayesian network log-likelihood ratio (LLR2)
+    desc: Fully unsupervised detector with a semiparametric Bayesian network (Sojo et al., 2027).
+    contents:
+      - spbn
+      - spbn_loglik
+      - dfr_llr2
   - title: Feature drift with the domino drift effect
     desc: Predicts which unmonitored features drift from their correlation with the drifting monitored ones (Szűcs and Németh, 2025).
     contents:

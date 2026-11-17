@@ -1,0 +1,51 @@
+There were 50 or more warnings (use warnings() to see the first 50)
+1. online_bcp(numerics = 'reference') against online_cp() + summary.BayesCP() of onlineBcp 0.1.4
+      data     n trace_max_prob trace_locations_equal trace_runs_equal
+      aCGH  2046       6.28e-14                  TRUE             TRUE
+ cnv_H2347 17595       3.38e-13                  TRUE             TRUE
+     covid   219       8.44e-14                  TRUE             TRUE
+ changepoints changepoints_reference locations_equal post_prob_difference
+            7                      7            TRUE             4.55e-15
+           51                     51            TRUE             4.23e-14
+           17                     17            TRUE             6.11e-16
+ segments_difference seconds seconds_reference changepoints_stable
+                   0  0.3582            23.185                   3
+                   0  6.2227           195.812                   0
+                   0  0.0215             0.057                  17
+
+2. Against the outputs printed in the paper
+                                                                   check
+                                         aCGH change point locations (7)
+                                            aCGH posterior probabilities
+            aCGH segments: largest difference (begin, end, mean, SD, CI)
+                             aCGH normality p-values: largest difference
+                                                 cnv_H2347 change points
+                                                  COVID-19 change points
+ COVID-19 segments: largest difference (begin, end, mean, SD, normality)
+                                          value
+               341 682 1023 1463 1513 1517 1519
+ 0.9178 0.8638 0.8093 0.7002 0.7049 0.76 0.7394
+                                       4.73e-06
+                                       3.39e-06
+                                             51
+                                             17
+                                       4.98e-05
+                                          paper
+               341 682 1023 1463 1513 1517 1519
+ 0.9178 0.8638 0.8093 0.7002 0.7049 0.76 0.7394
+                        printed with 4-6 digits
+                          printed with 5 digits
+                                             51
+                                             17
+           18 segments, printed with 4-5 digits
+
+3. numerics = 'stable': change points where 'reference' differs
+aCGH       reference 7, stable 3; only in reference: 341 682 1023 1517 1519; only in stable: 1992
+cnv_H2347  reference 51, stable 0; only in reference: 341 682 1023 1365 1706 2047 2388 2729 3070 3411 3752 4094; only in stable: 
+covid      reference 17, stable 17; only in reference: ; only in stable: 
+
+4. dfr_onlinebcp on the data as streams
+  data drifts same_locations_as_trace mean_delay
+  aCGH      7                    TRUE 259.000000
+ covid     39                    TRUE   1.564103
+ONLINEBCP_DONE

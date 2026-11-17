@@ -1,0 +1,129 @@
+"source","label","method","window","step","mdr","mtd","fa","drifts","mtrd"
+"dfr_llr2","Model 1-S","LLR2",250,10,0,16,2,10,55.6875
+"reference (parameter)","Model 1-S","LLR2",100,10,0,12.5,0,8,NA
+"reference (local)","Model 1-S","LLR2",100,10,0,22.25,0,8,NA
+"paper","Model 1-S","LLR2",NA,NA,0,22.25,0,8,NA
+"dfr_llr2","Model 1-S","LLR2-BH",100,10,0,17.25,1,9,NA
+"reference (parameter)","Model 1-S","LLR2-BH",100,10,0,22.5,0,8,NA
+"reference (local)","Model 1-S","LLR2-BH",100,50,0,58.5,0,8,NA
+"paper","Model 1-S","LLR2-BH",NA,NA,0,58.5,0,8,NA
+"dfr_llr2","Model 2-S","LLR2",100,10,0,9.75,4,12,30.3418803418803
+"reference (parameter)","Model 2-S","LLR2",100,10,0,7.5,0,8,NA
+"reference (local)","Model 2-S","LLR2",100,10,0,8.5,0,8,NA
+"paper","Model 2-S","LLR2",NA,NA,0,8.5,0,8,NA
+"dfr_llr2","Model 2-S","LLR2-BH",100,10,0,13.5,2,10,12.4444444444444
+"reference (parameter)","Model 2-S","LLR2-BH",100,10,0,10,0,8,NA
+"reference (local)","Model 2-S","LLR2-BH",100,10,0,13.5,0,8,NA
+"paper","Model 2-S","LLR2-BH",NA,NA,0,13.5,0,8,NA
+"dfr_llr2","Model 3-S","LLR2",100,10,0,19.75,1,9,NA
+"reference (parameter)","Model 3-S","LLR2",100,10,0,28.75,0,8,NA
+"reference (local)","Model 3-S","LLR2",250,10,0,57.25,0,8,NA
+"paper","Model 3-S","LLR2",NA,NA,0,57.25,0,8,NA
+"dfr_llr2","Model 3-S","LLR2-BH",100,10,0,28.5,0,8,NA
+"reference (parameter)","Model 3-S","LLR2-BH",100,10,0.125,28.7142857142857,0,7,NA
+"reference (local)","Model 3-S","LLR2-BH",100,10,0.125,29.7142857142857,0,7,NA
+"paper","Model 3-S","LLR2-BH",NA,NA,0.12,29.71,0,7,NA
+"dfr_llr2","Model 4-S","LLR2",100,10,0,12.25,2,10,65.8775510204082
+"reference (parameter)","Model 4-S","LLR2",100,10,0,12.5,0,8,NA
+"reference (local)","Model 4-S","LLR2",100,10,0,11,0,8,NA
+"paper","Model 4-S","LLR2",NA,NA,0,11,0,8,NA
+"dfr_llr2","Model 4-S","LLR2-BH",100,10,0,26,0,8,NA
+"reference (parameter)","Model 4-S","LLR2-BH",100,10,0,26.25,0,8,NA
+"reference (local)","Model 4-S","LLR2-BH",100,10,0,21,0,8,NA
+"paper","Model 4-S","LLR2-BH",NA,NA,0,21,0,8,NA
+"dfr_llr2","Model 1-I","LLR2",500,50,0,425,4,10,0.603921568627451
+"reference (parameter)","Model 1-I","LLR2",500,10,0,405.666666666667,3,9,1.04491920021912
+"reference (local)","Model 1-I","LLR2",500,50,0,358.333333333333,3,9,1.18604651162791
+"paper","Model 1-I","LLR2",NA,NA,0,358.33,3,9,1.19
+"dfr_llr2","Model 1-I","LLR2-BH",500,10,0,495,2,8,0.876262626262626
+"reference (parameter)","Model 1-I","LLR2-BH",500,10,0,245.666666666667,2,8,1.85719131614654
+"reference (local)","Model 1-I","LLR2-BH",500,50,0,416.666666666667,2,8,1.47
+"paper","Model 1-I","LLR2-BH",NA,NA,0,416.67,2,8,1.47
+"dfr_llr2","Model 2-I","LLR2",500,50,0,275,5,11,0.81404958677686
+"reference (parameter)","Model 2-I","LLR2",500,50,0,349,4,10,0.749761222540592
+"reference (local)","Model 2-I","LLR2",500,100,0,383.333333333333,4,10,0.704347826086957
+"paper","Model 2-I","LLR2",NA,NA,0,383.33,4,10,0.7
+"dfr_llr2","Model 2-I","LLR2-BH",250,50,0,383.333333333333,3,9,1.14492753623188
+"reference (parameter)","Model 2-I","LLR2-BH",500,10,0,400.666666666667,3,9,1.10094287298946
+"reference (local)","Model 2-I","LLR2-BH",500,10,0,466.666666666667,2,8,1.26964285714286
+"paper","Model 2-I","LLR2-BH",NA,NA,0,466.67,2,8,1.27
+"dfr_llr2","Model 3-I","LLR2",500,100,0,400,5,11,0.5
+"reference (parameter)","Model 3-I","LLR2",500,100,0,399,3,9,1.08604845446951
+"reference (local)","Model 3-I","LLR2",500,100,0,400,3,9,1.08333333333333
+"paper","Model 3-I","LLR2",NA,NA,0,400,3,9,1.08
+"dfr_llr2","Model 3-I","LLR2-BH",500,100,0,383.333333333333,3,9,1.15942028985507
+"reference (parameter)","Model 3-I","LLR2-BH",500,10,0,449,2,8,2.04621380846325
+"reference (local)","Model 3-I","LLR2-BH",250,10,0,353.333333333333,4,10,0.907547169811321
+"paper","Model 3-I","LLR2-BH",NA,NA,0,353.33,4,10,0.91
+"dfr_llr2","Model 4-I","LLR2",500,100,0,383.333333333333,4,10,0.695652173913043
+"reference (parameter)","Model 4-I","LLR2",500,10,0,332.333333333333,6,12,0.495987963891675
+"reference (local)","Model 4-I","LLR2",500,50,0,366.666666666667,5,11,0.511363636363636
+"paper","Model 4-I","LLR2",NA,NA,0,366.67,5,11,0.51
+"dfr_llr2","Model 4-I","LLR2-BH",500,100,0,450,2,8,1.22222222222222
+"reference (parameter)","Model 4-I","LLR2-BH",500,100,0,482.333333333333,3,9,1.1172540889196
+"reference (local)","Model 4-I","LLR2-BH",500,50,0,475,3,9,1.14619883040936
+"paper","Model 4-I","LLR2-BH",NA,NA,0,475,3,9,1.15
+"dfr_llr2","Model 1-IR","LLR2",500,100,0,340,5,10,0.544117647058824
+"reference (parameter)","Model 1-IR","LLR2",500,10,0,379,3,8,0.796503957783641
+"reference (local)","Model 1-IR","LLR2",500,100,0,380,3,8,0.789473684210526
+"paper","Model 1-IR","LLR2",NA,NA,0,380,3,8,0.79
+"dfr_llr2","Model 1-IR","LLR2-BH",500,10,0,462,2,7,0.816326530612245
+"reference (parameter)","Model 1-IR","LLR2-BH",500,10,0,345,2,7,1.6231884057971
+"reference (local)","Model 1-IR","LLR2-BH",250,10,0,366,3,8,0.809426229508197
+"paper","Model 1-IR","LLR2-BH",NA,NA,0,366,3,8,0.81
+"dfr_llr2","Model 2-IR","LLR2",500,100,0,200,4,9,1.42592592592593
+"reference (parameter)","Model 2-IR","LLR2",500,10,0,321,4,9,0.908041998384678
+"reference (local)","Model 2-IR","LLR2",500,10,0,326,5,10,0.608128834355828
+"paper","Model 2-IR","LLR2",NA,NA,0,326,5,10,0.61
+"dfr_llr2","Model 2-IR","LLR2-BH",500,10,0,200,5,10,0.97125
+"reference (parameter)","Model 2-IR","LLR2-BH",500,10,0,303,3,8,1.79661716171617
+"reference (local)","Model 2-IR","LLR2-BH",500,50,0,210,4,9,1.67548500881834
+"paper","Model 2-IR","LLR2-BH",NA,NA,0,210,4,9,1.68
+"dfr_llr2","Model 3-IR","LLR2",500,50,0,390,4,9,0.849952516619183
+"reference (parameter)","Model 3-IR","LLR2",500,100,0,439,2,7,1.30165961601041
+"reference (local)","Model 3-IR","LLR2",500,100,0,460,3,8,0.951086956521739
+"paper","Model 3-IR","LLR2",NA,NA,0,460,3,8,0.95
+"dfr_llr2","Model 3-IR","LLR2-BH",500,10,0,398,3,8,1.05370603015075
+"reference (parameter)","Model 3-IR","LLR2-BH",500,50,0,489,2,7,1.24160093485247
+"reference (local)","Model 3-IR","LLR2-BH",500,50,0,510,3,8,0.496323529411765
+"paper","Model 3-IR","LLR2-BH",NA,NA,0,510,3,8,0.5
+"dfr_llr2","Model 4-IR","LLR2",500,10,0,418,5,10,0.523923444976077
+"reference (parameter)","Model 4-IR","LLR2",500,50,0,379,3,8,0.816292875989446
+"reference (local)","Model 4-IR","LLR2",500,50,0,310,2,7,2.69585253456221
+"paper","Model 4-IR","LLR2",NA,NA,0,310,2,7,2.7
+"dfr_llr2","Model 4-IR","LLR2-BH",500,10,0,508,3,8,1.05314960629921
+"reference (parameter)","Model 4-IR","LLR2-BH",100,10,0,411,4,9,0.609173650536181
+"reference (local)","Model 4-IR","LLR2-BH",100,10,0,470,2,7,0.31306990881459
+"paper","Model 4-IR","LLR2-BH",NA,NA,0,470,2,7,0.31
+"dfr_llr2","Model 1-G","LLR2",250,100,0,233.333333333333,2,8,4.23214285714286
+"reference (parameter)","Model 1-G","LLR2",500,100,0,299,2,8,4.09698996655518
+"reference (local)","Model 1-G","LLR2",100,100,0,133.333333333333,3,9,4.08333333333333
+"paper","Model 1-G","LLR2",NA,NA,0,133.33,3,9,4.08
+"dfr_llr2","Model 1-G","LLR2-BH",250,50,0,200,0,6,NA
+"reference (parameter)","Model 1-G","LLR2-BH",100,50,0,357.333333333333,0,6,NA
+"reference (local)","Model 1-G","LLR2-BH",100,10,0,140,3,9,3.42063492063492
+"paper","Model 1-G","LLR2-BH",NA,NA,0,140,3,9,3.42
+"dfr_llr2","Model 2-G","LLR2",100,100,0,166.666666666667,1,7,NA
+"reference (parameter)","Model 2-G","LLR2",500,50,0,207.333333333333,1,7,NA
+"reference (local)","Model 2-G","LLR2",250,10,0,185,2,8,3.05405405405405
+"paper","Model 2-G","LLR2",NA,NA,0,185,2,8,3.05
+"dfr_llr2","Model 2-G","LLR2-BH",100,10,0,290,1,7,NA
+"reference (parameter)","Model 2-G","LLR2-BH",100,10,0,332.333333333333,1,7,NA
+"reference (local)","Model 2-G","LLR2-BH",250,10,0,278.333333333333,0,6,NA
+"paper","Model 2-G","LLR2-BH",NA,NA,0,278.33,0,6,NA
+"dfr_llr2","Model 3-G","LLR2",250,10,0,150,2,8,3.45
+"reference (parameter)","Model 3-G","LLR2",250,50,0,240.666666666667,2,8,3.73961218836565
+"reference (local)","Model 3-G","LLR2",250,10,0,163.333333333333,3,9,2.91836734693878
+"paper","Model 3-G","LLR2",NA,NA,0,163.33,3,9,2.92
+"dfr_llr2","Model 3-G","LLR2-BH",100,10,0,231.666666666667,1,7,NA
+"reference (parameter)","Model 3-G","LLR2-BH",100,10,0,419,1,7,NA
+"reference (local)","Model 3-G","LLR2-BH",100,10,0,310,1,7,NA
+"paper","Model 3-G","LLR2-BH",NA,NA,0,310,1,7,NA
+"dfr_llr2","Model 4-G","LLR2",100,100,0,133.333333333333,3,9,4.33333333333333
+"reference (parameter)","Model 4-G","LLR2",100,50,0,157.333333333333,4,10,2.25635593220339
+"reference (local)","Model 4-G","LLR2",250,100,0,250,3,9,1.73333333333333
+"paper","Model 4-G","LLR2",NA,NA,0,250,3,9,1.73
+"dfr_llr2","Model 4-G","LLR2-BH",250,100,0,233.333333333333,0,6,NA
+"reference (parameter)","Model 4-G","LLR2-BH",250,100,0,440.666666666667,1,7,NA
+"reference (local)","Model 4-G","LLR2-BH",250,10,0,285,1,7,NA
+"paper","Model 4-G","LLR2-BH",NA,NA,0,285,1,7,NA

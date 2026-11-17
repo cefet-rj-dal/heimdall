@@ -1,0 +1,31 @@
+synthetic_1D_bce_102 epochs [200] F1 0.9872 AUC 634.1
+synthetic_1D_bce_103 epochs [200] F1 0.9904 AUC 631.71
+synthetic_1D_bce_104 epochs [200] F1 0.9904 AUC 644.18
+synthetic_1D_bce_105 epochs [200] F1 0.9872 AUC 623.28
+synthetic_1D_indid_102 epochs [200] F1 0.9839 AUC 609.32
+synthetic_1D_indid_106 epochs [200] F1 0.9904 AUC 618.51
+synthetic_1D_indid_103 epochs [200] F1 0.9872 AUC 607.66
+synthetic_1D_indid_104 epochs [200] F1 0.9872 AUC 611.93
+synthetic_1D_indid_105 epochs [200] F1 0.9904 AUC 598.44
+synthetic_1D_bce_106 epochs [200] F1 0.9872 AUC 635.57
+synthetic_1D_combined_102 epochs [100, 100] F1 0.9839 AUC 613.06
+synthetic_1D_combined_103 epochs [100, 100] F1 0.9839 AUC 608.24
+synthetic_1D_combined_104 epochs [100, 100] F1 0.984 AUC 637.73
+synthetic_1D_combined_105 epochs [100, 100] F1 0.9872 AUC 631.55
+synthetic_1D_combined_106 epochs [100, 100] F1 0.9904 AUC 604.09
+synthetic_100D_indid_102 epochs [200] F1 0.9968 AUC 574.8
+synthetic_100D_bce_102 epochs [200] F1 0.9968 AUC 595.44
+synthetic_100D_indid_103 epochs [200] F1 0.9936 AUC 577.34
+synthetic_100D_bce_103 epochs [200] F1 0.9904 AUC 599.5
+synthetic_100D_bce_104 epochs [200] F1 0.9968 AUC 573.99
+synthetic_100D_indid_104 epochs [200] F1 0.9904 AUC 575.31
+synthetic_100D_indid_105 epochs [200] F1 0.9968 AUC 574.95
+synthetic_100D_bce_105 epochs [200] F1 0.9904 AUC 596.82
+synthetic_100D_bce_106 epochs [200] F1 0.9936 AUC 595.65
+synthetic_100D_indid_106 epochs [200] F1 0.9936 AUC 591.37
+synthetic_100D_combined_102 epochs [100, 100] F1 0.9936 AUC 575.93
+synthetic_100D_combined_103 epochs [100, 100] F1 0.9904 AUC 580.06
+synthetic_100D_combined_104 epochs [100, 100] F1 0.9904 AUC 577.29
+synthetic_100D_combined_105 epochs [100, 100] F1 0.9904 AUC 580.57
+synthetic_100D_combined_106 epochs [100, 100] F1 0.9904 AUC 577.45
+REF_DONE

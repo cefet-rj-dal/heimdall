@@ -1,0 +1,4 @@
+"data","n","trace_max_prob","trace_locations_equal","trace_runs_equal","changepoints","changepoints_reference","locations_equal","post_prob_difference","segments_difference","seconds","seconds_reference","changepoints_stable"
+"aCGH",2046,6.27831120425526e-14,TRUE,TRUE,7,7,TRUE,4.55191440096314e-15,0,0.358169078826904,23.1854717731476,3
+"cnv_H2347",17595,3.38173933300823e-13,TRUE,TRUE,51,51,TRUE,4.22994972382185e-14,0,6.2227201461792,195.812415122986,0
+"covid",219,8.43769498715119e-14,TRUE,TRUE,17,17,TRUE,6.10622663543836e-16,0,0.0214760303497314,0.056976318359375,17

@@ -1,0 +1,58 @@
+metrics.R against metrics.py on the probabilities of the 30 reference runs: largest difference 8.86e-05 
+
+Table 2 (SyntheticNormal): mean and sd over 5 runs
+        dataset     loss implementation time_to_fa time_to_fa_sd   delay
+   synthetic_1D      bce        indid()      94.49       0.00000 0.53933
+   synthetic_1D      bce      reference      94.61       0.10955 0.66800
+   synthetic_1D      bce          paper      94.49       0.00000 0.50000
+   synthetic_1D    indid        indid()      94.71       0.40291 0.93800
+   synthetic_1D    indid      reference      94.67       0.21411 0.68000
+   synthetic_1D    indid          paper      94.41       0.13000 0.54000
+   synthetic_1D combined        indid()      94.46       0.38528 0.74133
+   synthetic_1D combined      reference      94.69       0.32827 0.80467
+   synthetic_1D combined          paper      94.59       0.17000 0.61000
+ synthetic_100D      bce        indid()      94.28       0.02534 0.25333
+ synthetic_100D      bce      reference      94.25       0.04530 0.13667
+ synthetic_100D      bce          paper      94.20       0.00000 0.03000
+ synthetic_100D    indid        indid()      94.22       0.04025 0.07067
+ synthetic_100D    indid      reference      94.24       0.03854 0.07000
+ synthetic_100D    indid          paper      94.20       0.00000 0.03000
+ synthetic_100D combined        indid()      94.29       0.00000 0.11733
+ synthetic_100D combined      reference      94.28       0.02534 0.10733
+ synthetic_100D combined          paper      94.20       0.00000 0.03000
+ delay_sd   auc auc_sd     f1    f1_sd  cover  cover_sd
+ 0.018768 625.0  3.880 0.9904 0.000000 0.9935 2.283e-04
+ 0.084314 633.8  7.516 0.9885 0.001772 0.9924 6.975e-04
+ 0.020000 606.0  4.910 0.9904 0.000000 0.9941 2.000e-04
+ 0.483808 614.4 20.844 0.9839 0.005635 0.9915 2.833e-03
+ 0.160935 609.2  7.285 0.9878 0.002715 0.9930 7.195e-04
+ 0.040000 598.7  5.000 0.9898 0.001000 0.9938 4.000e-04
+ 0.126328 617.4  9.221 0.9853 0.001769 0.9924 4.609e-04
+ 0.129970 618.9 14.848 0.9859 0.002888 0.9921 1.115e-04
+ 0.130000 605.3  5.120 0.9891 0.002100 0.9936 6.000e-04
+ 0.145774 602.9  7.246 0.9911 0.001438 0.9962 2.236e-03
+ 0.078634 592.3 10.350 0.9936 0.003205 0.9980 1.150e-03
+ 0.000000 573.4  0.220 0.9968 0.000000 0.9996 1.000e-04
+ 0.032094 583.3 11.224 0.9955 0.002867 0.9990 4.445e-04
+ 0.035824 578.8  7.127 0.9943 0.002680 0.9990 4.918e-04
+ 0.010000 573.5  0.310 0.9968 0.000000 0.9996 1.000e-04
+ 0.005963 588.7 13.377 0.9904 0.000000 0.9983 9.181e-05
+ 0.017385 578.3  1.975 0.9911 0.001438 0.9985 2.232e-04
+ 0.000000 573.3  0.160 0.9968 0.000000 0.9996 0.000e+00
+
+Epochs and seconds per run
+ implementation        dataset     loss epochs   seconds
+        indid() synthetic_100D      bce  200.0 811.86311
+      reference synthetic_100D      bce  200.0 116.59512
+        indid()   synthetic_1D      bce  200.0 306.84553
+      reference   synthetic_1D      bce  200.0  90.68116
+        indid() synthetic_100D combined  200.0 800.58966
+      reference synthetic_100D combined  200.0 259.66788
+        indid()   synthetic_1D combined  200.0 395.96013
+      reference   synthetic_1D combined  200.0 290.18840
+        indid() synthetic_100D    indid  191.4 942.64108
+      reference synthetic_100D    indid  200.0 558.00337
+        indid()   synthetic_1D    indid  191.4 457.10768
+      reference   synthetic_1D    indid  200.0 489.26617
+INDID_DONE
+EXIT 0

@@ -1,0 +1,17 @@
+"check","value_difference","gradient_difference","weight_difference"
+"loss indid (float64)",0,1.66533453693773e-16,NA
+"loss bce (float64)",0,0,NA
+"step 1, indid (float64)",8.88178419700125e-16,1.11022302462516e-15,1.38777878078145e-17
+"step 1, indid (float32, unchanged CPDModel)",1.01579185063372e-08,NA,1.29381612645751e-08
+"step 2, indid (float64)",4.44089209850063e-16,1.33226762955019e-15,1.38777878078145e-17
+"step 2, indid (float32, unchanged CPDModel)",3.18963037315712e-07,NA,2.59672440217074e-08
+"step 3, indid (float64)",4.44089209850063e-16,2.4980018054066e-16,1.38777878078145e-17
+"step 3, indid (float32, unchanged CPDModel)",2.34910550123146e-07,NA,3.77087460146086e-08
+"test probabilities, indid (float32)",6.72560699910285e-08,NA,NA
+"step 1, bce (float64)",1.11022302462516e-16,5.55111512312578e-17,0
+"step 1, bce (float32, unchanged CPDModel)",2.08010181301788e-08,NA,1.26764055918827e-08
+"step 2, bce (float64)",1.11022302462516e-16,3.46944695195361e-17,0
+"step 2, bce (float32, unchanged CPDModel)",5.27372442382656e-08,NA,2.43559501456048e-08
+"step 3, bce (float64)",0,1.11022302462516e-16,3.46944695195361e-18
+"step 3, bce (float32, unchanged CPDModel)",6.44958864093326e-10,NA,2.52352641005871e-08
+"test probabilities, bce (float32)",6.201916719073e-08,NA,NA

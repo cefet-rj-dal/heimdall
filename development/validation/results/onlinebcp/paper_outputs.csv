@@ -1,0 +1,8 @@
+"check","value","paper"
+"aCGH change point locations (7)","341 682 1023 1463 1513 1517 1519","341 682 1023 1463 1513 1517 1519"
+"aCGH posterior probabilities","0.9178 0.8638 0.8093 0.7002 0.7049 0.76 0.7394","0.9178 0.8638 0.8093 0.7002 0.7049 0.76 0.7394"
+"aCGH segments: largest difference (begin, end, mean, SD, CI)","4.73e-06","printed with 4-6 digits"
+"aCGH normality p-values: largest difference","3.39e-06","printed with 5 digits"
+"cnv_H2347 change points","51","51"
+"COVID-19 change points","17","17"
+"COVID-19 segments: largest difference (begin, end, mean, SD, normality)","4.98e-05","18 segments, printed with 4-5 digits"

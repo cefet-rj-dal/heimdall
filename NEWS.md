@@ -171,6 +171,22 @@
   votes on their detections: EFER, majority or threshold voting, crisp (CEDD)
   or with fuzzy time tolerance (FEDD, Giusti Tavares et al., 2025), and
   `ensemble_vote()`, the same vote on detection series computed beforehand.
+* New `indid()`, the sequence-to-sequence change point detector of Romanenkova
+  et al. (2022): an LSTM that outputs the probability of change at every step,
+  trained on labelled sequences with the InDiD loss (expected detection delay
+  and time to false alarm), BCE or both in turn; `indid_predict()` and the
+  stream detector `dfr_indid()`. The network, backpropagation through time and
+  Adam are written in R.
+* New `dfr_llr2()`, the LLR2 detector of Sojo et al. (2027): a semiparametric
+  Bayesian network (`spbn()`, `spbn_loglik()`; linear Gaussian and conditional
+  KDE nodes) learned on a baseline, and a chi-square test per node of the
+  difference of mean log-likelihoods between a sliding and a reference window,
+  with optional Benjamini-Hochberg correction (LLR2-BH) and update of the
+  network after a drift.
+* New `online_bcp()`, the online Bayesian change point detection of onlineBcp
+  (Yigiter et al., 2015; Xu et al., 2022) for normal data, with the segment
+  summary of the package and stable (log-scale) numerics, and the stream
+  detector `dfr_onlinebcp()`.
 
 ## Bug fixes
 

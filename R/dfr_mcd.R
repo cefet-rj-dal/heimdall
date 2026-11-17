@@ -392,7 +392,7 @@ reset_state.dfr_mcd <- function(obj) {
     penalty <- .mcd_penalty(params, samples[[n_sub]], caches[[n_sub]], k)
     grads <- .mcd_add(grads, lapply(penalty$grad, function(g) settings$lambda * g))
     loss <- log(total_pos / total) + settings$lambda * penalty$value
-    net <- .mcd_adam(net, grads, settings$learning_rate)
+    net <- .adam_step(net, grads, settings$learning_rate)
   }
   threshold_sets <- if (is.null(draws)) lapply(subs, function(s) .mcd_sets(nrow(s), settings)) else draws$threshold_sets
   pairs <- unlist(lapply(seq_len(n_sub), function(j) {
@@ -415,19 +415,4 @@ reset_state.dfr_mcd <- function(obj) {
   })
   last <- embeddings[[length(embeddings)]]
   vapply(embeddings[-length(embeddings)], function(e) .mcd_between(e, last)$value, numeric(1))
-}
-
-# Adam with the defaults of torch.optim.Adam (betas 0.9 and 0.999, eps 1e-8).
-#' @noRd
-.mcd_adam <- function(net, grads, learning_rate, beta1 = 0.9, beta2 = 0.999, eps = 1e-8) {
-  adam <- net$adam
-  adam$t <- adam$t + 1L
-  for (name in names(net$params)) {
-    adam$m[[name]] <- beta1 * adam$m[[name]] + (1 - beta1) * grads[[name]]
-    adam$v[[name]] <- beta2 * adam$v[[name]] + (1 - beta2) * grads[[name]]^2
-    denominator <- sqrt(adam$v[[name]]) / sqrt(1 - beta2^adam$t) + eps
-    net$params[[name]] <- net$params[[name]] - (learning_rate / (1 - beta1^adam$t)) * adam$m[[name]] / denominator
-  }
-  net$adam <- adam
-  net
 }

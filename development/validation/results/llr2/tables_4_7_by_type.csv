@@ -1,0 +1,33 @@
+"source","type","method","mdr","mtd","fa","drifts"
+"dfr_llr2","S","LLR2",0,14.4375,2.25,10.25
+"reference (parameter)","S","LLR2",0,15.3125,0,8
+"reference (local)","S","LLR2",0,24.75,0,8
+"paper","S","LLR2",0,24.75,0,8
+"dfr_llr2","S","LLR2-BH",0,21.3125,0.75,8.75
+"reference (parameter)","S","LLR2-BH",0.03125,21.8660714285714,0,7.75
+"reference (local)","S","LLR2-BH",0.03125,30.6785714285714,0,7.75
+"paper","S","LLR2-BH",0.03,30.6775,0,7.75
+"dfr_llr2","I","LLR2",0,370.833333333333,4.5,10.5
+"reference (parameter)","I","LLR2",0,371.5,4,10
+"reference (local)","I","LLR2",0,377.083333333333,3.75,9.75
+"paper","I","LLR2",0,377.0825,3.75,9.75
+"dfr_llr2","I","LLR2-BH",0,427.916666666667,2.5,8.5
+"reference (parameter)","I","LLR2-BH",0,394.416666666667,2.5,8.5
+"reference (local)","I","LLR2-BH",0,427.916666666667,2.75,8.75
+"paper","I","LLR2-BH",0,427.9175,2.75,8.75
+"dfr_llr2","IR","LLR2",0,337,4.5,9.5
+"reference (parameter)","IR","LLR2",0,379.5,3,8
+"reference (local)","IR","LLR2",0,369,3.25,8.25
+"paper","IR","LLR2",0,369,3.25,8.25
+"dfr_llr2","IR","LLR2-BH",0,392,3.25,8.25
+"reference (parameter)","IR","LLR2-BH",0,387,2.75,7.75
+"reference (local)","IR","LLR2-BH",0,389,3,8
+"paper","IR","LLR2-BH",0,389,3,8
+"dfr_llr2","G","LLR2",0,170.833333333333,2,8
+"reference (parameter)","G","LLR2",0,226.083333333333,2.25,8.25
+"reference (local)","G","LLR2",0,182.916666666667,2.75,8.75
+"paper","G","LLR2",0,182.915,2.75,8.75
+"dfr_llr2","G","LLR2-BH",0,238.75,0.5,6.5
+"reference (parameter)","G","LLR2-BH",0,387.333333333333,0.75,6.75
+"reference (local)","G","LLR2-BH",0,253.333333333333,1.25,7.25
+"paper","G","LLR2-BH",0,253.3325,1.25,7.25
