@@ -1,0 +1,134 @@
+Evaluation: 5253 s
+       source    model calibrated  aggregation   f1.mean        f1.sd
+1    heimdall      bce      FALSE          max 0.9870088 0.0045580388
+2   reference      bce      FALSE          max 0.9862793 0.0029025678
+3    heimdall bce_boot      FALSE          max 0.9870017 0.0007506714
+4   reference bce_boot      FALSE          max 0.9845112 0.0017801571
+5    heimdall    indid      FALSE          max 0.9868045 0.0027936275
+6   reference    indid      FALSE          max 0.9862198 0.0017808507
+7    heimdall   ts2vec      FALSE          max 0.9310370 0.0026007530
+8   reference   ts2vec      FALSE          max 0.9335926 0.0018967214
+9    heimdall     tscp      FALSE          max 0.9296465 0.0022873855
+10  reference     tscp      FALSE          max 0.9289472 0.0018614831
+11   heimdall      bce       TRUE          max 0.9890454 0.0005126228
+12  reference      bce       TRUE          max 0.9877457 0.0020533081
+13   heimdall bce_boot       TRUE          max 0.9864157 0.0026853836
+14  reference bce_boot       TRUE          max 0.9858272 0.0032478895
+15   heimdall    indid       TRUE          max 0.9835614 0.0032733801
+16  reference    indid       TRUE          max 0.9801573 0.0006820078
+17   heimdall   ts2vec       TRUE          max 0.9318416 0.0027251772
+18  reference   ts2vec       TRUE          max 0.9350565 0.0009608345
+19   heimdall     tscp       TRUE          max 0.9282970 0.0040213037
+20  reference     tscp       TRUE          max 0.9287629 0.0028764458
+21   heimdall      bce      FALSE         mean 0.9917851 0.0008717815
+22  reference      bce      FALSE         mean 0.9916443 0.0013270949
+23   heimdall bce_boot      FALSE         mean 0.9928003 0.0013973715
+24  reference bce_boot      FALSE         mean 0.9920760 0.0002515527
+25   heimdall    indid      FALSE         mean 0.9892996 0.0009129961
+26  reference    indid      FALSE         mean 0.9878331 0.0023292256
+27   heimdall   ts2vec      FALSE         mean 0.9339350 0.0005735038
+28  reference   ts2vec      FALSE         mean 0.9361573 0.0007073704
+29   heimdall     tscp      FALSE         mean 0.9310162 0.0016295344
+30  reference     tscp      FALSE         mean 0.9295401 0.0020582256
+31   heimdall      bce       TRUE         mean 0.9917851 0.0008717815
+32  reference      bce       TRUE         mean 0.9919350 0.0010923084
+33   heimdall bce_boot       TRUE         mean 0.9929448 0.0016450272
+34  reference bce_boot       TRUE         mean 0.9919330 0.0002554310
+35   heimdall    indid       TRUE         mean 0.9898844 0.0002528648
+36  reference    indid       TRUE         mean 0.9876880 0.0017793028
+37   heimdall   ts2vec       TRUE         mean 0.9340948 0.0009923730
+38  reference   ts2vec       TRUE         mean 0.9361573 0.0007073704
+39   heimdall     tscp       TRUE         mean 0.9285495 0.0009764365
+40  reference     tscp       TRUE         mean 0.9281808 0.0012897391
+41   heimdall      bce      FALSE       median 0.9929461 0.0009049395
+42  reference      bce      FALSE       median 0.9930948 0.0013007416
+43   heimdall bce_boot      FALSE       median 0.9939588 0.0015021676
+44  reference bce_boot      FALSE       median 0.9928058 0.0008979557
+45   heimdall    indid      FALSE       median 0.9900303 0.0000000000
+46  reference    indid      FALSE       median 0.9898844 0.0002528648
+47   heimdall   ts2vec      FALSE       median 0.9334523 0.0014070520
+48  reference   ts2vec      FALSE       median 0.9352162 0.0013702898
+49   heimdall     tscp      FALSE       median 0.9303287 0.0015378907
+50  reference     tscp      FALSE       median 0.9285276 0.0007723374
+51   heimdall      bce       TRUE       median 0.9928009 0.0010040403
+52  reference      bce       TRUE       median 0.9929504 0.0009012359
+53   heimdall bce_boot       TRUE       median 0.9939588 0.0015021676
+54  reference bce_boot       TRUE       median 0.9929485 0.0005002001
+55   heimdall    indid       TRUE       median 0.9885647 0.0025385557
+56  reference    indid       TRUE       median 0.9885647 0.0025385557
+57   heimdall   ts2vec       TRUE       median 0.9333125 0.0014327929
+58  reference   ts2vec       TRUE       median 0.9356765 0.0016572197
+59   heimdall     tscp       TRUE       median 0.9301684 0.0014240206
+60  reference     tscp       TRUE       median 0.9285281 0.0003015888
+61   heimdall      bce      FALSE          min 0.9826944 0.0059808817
+62  reference      bce      FALSE          min 0.9887249 0.0004385408
+63   heimdall bce_boot      FALSE          min 0.9895997 0.0015793931
+64  reference bce_boot      FALSE          min 0.9875506 0.0006657494
+65   heimdall    indid      FALSE          min 0.9885667 0.0018293527
+66  reference    indid      FALSE          min 0.9856272 0.0030912681
+67   heimdall   ts2vec      FALSE          min 0.9364711 0.0035560476
+68  reference   ts2vec      FALSE          min 0.9367690 0.0035382171
+69   heimdall     tscp      FALSE          min 0.9263670 0.0020611696
+70  reference     tscp      FALSE          min 0.9243978 0.0048620529
+71   heimdall      bce       TRUE          min 0.9857783 0.0047290464
+72  reference      bce       TRUE          min 0.9885788 0.0002533015
+73   heimdall bce_boot       TRUE          min 0.9898916 0.0015368825
+74  reference bce_boot       TRUE          min 0.9884248 0.0015366443
+75   heimdall    indid       TRUE          min 0.9891535 0.0008770906
+76  reference    indid       TRUE          min 0.9866596 0.0022191473
+77   heimdall   ts2vec       TRUE          min 0.9369365 0.0012245102
+78  reference   ts2vec       TRUE          min 0.9359540 0.0033988814
+79   heimdall     tscp       TRUE          min 0.9242690 0.0012991732
+80  reference     tscp       TRUE          min 0.9249122 0.0042642061
+81   heimdall      bce      FALSE  wwaggr_prev 0.9731679 0.0023782486
+82  reference      bce      FALSE  wwaggr_prev 0.9740650 0.0011924555
+83   heimdall bce_boot      FALSE  wwaggr_prev 0.9743590 0.0005075607
+84  reference bce_boot      FALSE  wwaggr_prev 0.9739150 0.0009386537
+85   heimdall    indid      FALSE  wwaggr_prev 0.9755239 0.0002600300
+86  reference    indid      FALSE  wwaggr_prev 0.9756740 0.0002600300
+87   heimdall   ts2vec      FALSE  wwaggr_prev 0.9238236 0.0007485174
+88  reference   ts2vec      FALSE  wwaggr_prev 0.9255722 0.0005251026
+89   heimdall     tscp      FALSE  wwaggr_prev 0.9129055 0.0025165875
+90  reference     tscp      FALSE  wwaggr_prev 0.9119603 0.0017040916
+91   heimdall      bce       TRUE  wwaggr_prev 0.9737548 0.0023021435
+92  reference      bce       TRUE  wwaggr_prev 0.9749659 0.0013505073
+93   heimdall bce_boot       TRUE  wwaggr_prev 0.9742008 0.0005277827
+94  reference bce_boot       TRUE  wwaggr_prev 0.9746743 0.0002538069
+95   heimdall    indid       TRUE  wwaggr_prev 0.9718640 0.0004396185
+96  reference    indid       TRUE  wwaggr_prev 0.9717213 0.0006878038
+97   heimdall   ts2vec       TRUE  wwaggr_prev 0.9041282 0.0020469768
+98  reference   ts2vec       TRUE  wwaggr_prev 0.9047178 0.0004685860
+99   heimdall     tscp       TRUE  wwaggr_prev 0.9032849 0.0008505260
+100 reference     tscp       TRUE  wwaggr_prev 0.9023326 0.0017850010
+101  heimdall      bce      FALSE wwaggr_start 0.9725841 0.0009402844
+102 reference      bce      FALSE wwaggr_start 0.9730155 0.0025001514
+103  heimdall bce_boot      FALSE wwaggr_start 0.9731631 0.0004517541
+104 reference bce_boot      FALSE wwaggr_start 0.9730190 0.0013164467
+105  heimdall    indid      FALSE wwaggr_start 0.9755239 0.0002600300
+106 reference    indid      FALSE wwaggr_start 0.9756740 0.0002600300
+107  heimdall   ts2vec      FALSE wwaggr_start 0.9216015 0.0002430360
+108 reference   ts2vec      FALSE wwaggr_start 0.9223744 0.0000000000
+109  heimdall     tscp      FALSE wwaggr_start 0.9121302 0.0024498905
+110 reference     tscp      FALSE wwaggr_start 0.9102612 0.0025490035
+111  heimdall      bce       TRUE wwaggr_start 0.9730194 0.0015741603
+112 reference      bce       TRUE wwaggr_start 0.9745135 0.0018246632
+113  heimdall bce_boot       TRUE wwaggr_start 0.9734553 0.0011494419
+114 reference bce_boot       TRUE wwaggr_start 0.9742161 0.0005207239
+115  heimdall    indid       TRUE wwaggr_start 0.9743888 0.0005197983
+116 reference    indid       TRUE wwaggr_start 0.9748315 0.0006850823
+117  heimdall   ts2vec       TRUE wwaggr_start 0.8979442 0.0014170224
+118 reference   ts2vec       TRUE wwaggr_start 0.8982605 0.0005948226
+119  heimdall     tscp       TRUE wwaggr_start 0.9039982 0.0018019920
+120 reference     tscp       TRUE wwaggr_start 0.9032646 0.0008506619
+      source    model   f1.mean       f1.sd
+1   heimdall      bce 0.9883044 0.006985864
+2  reference      bce 0.9894344 0.002480140
+3   heimdall bce_boot 0.9898658 0.003253303
+4  reference bce_boot 0.9886594 0.003579618
+5   heimdall    indid 0.9888281 0.002101714
+6  reference    indid 0.9880950 0.002385690
+7   heimdall   ts2vec 0.9327532 0.003755015
+8  reference   ts2vec 0.9345629 0.003972676
+9   heimdall     tscp 0.9262111 0.005301539
+10 reference     tscp 0.9266115 0.004477146
+HAR_EVALUATION_DONE

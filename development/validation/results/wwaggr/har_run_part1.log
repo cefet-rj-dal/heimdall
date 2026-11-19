@@ -1,0 +1,60 @@
+R tscp ensemble 1 member 0: 19 epochs, 2058 s
+R tscp ensemble 1 member 2: 20 epochs, 2165 s
+R tscp ensemble 1 member 1: 21 epochs, 2276 s
+R tscp ensemble 1 member 3: 17 epochs, 1912 s
+R tscp ensemble 1 member 4: 20 epochs, 2432 s
+R tscp ensemble 1 member 5: 19 epochs, 2327 s
+R tscp ensemble 1 member 6: 18 epochs, 2505 s
+R tscp ensemble 1 member 8: 17 epochs, 2239 s
+R ts2vec ensemble 1 member 1: 40 epochs, 8811 s
+R tscp ensemble 1 member 7: 31 epochs, 3929 s
+R ts2vec ensemble 1 member 0: 40 epochs, 8875 s
+R ts2vec ensemble 1 member 2: 40 epochs, 8978 s
+R tscp ensemble 2 member 0: 20 epochs, 2343 s
+R tscp ensemble 1 member 9: 23 epochs, 2721 s
+R tscp ensemble 2 member 3: 15 epochs, 1840 s
+R tscp ensemble 2 member 1: 33 epochs, 4055 s
+R tscp ensemble 2 member 2: 29 epochs, 3599 s
+R tscp ensemble 2 member 6: 16 epochs, 1980 s
+R tscp ensemble 2 member 4: 30 epochs, 3711 s
+R ts2vec ensemble 1 member 3: 40 epochs, 8723 s
+R ts2vec ensemble 1 member 4: 40 epochs, 8764 s
+R ts2vec ensemble 1 member 5: 40 epochs, 8704 s
+R tscp ensemble 2 member 7: 19 epochs, 2211 s
+R tscp ensemble 2 member 5: 43 epochs, 5139 s
+R tscp ensemble 2 member 8: 26 epochs, 3143 s
+R tscp ensemble 3 member 0: 19 epochs, 2402 s
+R tscp ensemble 2 member 9: 26 epochs, 3303 s
+R tscp ensemble 3 member 1: 29 epochs, 3560 s
+R tscp ensemble 3 member 2: 33 epochs, 3860 s
+R tscp ensemble 3 member 3: 34 epochs, 3951 s
+R tscp ensemble 3 member 4: 31 epochs, 3663 s
+R ts2vec ensemble 1 member 8: 40 epochs, 8759 s
+R ts2vec ensemble 1 member 6: 40 epochs, 8949 s
+R ts2vec ensemble 1 member 7: 40 epochs, 8921 s
+R tscp ensemble 3 member 5: 24 epochs, 3109 s
+R tscp ensemble 3 member 6: 22 epochs, 2938 s
+R tscp ensemble 3 member 7: 33 epochs, 4186 s
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+R tscp ensemble 3 member 9: 21 epochs, 2534 s
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+R tscp ensemble 3 member 8: 32 epochs, 3785 s
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+reference TypeError: CosineAnnealingWarmRestarts.__init__() got an unexpected keyword argument 'verbose'
+Killed

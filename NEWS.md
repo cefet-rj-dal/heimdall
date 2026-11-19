@@ -187,6 +187,31 @@
   (Yigiter et al., 2015; Xu et al., 2022) for normal data, with the segment
   summary of the package and stable (log-scale) numerics, and the stream
   detector `dfr_onlinebcp()`.
+* New `cosine_score()` and `dfr_cosine()`, the data drift check for embeddings
+  (e.g. BERT sentence embeddings of NLP inputs) of the custom Amazon SageMaker
+  Model Monitor (Nigenda et al., 2022): the average cosine similarity of every
+  input with a baseline of embeddings, averaged over monitoring windows and
+  compared with a threshold.
+* New `dfr_padd()`, the Parallel Activations Drift Detector of Komorniczak and
+  Ksieniewicz (2024): chunks of the stream pass through a fixed, randomly
+  initialised neural network, and replicated t-tests compare the activations of
+  each chunk with those stored since the last drift.
+* New `dfr_studd()`, the student-teacher unsupervised drift detector (STUDD) of
+  Cerqueira et al. (2023): a student classifier is trained to mimic the
+  teacher, and its mimicking error, which needs no label, feeds a change
+  detector (Page-Hinkley by default). Labels are only requested to retrain the
+  teacher after a drift.
+* New `dfr_wwaggr()` and `wwaggr()`, the window Wasserstein-based aggregation
+  (WWAggr) of ensembles of change point detectors of Stepikin et al. (2025),
+  with the MMD and p-Wasserstein distances, the start, previous and combined
+  anchor windows, and the mean, min, max, median and quantile aggregations.
+  The ensembles (`cpd_ensemble()`, `cpd_ensemble_fit()`; naive, bootstrap or
+  mixed) take members from `indid()` (BCE and InDiD losses), the new `tscp2()`
+  (TS-CP2) and `ts2vec()` (SN-TS2Vec), scored by `cpd_scores()` and calibrated
+  by `cpd_calibrate()` (beta or temperature). The networks are trained with a
+  reverse-mode automatic differentiation written in R.
+* `indid()` gained `n_layers`, `dropout` and `layer_norm` (the LSTM with layer
+  normalisation of the WWAggr code); `dfr_indid()` streams these models too.
 
 ## Bug fixes
 

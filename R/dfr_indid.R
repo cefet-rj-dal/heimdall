@@ -25,6 +25,12 @@
 #' @param validation Optional validation data, `list(x = , labels = )`.
 #' @param seed Seed of the private random stream (initial weights and order of
 #' the batches). `NULL` draws one from the session.
+#' @param n_layers Number of LSTM layers.
+#' @param dropout Dropout rate on the outputs of every LSTM layer but the last
+#' (training only), as `torch.nn.LSTM`.
+#' @param layer_norm `"none"` (default, `torch.nn.LSTM`), or the one-layer
+#' LSTM with layer normalisation of the WWAggr code (`LayerNormLSTM`):
+#' `"before"` or `"after"` the linear map of every gate.
 #' @details The model and the training follow the reference code
 #' (<https://github.com/romanenkova95/InDiD>: `utils/loss.py`,
 #' `utils/core_models.py` (`BaseRnn`), `utils/cpd_models.py`, `train.py` and
@@ -51,6 +57,17 @@
 #' The network, the gradients (backpropagation through time) and Adam are
 #' written in R. The defaults are those of the 1-D SyntheticNormal experiment
 #' (`configs/synthetic_1D_seq2seq.yaml`).
+#'
+#' The architectures of the WWAggr code (`BaseRnn` of
+#' <https://github.com/stalex2902/wwagr-ensemble-cpd>,
+#' `src/models/core_models.py`), used for the BCE and InDiD members of the
+#' ensembles of [cpd_ensemble()], are available through `n_layers`, `dropout`
+#' and `layer_norm`. In `LayerNormLSTM`, every gate (forget, input, output,
+#' cell) has a linear map of the input and one of the hidden state, each with
+#' its own layer normalisation (before the map, on the input or hidden state,
+#' or after it); the linear maps are initialised as `torch.nn.Linear`. Models
+#' with more than one layer or with layer normalisation are trained with the
+#' automatic differentiation of the package.
 #' @references Romanenkova, E., Stepikin, A., Morozov, M. and Zaytsev, A.
 #' (2022). InDiD: Instant disorder detection via a principled neural network.
 #' *Proceedings of the 30th ACM International Conference on Multimedia*,
@@ -76,8 +93,18 @@
 #' test$labels[, 25:32]
 #' @export
 indid <- function(x, labels, loss = c("indid", "bce", "combined"), hidden_size = 4, T = 32, learning_rate = 0.001,
-                  batch_size = 64, epochs = 200, patience = 10, validation = NULL, seed = NULL) {
+                  batch_size = 64, epochs = 200, patience = 10, validation = NULL, seed = NULL, n_layers = 1,
+                  dropout = 0, layer_norm = c("none", "before", "after")) {
   loss <- match.arg(loss)
+  layer_norm <- match.arg(layer_norm)
+  .check_positive_integer(n_layers, "n_layers", min_value = 1L)
+  .check_number(dropout, "dropout", min_value = 0)
+  if (dropout >= 1) {
+    stop("indid: dropout must be below 1", call. = FALSE)
+  }
+  if (layer_norm != "none" && n_layers != 1) {
+    stop("indid: the LSTM with layer normalisation has one layer", call. = FALSE)
+  }
   .check_positive_integer(hidden_size, "hidden_size", min_value = 1L)
   .check_positive_integer(T, "T", min_value = 1L)
   .check_number(learning_rate, "learning_rate", min_value = 0)
@@ -98,18 +125,25 @@ indid <- function(x, labels, loss = c("indid", "bce", "combined"), hidden_size =
   }
   settings <- list(loss = loss, hidden_size = hidden_size, T = T, learning_rate = learning_rate,
                    batch_size = batch_size, epochs = epochs, patience = patience)
+  general <- (n_layers > 1) || (layer_norm != "none")
+  if (general) {
+    settings <- c(settings, list(n_layers = as.integer(n_layers), dropout = dropout, layer_norm = layer_norm,
+                                 general = TRUE))
+  }
+  fit_net <- if (general) .s2s_fit else .indid_fit
   result <- .with_rng(.rng_state(seed), function() {
-    net <- .indid_net(dim(x)[3], hidden_size)
+    net <- if (general) .indid_reset_adam(list(params = .s2s_init(dim(x)[3], settings))) else
+      .indid_net(dim(x)[3], hidden_size)
     if (loss == "combined") {
-      first <- .indid_fit(net, x, labels, validation, utils::modifyList(settings, list(loss = "bce",
-                                                                                         epochs = epochs %/% 2)))
+      first <- fit_net(net, x, labels, validation, utils::modifyList(settings, list(loss = "bce",
+                                                                                      epochs = epochs %/% 2)))
       net <- .indid_reset_adam(first$net)
-      second <- .indid_fit(net, x, labels, validation, utils::modifyList(settings, list(loss = "indid",
-                                                                                          epochs = epochs %/% 2)))
+      second <- fit_net(net, x, labels, validation, utils::modifyList(settings, list(loss = "indid",
+                                                                                       epochs = epochs %/% 2)))
       list(net = second$net, history = rbind(cbind(stage = "bce", first$history),
                                              cbind(stage = "indid", second$history)))
     } else {
-      fitted <- .indid_fit(net, x, labels, validation, settings)
+      fitted <- fit_net(net, x, labels, validation, settings)
       list(net = fitted$net, history = cbind(stage = loss, fitted$history))
     }
   })$value
@@ -141,14 +175,27 @@ indid_predict <- function(model, x) {
   if (dim(x)[3] != model$dim) {
     stop("indid_predict: the sequences have a different number of features from the training ones", call. = FALSE)
   }
+  if (isTRUE(model$settings$general)) {
+    p <- matrix(0, dim(x)[1], dim(x)[2])
+    for (rows in .nn_batches(dim(x)[1], 256L, FALSE)) {
+      p[rows, ] <- .s2s_forward(model$params, model$settings, x[rows, , , drop = FALSE])
+    }
+    return(p)
+  }
   .indid_forward(model$params, x)$p
 }
 
 #' @export
 print.indid <- function(x, ...) {
   epochs <- nrow(x$history)
-  cat(sprintf("InDiD model (%s loss): LSTM with %d hidden units on %d feature(s), %d epoch(s)\n", x$settings$loss,
-              x$settings$hidden_size, x$dim, epochs))
+  layers <- if (isTRUE(x$settings$general)) {
+    if (x$settings$layer_norm != "none") sprintf(", layer normalisation %s the gates", x$settings$layer_norm) else
+      sprintf(", %d layers", x$settings$n_layers)
+  } else {
+    ""
+  }
+  cat(sprintf("InDiD model (%s loss): LSTM with %d hidden units%s on %d feature(s), %d epoch(s)\n", x$settings$loss,
+              x$settings$hidden_size, layers, x$dim, epochs))
   invisible(x)
 }
 
@@ -399,6 +446,20 @@ print.indid <- function(x, ...) {
 
 # Stream detector ----------------------------------------------------------------------------------
 
+# One observation of a stream for an indid model; `state` is NULL at the start
+# of a sequence.
+#' @noRd
+.indid_stream_step <- function(model, row, state) {
+  if (isTRUE(model$settings$general)) {
+    return(.s2s_stream_step(model$params, model$settings, row, state))
+  }
+  size <- ncol(model$params$W_hh)
+  if (is.null(state)) state <- list(h = matrix(0, 1, size), c = matrix(0, 1, size))
+  step <- .indid_cell(model$params, matrix(row, 1), state$h, state$c)
+  list(probability = .indid_sigmoid(sum(step$h * model$params$W_out) + model$params$b_out),
+       state = list(h = step$h, c = step$c))
+}
+
 #' @title InDiD stream detector
 #' @description Monitors a stream with a trained [indid()] model: the
 #' observations are fed one by one to the recurrent network, and a drift is
@@ -454,7 +515,7 @@ dfr_indid <- function(model, threshold = 0.5, target_feat = NULL, horizon = NULL
   obj <- mv_dist_based(target_feat = target_feat)
   obj$model <- model
   # The network state (hidden and cell) is `fresh` at the start and after a drift.
-  obj$state <- list(threshold = threshold, horizon = horizon, hidden = NULL, cell = NULL, fresh = TRUE, steps = 0L)
+  obj$state <- list(threshold = threshold, horizon = horizon, network = NULL, fresh = TRUE, steps = 0L)
   obj$last_drifter_output <- NULL
   obj$drifter_output <- NULL
   class(obj) <- append("dfr_indid", class(obj))
@@ -473,17 +534,14 @@ update_state.dfr_indid <- function(obj, value, ...) {
   if (anyNA(row)) {
     return(list(obj = obj, drift = FALSE))
   }
-  size <- ncol(obj$model$params$W_hh)
   if (state[["fresh"]] || (!is.null(state[["horizon"]]) && (state[["steps"]] >= state[["horizon"]]))) {
-    state[["hidden"]] <- matrix(0, 1, size)
-    state[["cell"]] <- matrix(0, 1, size)
+    state[["network"]] <- NULL
     state[["fresh"]] <- FALSE
     state$steps <- 0L
   }
-  step <- .indid_cell(obj$model$params, matrix(unname(row), 1), state[["hidden"]], state[["cell"]])
-  probability <- .indid_sigmoid(sum(step$h * obj$model$params$W_out) + obj$model$params$b_out)
-  state[["hidden"]] <- step$h
-  state[["cell"]] <- step$c
+  step <- .indid_stream_step(obj$model, unname(row), state[["network"]])
+  probability <- step$probability
+  state[["network"]] <- step$state
   state$steps <- state$steps + 1L
   obj$last_drifter_output <- c(probability = probability)
   drift <- probability > state$threshold

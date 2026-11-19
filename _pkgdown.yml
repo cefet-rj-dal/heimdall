@@ -48,6 +48,30 @@ reference:
     contents:
       - psi
       - dfr_psi
+  - title: Cosine similarity of embeddings
+    desc: Data drift check for embeddings of the custom SageMaker Model Monitor (Nigenda et al., 2022).
+    contents:
+      - cosine_score
+      - dfr_cosine
+  - title: Parallel Activations Drift Detector
+    desc: Unsupervised batch detector on the outputs of a random neural network (Komorniczak and Ksieniewicz, 2024).
+    contents:
+      - dfr_padd
+  - title: Student-Teacher Unsupervised Drift Detection
+    desc: Unsupervised detector on the mimicking error of a student classifier (Cerqueira et al., 2023).
+    contents:
+      - dfr_studd
+  - title: Ensembles of change point detectors (WWAggr)
+    desc: Window Wasserstein-based aggregation of calibrated deep change point detectors (Stepikin et al., 2025).
+    contents:
+      - wwaggr
+      - dfr_wwaggr
+      - cpd_ensemble
+      - cpd_ensemble_fit
+      - cpd_calibrate
+      - cpd_scores
+      - tscp2
+      - ts2vec
   - title: Maximum Concept Discrepancy
     desc: Unsupervised detector with a contrastively trained set encoder (Wan et al., 2024).
     contents:

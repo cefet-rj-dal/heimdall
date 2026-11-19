@@ -15,7 +15,10 @@ indid(
   epochs = 200,
   patience = 10,
   validation = NULL,
-  seed = NULL
+  seed = NULL,
+  n_layers = 1,
+  dropout = 0,
+  layer_norm = c("none", "before", "after")
 )
 }
 \arguments{
@@ -48,6 +51,15 @@ the InDiD loss.}
 
 \item{seed}{Seed of the private random stream (initial weights and order of
 the batches). \code{NULL} draws one from the session.}
+
+\item{n_layers}{Number of LSTM layers.}
+
+\item{dropout}{Dropout rate on the outputs of every LSTM layer but the last
+(training only), as \code{torch.nn.LSTM}.}
+
+\item{layer_norm}{\code{"none"} (default, \code{torch.nn.LSTM}), or the one-layer
+LSTM with layer normalisation of the WWAggr code (\code{LayerNormLSTM}):
+\code{"before"} or \code{"after"} the linear map of every gate.}
 }
 \value{
 An \code{indid} object with the network (\code{params}), the settings and the
@@ -89,6 +101,17 @@ min_delta 0) as Lightning; the model of the last epoch is kept, as
 The network, the gradients (backpropagation through time) and Adam are
 written in R. The defaults are those of the 1-D SyntheticNormal experiment
 (\code{configs/synthetic_1D_seq2seq.yaml}).
+
+The architectures of the WWAggr code (\code{BaseRnn} of
+\url{https://github.com/stalex2902/wwagr-ensemble-cpd},
+\code{src/models/core_models.py}), used for the BCE and InDiD members of the
+ensembles of \code{\link[=cpd_ensemble]{cpd_ensemble()}}, are available through \code{n_layers}, \code{dropout}
+and \code{layer_norm}. In \code{LayerNormLSTM}, every gate (forget, input, output,
+cell) has a linear map of the input and one of the hidden state, each with
+its own layer normalisation (before the map, on the input or hidden state,
+or after it); the linear maps are initialised as \code{torch.nn.Linear}. Models
+with more than one layer or with layer normalisation are trained with the
+automatic differentiation of the package.
 }
 \examples{
 # Sequences of 32 steps around 1; half of them move to 6 at a random step.

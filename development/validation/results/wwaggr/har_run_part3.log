@@ -1,0 +1,2 @@
+reference   total += float(loss) * size
+reference   total += float(loss) * size

@@ -1,0 +1,37 @@
+"baseline","window_size","threshold","segment","windows","drift_rate"
+"padded",1,"0.5","in_domain_dev",527,0.0208728652751423
+"padded",1,"0.5","out_of_domain_dev",516,0.0135658914728682
+"padded",1,"0.5","notebook",14,0.214285714285714
+"padded",1,"calibrated (0.4804)","in_domain_dev",527,0.0132827324478178
+"padded",1,"calibrated (0.4804)","out_of_domain_dev",516,0.00581395348837209
+"padded",1,"calibrated (0.4804)","notebook",14,0.214285714285714
+"padded",10,"0.5","in_domain_dev",52,0
+"padded",10,"0.5","out_of_domain_dev",52,0
+"padded",10,"0.5","notebook",1,0
+"padded",10,"calibrated (0.5992)","in_domain_dev",52,0.0192307692307692
+"padded",10,"calibrated (0.5992)","out_of_domain_dev",52,0
+"padded",10,"calibrated (0.5992)","notebook",1,0
+"padded",50,"0.5","in_domain_dev",10,0
+"padded",50,"0.5","out_of_domain_dev",10,0
+"padded",50,"0.5","notebook",1,0
+"padded",50,"calibrated (0.6237)","in_domain_dev",10,0
+"padded",50,"calibrated (0.6237)","out_of_domain_dev",10,0
+"padded",50,"calibrated (0.6237)","notebook",1,0
+"unpadded",1,"0.5","in_domain_dev",527,0.0113851992409867
+"unpadded",1,"0.5","out_of_domain_dev",516,0.00775193798449612
+"unpadded",1,"0.5","notebook",14,0.214285714285714
+"unpadded",1,"calibrated (0.5023)","in_domain_dev",527,0.0132827324478178
+"unpadded",1,"calibrated (0.5023)","out_of_domain_dev",516,0.00775193798449612
+"unpadded",1,"calibrated (0.5023)","notebook",14,0.214285714285714
+"unpadded",10,"0.5","in_domain_dev",52,0
+"unpadded",10,"0.5","out_of_domain_dev",52,0
+"unpadded",10,"0.5","notebook",1,0
+"unpadded",10,"calibrated (0.5839)","in_domain_dev",52,0.0192307692307692
+"unpadded",10,"calibrated (0.5839)","out_of_domain_dev",52,0
+"unpadded",10,"calibrated (0.5839)","notebook",1,0
+"unpadded",50,"0.5","in_domain_dev",10,0
+"unpadded",50,"0.5","out_of_domain_dev",10,0
+"unpadded",50,"0.5","notebook",1,0
+"unpadded",50,"calibrated (0.6035)","in_domain_dev",10,0
+"unpadded",50,"calibrated (0.6035)","out_of_domain_dev",10,0
+"unpadded",50,"calibrated (0.6035)","notebook",1,0

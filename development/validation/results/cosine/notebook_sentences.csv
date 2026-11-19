@@ -1,0 +1,15 @@
+"sentence","score_padded","score_unpadded"
+"CLI to download the zip file",0.677537218474085,0.612948003036099
+"Thanks so much for driving me home",0.366533777342439,0.421212479526437
+"construct the sub-embeddings and corresponding baselines",0.578222706248541,0.546201866359499
+"our Bert model and interpret what the model",0.697292287009748,0.620328717469684
+"Bert models using Captum library",0.68530356465512,0.600130271966486
+"case study we focus on a fine-tuned Question Answering model on SQUAD datase",0.702773854882536,0.634193951921268
+"we pretrain the model, we can load ",0.722203933313532,0.656038208642329
+"need to define baselines / references, nu",0.67100914885652,0.607803949336011
+"defines numericalized special tokens ",0.606067242394856,0.567779071795793
+"Thanks so much for cooking dinner. I really appreciate it",0.349749451004936,0.413206777909847
+"let's define the ground truth for prediction's start and en",0.708282466789357,0.632112499360966
+"pre-computation of embeddings for the second option is necessary because",0.613939696454413,0.587063690798613
+"to summarize attributions for each word token in the sequence.",0.657897042095143,0.61180659236064
+"Nice to meet you, Sergio. So, where are you from",0.378982584152428,0.420420323952316

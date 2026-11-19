@@ -1,0 +1,4 @@
+"dataset","rows","window","fits","fits_reference","same_fit_labels","same_errors","alarms","alarms_reference","kappa","kappa_reference","labels","labels_reference","all_calls_used"
+"AbruptInsects",5325,500,6,6,TRUE,TRUE,"2611 4644","2611 4644",0.508415371015592,0.508415371015593,1000,1000,TRUE
+"Insects",5325,500,2,2,TRUE,TRUE,"","",0.809307225833626,0.809307225833626,0,0,TRUE
+"Keystroke",1600,500,2,2,TRUE,TRUE,"","",0.854545454545454,0.854545454545454,0,0,TRUE

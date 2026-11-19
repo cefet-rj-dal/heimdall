@@ -1,0 +1,6 @@
+baseline: 8551 sentences, longest 47 tokens
+baseline_padded: (8551, 768) in 1668 s
+baseline_unpadded: (8551, 768) in 535 s
+notebook: 14 sentences, 3 violations, 2 s
+in_domain_dev: 527 sentences, 11 violations, 72 s
+out_of_domain_dev: 516 sentences, 7 violations, 72 s

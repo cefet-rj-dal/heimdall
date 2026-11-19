@@ -1,0 +1,2 @@
+float32 loop vs float64 loop 1.36672192130316e-06
+float64 loop vs mean-direction identity 4.107825191113079e-15

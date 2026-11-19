@@ -1,0 +1,3 @@
+"stream","tests","tests_reference","p_max_difference","detections","detections_reference","same_detections"
+"r0_f30_c5_d10",35856,35856,4.45199432874688e-14,11,11,TRUE
+"r0_f30_c999_d10",35856,35856,5.89528426075958e-14,11,11,TRUE
