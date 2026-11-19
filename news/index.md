@@ -298,6 +298,56 @@
   of the package and stable (log-scale) numerics, and the stream
   detector
   [`dfr_onlinebcp()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_onlinebcp.md).
+- New
+  [`cosine_score()`](https://cefet-rj-dal.github.io/heimdall/reference/cosine_score.md)
+  and
+  [`dfr_cosine()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_cosine.md),
+  the data drift check for embeddings (e.g. BERT sentence embeddings of
+  NLP inputs) of the custom Amazon SageMaker Model Monitor (Nigenda et
+  al., 2022): the average cosine similarity of every input with a
+  baseline of embeddings, averaged over monitoring windows and compared
+  with a threshold.
+- New
+  [`dfr_padd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_padd.md),
+  the Parallel Activations Drift Detector of Komorniczak and Ksieniewicz
+  (2024): chunks of the stream pass through a fixed, randomly
+  initialised neural network, and replicated t-tests compare the
+  activations of each chunk with those stored since the last drift.
+- New
+  [`dfr_studd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_studd.md),
+  the student-teacher unsupervised drift detector (STUDD) of Cerqueira
+  et al. (2023): a student classifier is trained to mimic the teacher,
+  and its mimicking error, which needs no label, feeds a change detector
+  (Page-Hinkley by default). Labels are only requested to retrain the
+  teacher after a drift.
+- New
+  [`dfr_wwaggr()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_wwaggr.md)
+  and
+  [`wwaggr()`](https://cefet-rj-dal.github.io/heimdall/reference/wwaggr.md),
+  the window Wasserstein-based aggregation (WWAggr) of ensembles of
+  change point detectors of Stepikin et al. (2025), with the MMD and
+  p-Wasserstein distances, the start, previous and combined anchor
+  windows, and the mean, min, max, median and quantile aggregations. The
+  ensembles
+  ([`cpd_ensemble()`](https://cefet-rj-dal.github.io/heimdall/reference/cpd_ensemble.md),
+  [`cpd_ensemble_fit()`](https://cefet-rj-dal.github.io/heimdall/reference/cpd_ensemble.md);
+  naive, bootstrap or mixed) take members from
+  [`indid()`](https://cefet-rj-dal.github.io/heimdall/reference/indid.md)
+  (BCE and InDiD losses), the new
+  [`tscp2()`](https://cefet-rj-dal.github.io/heimdall/reference/tscp2.md)
+  (TS-CP2) and
+  [`ts2vec()`](https://cefet-rj-dal.github.io/heimdall/reference/ts2vec.md)
+  (SN-TS2Vec), scored by
+  [`cpd_scores()`](https://cefet-rj-dal.github.io/heimdall/reference/cpd_scores.md)
+  and calibrated by
+  [`cpd_calibrate()`](https://cefet-rj-dal.github.io/heimdall/reference/cpd_calibrate.md)
+  (beta or temperature). The networks are trained with a reverse-mode
+  automatic differentiation written in R.
+- [`indid()`](https://cefet-rj-dal.github.io/heimdall/reference/indid.md)
+  gained `n_layers`, `dropout` and `layer_norm` (the LSTM with layer
+  normalisation of the WWAggr code);
+  [`dfr_indid()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_indid.md)
+  streams these models too.
 
 ### Bug fixes
 

@@ -108,5 +108,5 @@ for (drift_index in detection[detection$type == 'drift', 'idx']) {
 
 
 print(paste('Successfull run at', Sys.time()))
-#> [1] "Successfull run at 2026-11-17 15:41:57.55484"
+#> [1] "Successfull run at 2026-11-19 23:03:33.785923"
 ```

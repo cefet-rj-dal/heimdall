@@ -301,6 +301,53 @@ PSI on quantile bins of a baseline (Kurian and Allali, 2024).
 - [`dfr_psi()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_psi.md)
   : PSI stream detector
 
+## Cosine similarity of embeddings
+
+Data drift check for embeddings of the custom SageMaker Model Monitor
+(Nigenda et al., 2022).
+
+- [`cosine_score()`](https://cefet-rj-dal.github.io/heimdall/reference/cosine_score.md)
+  : Average cosine similarity to a baseline of embeddings
+- [`dfr_cosine()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_cosine.md)
+  : Cosine similarity drift detector for embeddings
+
+## Parallel Activations Drift Detector
+
+Unsupervised batch detector on the outputs of a random neural network
+(Komorniczak and Ksieniewicz, 2024).
+
+- [`dfr_padd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_padd.md)
+  : Parallel Activations Drift Detector (PADD)
+
+## Student-Teacher Unsupervised Drift Detection
+
+Unsupervised detector on the mimicking error of a student classifier
+(Cerqueira et al., 2023).
+
+- [`dfr_studd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_studd.md)
+  : Student-Teacher Unsupervised Drift Detection (STUDD)
+
+## Ensembles of change point detectors (WWAggr)
+
+Window Wasserstein-based aggregation of calibrated deep change point
+detectors (Stepikin et al., 2025).
+
+- [`wwaggr()`](https://cefet-rj-dal.github.io/heimdall/reference/wwaggr.md)
+  : WWAggr and naive aggregations of ensemble scores
+- [`dfr_wwaggr()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_wwaggr.md)
+  : WWAggr ensemble drift detector
+- [`cpd_ensemble()`](https://cefet-rj-dal.github.io/heimdall/reference/cpd_ensemble.md)
+  [`cpd_ensemble_fit()`](https://cefet-rj-dal.github.io/heimdall/reference/cpd_ensemble.md)
+  : Ensembles of change point models
+- [`cpd_calibrate()`](https://cefet-rj-dal.github.io/heimdall/reference/cpd_calibrate.md)
+  : Calibration of change point models
+- [`cpd_scores()`](https://cefet-rj-dal.github.io/heimdall/reference/cpd_scores.md)
+  : Change point scores of a sequence model
+- [`tscp2()`](https://cefet-rj-dal.github.io/heimdall/reference/tscp2.md)
+  : TS-CP2 change point model
+- [`ts2vec()`](https://cefet-rj-dal.github.io/heimdall/reference/ts2vec.md)
+  : SN-TS2Vec change point model
+
 ## Maximum Concept Discrepancy
 
 Unsupervised detector with a contrastively trained set encoder (Wan et

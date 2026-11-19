@@ -10,11 +10,16 @@
 <url><loc>https://cefet-rj-dal.github.io/heimdall/authors.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/index.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/news/index.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/cosine_score.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/cpd_calibrate.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/cpd_ensemble.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/cpd_scores.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dde_curve.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dde_feature_drift.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dde_score.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_adwin.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_aedd.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_cosine.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_cusum.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_dde.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_ddm.html</loc></url>
@@ -34,11 +39,14 @@
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_mmqt.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_multi_criteria.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_onlinebcp.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_padd.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_page_hinkley.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_passive.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_proton.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_psi.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_qts.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_studd.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_wwaggr.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dist_based.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/drifter.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dsg_drift.html</loc></url>
@@ -76,6 +84,9 @@
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/spbn_loglik.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/st_drift_examples.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/stealthy.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/ts2vec.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/tscp2.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/update_state.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/wwaggr.html</loc></url>
 </urlset>
 

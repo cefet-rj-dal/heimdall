@@ -23,7 +23,10 @@ indid(
   epochs = 200,
   patience = 10,
   validation = NULL,
-  seed = NULL
+  seed = NULL,
+  n_layers = 1,
+  dropout = 0,
+  layer_norm = c("none", "before", "after")
 )
 ```
 
@@ -81,6 +84,21 @@ indid(
   Seed of the private random stream (initial weights and order of the
   batches). `NULL` draws one from the session.
 
+- n_layers:
+
+  Number of LSTM layers.
+
+- dropout:
+
+  Dropout rate on the outputs of every LSTM layer but the last (training
+  only), as `torch.nn.LSTM`.
+
+- layer_norm:
+
+  `"none"` (default, `torch.nn.LSTM`), or the one-layer LSTM with layer
+  normalisation of the WWAggr code (`LayerNormLSTM`): `"before"` or
+  `"after"` the linear map of every gate.
+
 ## Value
 
 An `indid` object with the network (`params`), the settings and the
@@ -118,6 +136,19 @@ and the `configs/`):
 The network, the gradients (backpropagation through time) and Adam are
 written in R. The defaults are those of the 1-D SyntheticNormal
 experiment (`configs/synthetic_1D_seq2seq.yaml`).
+
+The architectures of the WWAggr code (`BaseRnn` of
+<https://github.com/stalex2902/wwagr-ensemble-cpd>,
+`src/models/core_models.py`), used for the BCE and InDiD members of the
+ensembles of
+[`cpd_ensemble()`](https://cefet-rj-dal.github.io/heimdall/reference/cpd_ensemble.md),
+are available through `n_layers`, `dropout` and `layer_norm`. In
+`LayerNormLSTM`, every gate (forget, input, output, cell) has a linear
+map of the input and one of the hidden state, each with its own layer
+normalisation (before the map, on the input or hidden state, or after
+it); the linear maps are initialised as `torch.nn.Linear`. Models with
+more than one layer or with layer normalisation are trained with the
+automatic differentiation of the package.
 
 ## References
 

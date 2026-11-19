@@ -74,7 +74,10 @@ it; with the binary cross-entropy (BCE); or with both in turn (<code>combined</c
 <span>  epochs <span class="op">=</span> <span class="fl">200</span>,</span>
 <span>  patience <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  validation <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  seed <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  n_layers <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  dropout <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  layer_norm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"none"</span>, <span class="st">"before"</span>, <span class="st">"after"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -133,6 +136,21 @@ the InDiD loss.</p></dd>
 <dd><p>Seed of the private random stream (initial weights and order of
 the batches). <code>NULL</code> draws one from the session.</p></dd>
 
+
+<dt id="arg-n-layers">n_layers<a class="anchor" aria-label="anchor" href="#arg-n-layers"></a></dt>
+<dd><p>Number of LSTM layers.</p></dd>
+
+
+<dt id="arg-dropout">dropout<a class="anchor" aria-label="anchor" href="#arg-dropout"></a></dt>
+<dd><p>Dropout rate on the outputs of every LSTM layer but the last
+(training only), as <code>torch.nn.LSTM</code>.</p></dd>
+
+
+<dt id="arg-layer-norm">layer_norm<a class="anchor" aria-label="anchor" href="#arg-layer-norm"></a></dt>
+<dd><p><code>"none"</code> (default, <code>torch.nn.LSTM</code>), or the one-layer
+LSTM with layer normalisation of the WWAggr code (<code>LayerNormLSTM</code>):
+<code>"before"</code> or <code>"after"</code> the linear map of every gate.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -163,6 +181,16 @@ min_delta 0) as Lightning; the model of the last epoch is kept, as
 </ul><p>The network, the gradients (backpropagation through time) and Adam are
 written in R. The defaults are those of the 1-D SyntheticNormal experiment
 (<code>configs/synthetic_1D_seq2seq.yaml</code>).</p>
+<p>The architectures of the WWAggr code (<code>BaseRnn</code> of
+<a href="https://github.com/stalex2902/wwagr-ensemble-cpd" class="external-link">https://github.com/stalex2902/wwagr-ensemble-cpd</a>,
+<code>src/models/core_models.py</code>), used for the BCE and InDiD members of the
+ensembles of <code><a href="cpd_ensemble.html">cpd_ensemble()</a></code>, are available through <code>n_layers</code>, <code>dropout</code>
+and <code>layer_norm</code>. In <code>LayerNormLSTM</code>, every gate (forget, input, output,
+cell) has a linear map of the input and one of the hidden state, each with
+its own layer normalisation (before the map, on the input or hidden state,
+or after it); the linear maps are initialised as <code>torch.nn.Linear</code>. Models
+with more than one layer or with layer normalisation are trained with the
+automatic differentiation of the package.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
