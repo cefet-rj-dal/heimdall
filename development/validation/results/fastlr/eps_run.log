@@ -1,0 +1,93 @@
+Ind eps 0.0: 0 changes, min ratio 1.0000, 121 s
+Ind eps 0.7: 0 changes, min ratio 0.5120, 549 s
+Ind eps 0.6: 0 changes, min ratio 0.6665, 575 s
+Ind eps 0.3: 0 changes, min ratio 0.8992, 589 s
+Ind eps 0.4: 0 changes, min ratio 0.8056, 596 s
+Ind eps 0.5: 0 changes, min ratio 0.7749, 600 s
+Ind eps 0.2: 0 changes, min ratio 0.9321, 619 s
+Ind eps 0.1: 0 changes, min ratio 0.9865, 628 s
+Ind eps 0.8: 0 changes, min ratio 0.4207, 549 s
+Step eps 0.0: 19 changes, min ratio 1.0000, 126 s
+Step eps 0.3: 19 changes, min ratio 0.8679, 451 s
+Step eps 0.2: 19 changes, min ratio 0.9409, 466 s
+Step eps 0.1: 19 changes, min ratio 0.9862, 469 s
+Ind eps 0.9: 0 changes, min ratio 0.4189, 518 s
+Step eps 0.4: 19 changes, min ratio 0.8282, 450 s
+Step eps 0.5: 19 changes, min ratio 0.7088, 444 s
+Step eps 0.6: 19 changes, min ratio 0.6143, 434 s
+Step eps 0.7: 19 changes, min ratio 0.5047, 441 s
+Slope eps 0.0: 61 changes, min ratio 1.0000, 109 s
+Step eps 0.9: 19 changes, min ratio 0.2623, 423 s
+Step eps 0.8: 19 changes, min ratio 0.3871, 438 s
+Slope eps 0.2: 61 changes, min ratio 0.9778, 418 s
+Slope eps 0.3: 61 changes, min ratio 0.8982, 417 s
+Slope eps 0.1: 61 changes, min ratio 0.9908, 433 s
+Slope eps 0.4: 61 changes, min ratio 0.8600, 417 s
+Slope eps 0.5: 61 changes, min ratio 0.7626, 413 s
+Slope eps 0.6: 61 changes, min ratio 0.6196, 408 s
+Slope eps 0.8: 61 changes, min ratio 0.3813, 268 s
+Slope eps 0.9: 61 changes, min ratio 0.2989, 246 s
+Slope eps 0.7: 60 changes, min ratio 0.5832, 271 s
+           data eps changes mean_delay missed min_ratio avg_ratio  tests_per_n
+elapsed     Ind 0.0       0         NA     NA 1.0000000 1.0000000 0.0007661737
+elapsed1    Ind 0.1       0         NA     NA 0.9864713 0.9999997 0.0007644918
+elapsed2    Ind 0.2       0         NA     NA 0.9320849 0.9999961 0.0007344426
+elapsed3    Ind 0.3       0         NA     NA 0.8991792 0.9999850 0.0007280670
+elapsed4    Ind 0.4       0         NA     NA 0.8056003 0.9999182 0.0007162106
+elapsed5    Ind 0.5       0         NA     NA 0.7748905 0.9997920 0.0006872516
+elapsed6    Ind 0.6       0         NA     NA 0.6664754 0.9995195 0.0006646131
+elapsed7    Ind 0.7       0         NA     NA 0.5119689 0.9991355 0.0006279871
+elapsed8    Ind 0.8       0         NA     NA 0.4206879 0.9981257 0.0006125316
+elapsed9    Ind 0.9       0         NA     NA 0.4189316 0.9813064 0.0005682354
+elapsed10  Step 0.0      19   24.42105      0 1.0000000 1.0000000 0.0084582871
+elapsed11  Step 0.1      19   24.42105      0 0.9862197 0.9999999 0.0084508077
+elapsed12  Step 0.2      19   24.42105      0 0.9409321 0.9999876 0.0083970613
+elapsed13  Step 0.3      19   24.42105      0 0.8678575 0.9999390 0.0083159151
+elapsed14  Step 0.4      19   24.42105      0 0.8282156 0.9998462 0.0082083440
+elapsed15  Step 0.5      19   24.42105      0 0.7087893 0.9995415 0.0080941611
+elapsed16  Step 0.6      19   24.78947      0 0.6142676 0.9965014 0.0079724716
+elapsed17  Step 0.7      19   24.47368      0 0.5046942 0.9933082 0.0077893548
+elapsed18  Step 0.8      19   24.73684      0 0.3870750 0.9881860 0.0074581478
+elapsed19  Step 0.9      19   25.47368      0 0.2622616 0.9856123 0.0071155934
+elapsed20 Slope 0.0      61         NA     NA 1.0000000 1.0000000 0.0207395545
+elapsed21 Slope 0.1      61         NA     NA 0.9907979 0.9999993 0.0207032906
+elapsed22 Slope 0.2      61         NA     NA 0.9777793 0.9999931 0.0206018029
+elapsed23 Slope 0.3      61         NA     NA 0.8982002 0.9998098 0.0204257781
+elapsed24 Slope 0.4      61         NA     NA 0.8599715 0.9996772 0.0201764359
+elapsed25 Slope 0.5      61         NA     NA 0.7626306 0.9989506 0.0198859175
+elapsed26 Slope 0.6      61         NA     NA 0.6195923 0.9985112 0.0195783304
+elapsed27 Slope 0.7      60         NA     NA 0.5832000 0.9954403 0.0189336420
+elapsed28 Slope 0.8      61         NA     NA 0.3813001 0.9916737 0.0185489660
+elapsed29 Slope 0.9      61         NA     NA 0.2989360 0.9869418 0.0176087511
+          tests_per_k cands_per_k total_tests_per_n total_cands_per_k seconds
+elapsed     1.0000000   1.0000000      0.0002220826         1.0000000 120.806
+elapsed1    0.9988502   0.9916827      0.0002218202         0.9913823 627.754
+elapsed2    0.9499936   0.9400863      0.0002110102         0.9398979 618.882
+elapsed3    0.9428739   0.9285314      0.0002093512         0.9279148 588.840
+elapsed4    0.9116600   0.8896960      0.0002020919         0.8876775 596.124
+elapsed5    0.8865762   0.8596832      0.0001968233         0.8586549 599.615
+elapsed6    0.8598782   0.7876604      0.0001910366         0.7872082 574.709
+elapsed7    0.7668079   0.7259154      0.0001701046         0.7250251 549.223
+elapsed8    0.7573778   0.6935284      0.0001680003         0.6926416 549.114
+elapsed9    0.6559616   0.5874697      0.0001452231         0.5847394 518.305
+elapsed10   1.0000000   1.0000000      0.0031350139         1.0000000 125.599
+elapsed11   0.9972924   0.9947381      0.0031252319         0.9942328 468.972
+elapsed12   0.9882227   0.9801534      0.0030941810         0.9785458 466.063
+elapsed13   0.9745847   0.9585628      0.0030460119         0.9549030 450.771
+elapsed14   0.9567796   0.9277923      0.0029883638         0.9230180 450.239
+elapsed15   0.9369573   0.8976401      0.0029254422         0.8923572 443.784
+elapsed16   0.9159313   0.8667353      0.0028562250         0.8608572 433.604
+elapsed17   0.8836343   0.8100976      0.0027623347         0.8034702 440.647
+elapsed18   0.8411520   0.7558850      0.0026110839         0.7485396 438.292
+elapsed19   0.7866803   0.6799864      0.0024289315         0.6716578 423.372
+elapsed20   1.0000000   1.0000000      0.0083187945         1.0000000 109.080
+elapsed21   0.9962202   0.9909899      0.0082801471         0.9895847 432.862
+elapsed22   0.9848182   0.9715451      0.0081673023         0.9668230 418.083
+elapsed23   0.9681996   0.9453864      0.0080064388         0.9370792 416.558
+elapsed24   0.9479043   0.9124342      0.0078186215         0.9008287 416.929
+elapsed25   0.9223484   0.8731185      0.0076391867         0.8588021 413.180
+elapsed26   0.8948468   0.8333293      0.0073750238         0.8179565 407.575
+elapsed27   0.8598771   0.7841090      0.0069980646         0.7673700 270.674
+elapsed28   0.8181365   0.7276781      0.0067658714         0.7095985 267.658
+elapsed29   0.7586451   0.6560470      0.0062198529         0.6374646 246.273
+EPS_DONE

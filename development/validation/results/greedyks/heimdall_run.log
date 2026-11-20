@@ -1,0 +1,13 @@
+error memo_units 900 runs, 9.698569 mins 
+error mean_diff 900 runs, 9.436735 mins 
+error std_diff 900 runs, 10.81849 mins 
+error sample_size 900 runs, 32.04007 mins 
+records 444448 weeks 53 
+callcenter DTW 34.03228 mins 
+  index       time_at_index          time_after          D first_hour
+1  1638 1999-01-04 21:41:26 1999-01-04 21:42:12 0.03980417        134
+effectiveness memo_units 900 runs, 23.56313 mins 
+effectiveness mean_diff 900 runs, 40.73374 mins 
+effectiveness std_diff 900 runs, 43.89551 mins 
+effectiveness sample_size 900 runs, 25.33955 mins 
+HEIMDALL_DONE

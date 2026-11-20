@@ -1,0 +1,207 @@
+Keystroke NB CD: accuracy 74.93 labels 25.00 retrainings 3 (42 s)
+Insects NB CD: accuracy 68.92 labels 39.44 retrainings 20 (106 s)
+Bike NB CD: accuracy 69.90 labels 43.73 retrainings 75 (117 s)
+AbruptInsects NB CD: accuracy 60.56 labels 5.63 retrainings 2 (181 s)
+Arabic NB CD: accuracy 76.57 labels 28.41 retrainings 4 (354 s)
+Posture NB CD: accuracy 45.72 labels 10.31 retrainings 33 (9896 s)
+Keystroke NN BL2: accuracy 86.87
+Keystroke NB BL2: accuracy 79.35
+Keystroke DT BL2: accuracy 77.05
+Insects NN BL2: accuracy 76.91
+Insects NB BL2: accuracy 76.01
+Insects DT BL2: accuracy 68.02
+AbruptInsects NN BL2: accuracy 75.31
+AbruptInsects NB BL2: accuracy 74.65
+AbruptInsects DT BL2: accuracy 58.86
+Bike NN BL2: accuracy 67.57
+Bike NB BL2: accuracy 71.66
+Bike DT BL2: accuracy 65.47
+Arabic NN BL2: accuracy 77.21
+Arabic NB BL2: accuracy 77.69
+Arabic DT BL2: accuracy 62.33
+Posture NN BL2: accuracy 51.17
+Posture NB BL2: accuracy 45.21
+Posture DT BL2: accuracy 46.28
+         dataset classifier method accuracy      labels retrainings
+1        Posture         DT     TL 48.82879 100.0000000           0
+2        Posture         NN     TL 54.05573 100.0000000           0
+3        Posture         NB     TL 45.87430 100.0000000           0
+4        Posture         NB    MRP 45.99355  10.3117797          33
+5        Posture         NB     CD 45.72037  10.3117797          33
+6        Posture         DT    BL1 38.88659   0.3032876           0
+7        Posture         DT     MR 47.58579   6.0657528          19
+8        Posture         NN    BL1 40.96495   0.3032876           0
+9        Posture         NN     MR 53.56960   6.0657528          19
+10       Posture         NN     AB 44.79009   0.9098629           2
+11       Posture         NB    BL1 41.90983   0.3032876           0
+12       Posture         NB     MR 46.32453   6.0657528          19
+13     Keystroke         DT     TL 88.80000 100.0000000           0
+14       Insects         DT     TL 81.60766 100.0000000           0
+15 AbruptInsects         DT     TL 68.07656 100.0000000           0
+16          Bike         DT     TL 75.06221 100.0000000           0
+17        Arabic         DT     TL 67.31325 100.0000000           0
+18     Keystroke         NN     TL 90.53333 100.0000000           0
+19     Keystroke         NB     TL 85.26667 100.0000000           0
+20     Keystroke         NB    MRP 78.00000  18.7500000           2
+21     Keystroke         NB     CD 74.93333  25.0000000           3
+22       Insects         NN     TL 89.81818 100.0000000           0
+23       Insects         NB     TL 88.26794 100.0000000           0
+24       Insects         NB    MRP 78.52632  82.6291080          43
+25       Insects         NB     CD 68.91866  39.4366197          20
+26 AbruptInsects         NN     TL 81.58852 100.0000000           0
+27 AbruptInsects         NB     TL 80.95694 100.0000000           0
+28 AbruptInsects         NB    MRP 78.14354   7.5117371           3
+29 AbruptInsects         NB     CD 60.55502   5.6338028           2
+30          Bike         NN     TL 75.65831 100.0000000           0
+31          Bike         NB     TL 75.18954 100.0000000           0
+32          Bike         NB    MRP 72.40581  90.9143219         157
+33          Bike         NB     CD 69.89988  43.7309396          75
+34        Arabic         NN     TL 82.95181 100.0000000           0
+35        Arabic         NB     TL 83.15663 100.0000000           0
+36        Arabic         NB    MRP 81.18072  62.5000000          10
+37        Arabic         NB     CD 76.56627  28.4090909           4
+38     Keystroke         DT    BL1 42.93333   6.2500000           0
+39     Keystroke         DT     MR 83.73333  31.2500000           4
+40       Insects         DT    BL1 53.43541   1.8779343           0
+41       Insects         DT     MR 73.32057  90.1408451          47
+42 AbruptInsects         DT    BL1 49.66507   1.8779343           0
+43 AbruptInsects         DT     MR 67.36842  20.6572770          10
+44          Bike         DT    BL1 54.29712   0.5754071           0
+45          Bike         DT     MR 66.34064 200.8170781         348
+46        Arabic         DT    BL1 54.30120   5.6818182           0
+47        Arabic         DT     MR 67.49398 107.9545455          18
+48     Keystroke         NN    BL1 63.73333   6.2500000           0
+49     Keystroke         NN     MR 88.53333  43.7500000           6
+50     Keystroke         NN     AB 86.60000  25.0000000           3
+51     Keystroke         NB    BL1 51.53333   6.2500000           0
+52     Keystroke         NB     MR 79.73333  43.7500000           6
+53       Insects         NN    BL1 59.25359   1.8779343           0
+54       Insects         NN     MR 82.67943 120.1877934          63
+55       Insects         NN     AB 68.19139  28.1690141          14
+56       Insects         NB    BL1 55.04306   1.8779343           0
+57       Insects         NB     MR 82.73684 120.1877934          63
+58 AbruptInsects         NN    BL1 58.96651   1.8779343           0
+59 AbruptInsects         NN     MR 80.76555  37.5586854          19
+60 AbruptInsects         NN     AB 79.38756  16.9014085           8
+61 AbruptInsects         NB    BL1 60.36364   1.8779343           0
+62 AbruptInsects         NB     MR 79.33014  37.5586854          19
+63          Bike         NN    BL1 49.65565   0.5754071           0
+64          Bike         NN     MR 67.73540 200.8170781         348
+65          Bike         NN     AB 67.09300  41.4293112          71
+66          Bike         NB    BL1 48.61392   0.5754071           0
+67          Bike         NB     MR 72.61416 200.8170781         348
+68        Arabic         NN    BL1 65.49398   5.6818182           0
+69        Arabic         NN     MR 82.24096 113.6363636          19
+70        Arabic         NN     AB 70.09639  11.3636364           1
+71        Arabic         NB    BL1 68.40964   5.6818182           0
+72        Arabic         NB     MR 82.27711 113.6363636          19
+73     Keystroke         NN    BL2 86.86667  43.7500000           6
+74     Keystroke         NB    BL2 79.34867  43.7500000           6
+75     Keystroke         DT    BL2 77.04867  31.2500000           4
+76       Insects         NN    BL2 76.90584 120.1877934          63
+77       Insects         NB    BL2 76.00880 120.1877934          63
+78       Insects         DT    BL2 68.02450  90.1408451          47
+79 AbruptInsects         NN    BL2 75.31177  37.5586854          19
+80 AbruptInsects         NB    BL2 74.65282  37.5586854          19
+81 AbruptInsects         DT    BL2 58.85971  20.6572770          10
+82          Bike         NN    BL2 67.56965 200.8170781         348
+83          Bike         NB    BL2 71.66231 200.8170781         348
+84          Bike         DT    BL2 65.46843 200.8170781         348
+85        Arabic         NN    BL2 77.20952 113.6363636          19
+86        Arabic         NB    BL2 77.68554 113.6363636          19
+87        Arabic         DT    BL2 62.33145 107.9545455          18
+88       Posture         NN    BL2 51.17187   6.0657528          19
+89       Posture         NB    BL2 45.21190   6.0657528          19
+90       Posture         DT    BL2 46.27788   6.0657528          19
+   ab_adaptations
+1               0
+2               0
+3               0
+4               0
+5               0
+6               0
+7               0
+8               0
+9               0
+10             58
+11              0
+12              0
+13              0
+14              0
+15              0
+16              0
+17              0
+18              0
+19              0
+20              0
+21              0
+22              0
+23              0
+24              0
+25              0
+26              0
+27              0
+28              0
+29              0
+30              0
+31              0
+32              0
+33              0
+34              0
+35              0
+36              0
+37              0
+38              0
+39              0
+40              0
+41              0
+42              0
+43              0
+44              0
+45              0
+46              0
+47              0
+48              0
+49              0
+50             19
+51              0
+52              0
+53              0
+54              0
+55            443
+56              0
+57              0
+58              0
+59              0
+60              9
+61              0
+62              0
+63              0
+64              0
+65            985
+66              0
+67              0
+68              0
+69              0
+70            183
+71              0
+72              0
+73              0
+74              0
+75              0
+76              0
+77              0
+78              0
+79              0
+80              0
+81              0
+82              0
+83              0
+84              0
+85              0
+86              0
+87              0
+88              0
+89              0
+90              0
+CLASSIFY_DONE

@@ -212,6 +212,24 @@
   reverse-mode automatic differentiation written in R.
 * `indid()` gained `n_layers`, `dropout` and `layer_norm` (the LSTM with layer
   normalisation of the WWAggr code); `dfr_indid()` streams these models too.
+* New `dfr_greedyks()` and the sketch `greedyks()` (`greedyks_update()`,
+  `greedyks_statistic()`, `greedyks_pvalue()`): the online, approximate
+  one-sample Kolmogorov-Smirnov test of Cardoso and Galeno (2023), with `m`
+  buckets and a Fenwick tree, against a given CDF or a normal, exponential or
+  uniform distribution fitted to the start of the stream.
+* New `dfr_iks()` and the sketch `iks()` (`iks_add()`, `iks_remove()`,
+  `iks_statistic()`, `iks_kuiper()`, `iks_test()`, `iks_ca()`): the incremental
+  two-sample Kolmogorov-Smirnov test of dos Reis et al. (2016), a treap with
+  lazy propagation, and its unsupervised drift detector (a fixed reference
+  sample or consecutive windows against the sliding window, per feature).
+* New `dfr_fastlr()` and `fastlr_split()`: the fast likelihood-based change
+  point detector for binary streams of Tatti (2019). The split that maximises
+  the Bernoulli log-likelihood ratio is searched among the border indices,
+  with the (1 - eps) approximation in O(log^2(n) / eps) time, and a change is
+  declared above tau + log(n).
+* New `ks_sf()`: the exact distribution of the one-sample Kolmogorov-Smirnov
+  statistic for any `n` (the algorithm of Simard and L'Ecuyer, as
+  `scipy.stats.kstwo`), and its limiting distribution.
 
 ## Bug fixes
 

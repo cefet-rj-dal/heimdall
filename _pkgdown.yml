@@ -61,6 +61,22 @@ reference:
     desc: Unsupervised detector on the mimicking error of a student classifier (Cerqueira et al., 2023).
     contents:
       - dfr_studd
+  - title: Online Kolmogorov-Smirnov test (GreedyKS)
+    desc: One-sample KS test on arbitrarily large streams with a bucket sketch (Cardoso and Galeno, 2023).
+    contents:
+      - greedyks
+      - dfr_greedyks
+      - ks_sf
+  - title: Incremental Kolmogorov-Smirnov test (IKS)
+    desc: Two-sample KS test on a treap with lazy propagation, for unsupervised drift detection (dos Reis et al., 2016).
+    contents:
+      - iks
+      - dfr_iks
+  - title: Fast likelihood-based change point detection
+    desc: Bernoulli likelihood ratio on the border indices of a binary stream, with a (1 - eps) approximation (Tatti, 2019).
+    contents:
+      - fastlr_split
+      - dfr_fastlr
   - title: Ensembles of change point detectors (WWAggr)
     desc: Window Wasserstein-based aggregation of calibrated deep change point detectors (Stepikin et al., 2025).
     contents:
