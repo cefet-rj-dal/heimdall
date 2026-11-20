@@ -110,6 +110,47 @@ Unsupervised detector on the mimicking error of a student classifier
 - [`dfr_studd()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_studd.md)
   : Student-Teacher Unsupervised Drift Detection (STUDD)
 
+## Online Kolmogorov-Smirnov test (GreedyKS)
+
+One-sample KS test on arbitrarily large streams with a bucket sketch
+(Cardoso and Galeno, 2023).
+
+- [`greedyks()`](https://cefet-rj-dal.github.io/heimdall/reference/greedyks.md)
+  [`greedyks_update()`](https://cefet-rj-dal.github.io/heimdall/reference/greedyks.md)
+  [`greedyks_statistic()`](https://cefet-rj-dal.github.io/heimdall/reference/greedyks.md)
+  [`greedyks_pvalue()`](https://cefet-rj-dal.github.io/heimdall/reference/greedyks.md)
+  : GreedyKS sketch of the one-sample Kolmogorov-Smirnov statistic
+- [`dfr_greedyks()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_greedyks.md)
+  : GreedyKS drift detector
+- [`ks_sf()`](https://cefet-rj-dal.github.io/heimdall/reference/ks_sf.md)
+  : Distribution of the Kolmogorov-Smirnov statistic
+
+## Incremental Kolmogorov-Smirnov test (IKS)
+
+Two-sample KS test on a treap with lazy propagation, for unsupervised
+drift detection (dos Reis et al., 2016).
+
+- [`iks()`](https://cefet-rj-dal.github.io/heimdall/reference/iks.md)
+  [`iks_add()`](https://cefet-rj-dal.github.io/heimdall/reference/iks.md)
+  [`iks_remove()`](https://cefet-rj-dal.github.io/heimdall/reference/iks.md)
+  [`iks_statistic()`](https://cefet-rj-dal.github.io/heimdall/reference/iks.md)
+  [`iks_kuiper()`](https://cefet-rj-dal.github.io/heimdall/reference/iks.md)
+  [`iks_test()`](https://cefet-rj-dal.github.io/heimdall/reference/iks.md)
+  [`iks_ca()`](https://cefet-rj-dal.github.io/heimdall/reference/iks.md)
+  : Incremental two-sample Kolmogorov-Smirnov test
+- [`dfr_iks()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_iks.md)
+  : Incremental Kolmogorov-Smirnov drift detector
+
+## Fast likelihood-based change point detection
+
+Bernoulli likelihood ratio on the border indices of a binary stream,
+with a (1 - eps) approximation (Tatti, 2019).
+
+- [`fastlr_split()`](https://cefet-rj-dal.github.io/heimdall/reference/fastlr_split.md)
+  : Likelihood-ratio change point of a binary sequence
+- [`dfr_fastlr()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_fastlr.md)
+  : Fast likelihood-based change point detector for binary streams
+
 ## Ensembles of change point detectors (WWAggr)
 
 Window Wasserstein-based aggregation of calibrated deep change point

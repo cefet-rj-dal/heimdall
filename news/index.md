@@ -348,6 +348,45 @@
   normalisation of the WWAggr code);
   [`dfr_indid()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_indid.md)
   streams these models too.
+- New
+  [`dfr_greedyks()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_greedyks.md)
+  and the sketch
+  [`greedyks()`](https://cefet-rj-dal.github.io/heimdall/reference/greedyks.md)
+  ([`greedyks_update()`](https://cefet-rj-dal.github.io/heimdall/reference/greedyks.md),
+  [`greedyks_statistic()`](https://cefet-rj-dal.github.io/heimdall/reference/greedyks.md),
+  [`greedyks_pvalue()`](https://cefet-rj-dal.github.io/heimdall/reference/greedyks.md)):
+  the online, approximate one-sample Kolmogorov-Smirnov test of Cardoso
+  and Galeno (2023), with `m` buckets and a Fenwick tree, against a
+  given CDF or a normal, exponential or uniform distribution fitted to
+  the start of the stream.
+- New
+  [`dfr_iks()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_iks.md)
+  and the sketch
+  [`iks()`](https://cefet-rj-dal.github.io/heimdall/reference/iks.md)
+  ([`iks_add()`](https://cefet-rj-dal.github.io/heimdall/reference/iks.md),
+  [`iks_remove()`](https://cefet-rj-dal.github.io/heimdall/reference/iks.md),
+  [`iks_statistic()`](https://cefet-rj-dal.github.io/heimdall/reference/iks.md),
+  [`iks_kuiper()`](https://cefet-rj-dal.github.io/heimdall/reference/iks.md),
+  [`iks_test()`](https://cefet-rj-dal.github.io/heimdall/reference/iks.md),
+  [`iks_ca()`](https://cefet-rj-dal.github.io/heimdall/reference/iks.md)):
+  the incremental two-sample Kolmogorov-Smirnov test of dos Reis et
+  al. (2016), a treap with lazy propagation, and its unsupervised drift
+  detector (a fixed reference sample or consecutive windows against the
+  sliding window, per feature).
+- New
+  [`dfr_fastlr()`](https://cefet-rj-dal.github.io/heimdall/reference/dfr_fastlr.md)
+  and
+  [`fastlr_split()`](https://cefet-rj-dal.github.io/heimdall/reference/fastlr_split.md):
+  the fast likelihood-based change point detector for binary streams of
+  Tatti (2019). The split that maximises the Bernoulli log-likelihood
+  ratio is searched among the border indices, with the (1 - eps)
+  approximation in O(log^2(n) / eps) time, and a change is declared
+  above tau + log(n).
+- New
+  [`ks_sf()`](https://cefet-rj-dal.github.io/heimdall/reference/ks_sf.md):
+  the exact distribution of the one-sample Kolmogorov-Smirnov statistic
+  for any `n` (the algorithm of Simard and L’Ecuyer, as
+  `scipy.stats.kstwo`), and its limiting distribution.
 
 ### Bug fixes
 

@@ -336,6 +336,82 @@
         </dt>
         <dd>Student-Teacher Unsupervised Drift Detection (STUDD)</dd>
       </dl></div><div class="section level2">
+      <h2 id="online-kolmogorov-smirnov-test-greedyks-">Online Kolmogorov-Smirnov test (GreedyKS)<a class="anchor" aria-label="anchor" href="#online-kolmogorov-smirnov-test-greedyks-"></a></h2>
+
+      <div class="section-desc"><p>One-sample KS test on arbitrarily large streams with a bucket sketch (Cardoso and Galeno, 2023).</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="greedyks.html">greedyks()</a></code> <code><a href="greedyks.html">greedyks_update()</a></code> <code><a href="greedyks.html">greedyks_statistic()</a></code> <code><a href="greedyks.html">greedyks_pvalue()</a></code>
+
+        </dt>
+        <dd>GreedyKS sketch of the one-sample Kolmogorov-Smirnov statistic</dd>
+
+        <dt>
+
+          <code><a href="dfr_greedyks.html">dfr_greedyks()</a></code>
+
+        </dt>
+        <dd>GreedyKS drift detector</dd>
+
+        <dt>
+
+          <code><a href="ks_sf.html">ks_sf()</a></code>
+
+        </dt>
+        <dd>Distribution of the Kolmogorov-Smirnov statistic</dd>
+      </dl></div><div class="section level2">
+      <h2 id="incremental-kolmogorov-smirnov-test-iks-">Incremental Kolmogorov-Smirnov test (IKS)<a class="anchor" aria-label="anchor" href="#incremental-kolmogorov-smirnov-test-iks-"></a></h2>
+
+      <div class="section-desc"><p>Two-sample KS test on a treap with lazy propagation, for unsupervised drift detection (dos Reis et al., 2016).</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="iks.html">iks()</a></code> <code><a href="iks.html">iks_add()</a></code> <code><a href="iks.html">iks_remove()</a></code> <code><a href="iks.html">iks_statistic()</a></code> <code><a href="iks.html">iks_kuiper()</a></code> <code><a href="iks.html">iks_test()</a></code> <code><a href="iks.html">iks_ca()</a></code>
+
+        </dt>
+        <dd>Incremental two-sample Kolmogorov-Smirnov test</dd>
+
+        <dt>
+
+          <code><a href="dfr_iks.html">dfr_iks()</a></code>
+
+        </dt>
+        <dd>Incremental Kolmogorov-Smirnov drift detector</dd>
+      </dl></div><div class="section level2">
+      <h2 id="fast-likelihood-based-change-point-detection">Fast likelihood-based change point detection<a class="anchor" aria-label="anchor" href="#fast-likelihood-based-change-point-detection"></a></h2>
+
+      <div class="section-desc"><p>Bernoulli likelihood ratio on the border indices of a binary stream, with a (1 - eps) approximation (Tatti, 2019).</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="fastlr_split.html">fastlr_split()</a></code>
+
+        </dt>
+        <dd>Likelihood-ratio change point of a binary sequence</dd>
+
+        <dt>
+
+          <code><a href="dfr_fastlr.html">dfr_fastlr()</a></code>
+
+        </dt>
+        <dd>Fast likelihood-based change point detector for binary streams</dd>
+      </dl></div><div class="section level2">
       <h2 id="ensembles-of-change-point-detectors-wwaggr-">Ensembles of change point detectors (WWAggr)<a class="anchor" aria-label="anchor" href="#ensembles-of-change-point-detectors-wwaggr-"></a></h2>
 
       <div class="section-desc"><p>Window Wasserstein-based aggregation of calibrated deep change point detectors (Stepikin et al., 2025).</p></div>

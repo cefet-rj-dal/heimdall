@@ -27,7 +27,10 @@
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_eddm.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_eikmeans.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_ensemble.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_fastlr.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_greedyks.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_hddm.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_iks.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_inactive.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_indid.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/dfr_kldist.html</loc></url>
@@ -62,10 +65,14 @@
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/eikmeans_test.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/ensemble_vote.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/error_based.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/fastlr_split.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/fit.drifter.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/greedyks.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/iks.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/index.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/indid.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/indid_predict.html</loc></url>
+<url><loc>https://cefet-rj-dal.github.io/heimdall/reference/ks_sf.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/metric.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/mmqt.html</loc></url>
 <url><loc>https://cefet-rj-dal.github.io/heimdall/reference/mmqt_test.html</loc></url>
